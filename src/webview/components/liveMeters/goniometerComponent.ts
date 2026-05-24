@@ -64,8 +64,6 @@ export default class GoniometerComponent extends Component {
   private _canvasWrap: HTMLElement;
   private _fieldTag: HTMLElement;
   private _canvas: HTMLCanvasElement;
-  private _corrFill: HTMLElement;
-  private _corrText: HTMLElement;
 
   private _playerService: PlayerService;
   private _analyzeSettingsService: AnalyzeSettingsService;
@@ -104,25 +102,21 @@ export default class GoniometerComponent extends Component {
             <canvas class="goniometer__canvas"></canvas>
           </div>
         </div>
-        <div class="goniometer__info">
-          <div class="goniometer__corrBar">
-            <div class="goniometer__corrFill"></div>
-          </div>
-          <div class="goniometer__corrText">CC: 0.00</div>
-        </div>
       </div>`;
 
     this._canvasWrap = containerEl.querySelector(".gonioCanvasWrap");
     this._fieldTag = containerEl.querySelector(".js-gonioFieldTag");
     this._canvas = this._canvasWrap.querySelector("canvas");
-    this._corrFill = containerEl.querySelector(".goniometer__corrFill");
-    this._corrText = containerEl.querySelector(".goniometer__corrText");
 
     this._syncFieldTag();
 
     this._addEventlistener(playerService, EventType.UPDATE_IS_PLAYING, () => {
       if (!playerService.isPlaying) {
-        /* Freeze last frame like spectral analyzer; do not wipe buffers. */
+        // /* Freeze last frame like spectral analyzer; do not wipe buffers. */
+        // TODO: Make it a choise in setting, freeze or erase
+        this._lissajouPoints.length = 0;
+        this._clearPolarSampleState();
+        this._clearPolarLevelState();
         this._drawFrame(false);
       }
       this._syncRaf();
@@ -457,16 +451,11 @@ export default class GoniometerComponent extends Component {
         polarLevelDisplayScaleDecay(fieldReleaseDbPerSec),
       );
     }
-
-    this._updateCorrelation();
   }
 
   private _drawFrame(updateAudio: boolean) {
     if (updateAudio) this._updateAudioData();
     this._drawSoundField();
-    if (!updateAudio && this._mixL.length > 0) {
-      this._updateCorrelation();
-    }
   }
 
   private _resizeCanvas(
@@ -497,11 +486,16 @@ export default class GoniometerComponent extends Component {
     return { cx, cy, radius, pad };
   }
 
+  /**
+   * Upper semicircle sound field, vertically centered like Lissajous.
+   * Baseline at cy; dome spans [cy − radius, cy] with midpoint at canvas center.
+   */
   private _semicircleLayout(w: number, h: number, dpr: number) {
     const pad = 14 * dpr;
     const cx = w / 2;
-    const cy = h - pad;
-    const radius = Math.min(cx - pad, cy - pad) * SCATTER_UNIT_RADIUS;
+    const radius =
+      Math.min(cx - pad, (h - 2 * pad) / 2) * SCATTER_UNIT_RADIUS;
+    const cy = h / 2 + radius / 2;
     return { cx, cy, radius, pad };
   }
 
@@ -750,35 +744,6 @@ export default class GoniometerComponent extends Component {
     );
     ctx.closePath();
     ctx.fill();
-  }
-
-  private _updateCorrelation() {
-    const n = this._mixL.length;
-    if (n < 1) return;
-
-    let sumLR = 0;
-    let sumL2 = 0;
-    let sumR2 = 0;
-    for (let i = 0; i < n; i++) {
-      sumLR += this._mixL[i] * this._mixR[i];
-      sumL2 += this._mixL[i] * this._mixL[i];
-      sumR2 += this._mixR[i] * this._mixR[i];
-    }
-    const denom = Math.sqrt(sumL2 * sumR2);
-    const corr = denom < 1e-12 ? 0 : Math.max(-1, Math.min(1, sumLR / denom));
-
-    if (corr >= 0) {
-      this._corrFill.style.left = "50%";
-      this._corrFill.style.width = `${corr * 50}%`;
-      this._corrFill.style.background = `rgb(${Math.round(255 * (1 - corr))}, ${Math.round(255 * corr)}, ${Math.round(255 * (1 - corr) * 0.3)})`;
-    } else {
-      this._corrFill.style.left = `${(1 + corr) * 50}%`;
-      this._corrFill.style.width = `${-corr * 50}%`;
-      this._corrFill.style.background = `rgb(${Math.round(255)}, ${Math.round(255 * (1 + corr))}, ${Math.round(255 * (1 + corr) * 0.3)})`;
-    }
-
-    const sign = corr >= 0 ? "+" : "";
-    this._corrText.textContent = `CC: ${sign}${corr.toFixed(2)}`;
   }
 
   override dispose() {

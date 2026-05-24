@@ -16,67 +16,28 @@ import {
   smoothPeakDisplayAlongBinsInto,
   stepSpectralPeakDisplay,
 } from "../../utils/spectralPeakDisplay";
+import {
+  LOG_FREQS,
+  LOG_POINTS,
+  SPECTRUM_FREQ_TICKS,
+  freqToCanvasX,
+  hzFromCanvasX,
+  logIndexFromHz,
+  lerpF32,
+  fmtHzLive,
+  formatFreqTickLabel,
+} from "../../utils/liveLogSpectrumAxis";
 
 const DB_FLOOR = -90;
 const DB_CEIL = 0;
-const LOG_POINTS = 300;
-const FREQ_MIN = 20;
-const FREQ_MAX = 20000;
-
-const FREQ_TICKS = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
 const DB_TICKS = [0, -12, -24, -36, -48, -60, -90];
 const MAX_CANVAS_PX = 4096;
-
-function logFreqPoints(): Float64Array {
-  const pts = new Float64Array(LOG_POINTS);
-  const lo = Math.log10(FREQ_MIN);
-  const hi = Math.log10(FREQ_MAX);
-  for (let i = 0; i < LOG_POINTS; i++) {
-    pts[i] = Math.pow(10, lo + (i / (LOG_POINTS - 1)) * (hi - lo));
-  }
-  return pts;
-}
-
-const LOG_FREQS = logFreqPoints();
-
-function lerpF32(arr: Float32Array, idx: number): number {
-  const n = arr.length;
-  if (n < 2) return DB_FLOOR;
-  const i = Math.max(0, Math.min(n - 2, Math.floor(idx)));
-  const f = idx - i;
-  return arr[i] * (1 - f) + arr[i + 1] * f;
-}
-
-function hzFromCanvasX(x: number, padL: number, drawW: number): number {
-  const t = (x - padL) / drawW;
-  const tl = Math.max(0, Math.min(1, t));
-  const lo = Math.log10(FREQ_MIN);
-  const hi = Math.log10(FREQ_MAX);
-  return Math.pow(10, lo + tl * (hi - lo));
-}
 
 function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   const t = (y - padT) / drawH;
   const tl = Math.max(0, Math.min(1, t));
   return DB_FLOOR + (1 - tl) * (DB_CEIL - DB_FLOOR);
-}
-
-function logIndexFromHz(hz: number): number {
-  const lo = Math.log10(FREQ_MIN);
-  const hi = Math.log10(FREQ_MAX);
-  return (
-    ((Math.log10(Math.max(hz, FREQ_MIN)) - lo) / (hi - lo)) * (LOG_POINTS - 1)
-  );
-}
-
-function fmtHzLive(hz: number): string {
-  if (!Number.isFinite(hz)) return "—";
-  if (hz >= 10000) return `${(hz / 1000).toFixed(2)} kHz`;
-  if (hz >= 1000) return `${(hz / 1000).toFixed(3)} kHz`;
-  return `${hz.toFixed(1)} Hz`;
-}
-
-export default class SpectralAnalyzerComponent extends Component {
+}export default class SpectralAnalyzerComponent extends Component {
   private _container: HTMLElement;
   private _canvas: HTMLCanvasElement;
   private _readoutEl: HTMLElement;
@@ -212,11 +173,7 @@ export default class SpectralAnalyzerComponent extends Component {
 
     if (drawW <= 0 || drawH <= 0) return;
 
-    const freqToX = (f: number) =>
-      padL +
-      ((Math.log10(f) - Math.log10(FREQ_MIN)) /
-        (Math.log10(FREQ_MAX) - Math.log10(FREQ_MIN))) *
-        drawW;
+    const freqToX = (f: number) => freqToCanvasX(f, padL, drawW);
     const dbToY = (db: number) =>
       padT + (1 - (db - DB_FLOOR) / (DB_CEIL - DB_FLOOR)) * drawH;
 
@@ -231,7 +188,7 @@ export default class SpectralAnalyzerComponent extends Component {
       ctx.stroke();
     }
 
-    for (const f of FREQ_TICKS) {
+    for (const f of SPECTRUM_FREQ_TICKS) {
       const x = freqToX(f);
       ctx.beginPath();
       ctx.moveTo(x, padT);
@@ -249,8 +206,8 @@ export default class SpectralAnalyzerComponent extends Component {
     }
 
     ctx.textAlign = "center";
-    for (const f of FREQ_TICKS) {
-      const label = f >= 1000 ? `${f / 1000}k` : String(f);
+    for (const f of SPECTRUM_FREQ_TICKS) {
+      const label = formatFreqTickLabel(f);
       ctx.fillText(label, freqToX(f), padT + drawH + 11 * dpr);
     }
 
@@ -411,8 +368,8 @@ export default class SpectralAnalyzerComponent extends Component {
       let rmStr = "—";
       if (analysers && this._emaPeakDisplay.length >= 2) {
         const li = logIndexFromHz(hz);
-        pkStr = lerpF32(this._emaPeakDisplay, li).toFixed(1);
-        rmStr = lerpF32(this._emaRms, li).toFixed(1);
+        pkStr = lerpF32(this._emaPeakDisplay, li, DB_FLOOR).toFixed(1);
+        rmStr = lerpF32(this._emaRms, li, DB_FLOOR).toFixed(1);
       }
       this._readoutEl.style.visibility = "visible";
       this._readoutEl.innerHTML = `${fmtHzLive(hz)}<br>Y ${dbY.toFixed(1)} dBFS<br>Peak ${pkStr} dBFS<br>RMS ${rmStr} dBFS`;

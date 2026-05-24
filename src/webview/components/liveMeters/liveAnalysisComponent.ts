@@ -3,27 +3,52 @@ import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import GoniometerComponent from "./goniometerComponent";
 import SpectralAnalyzerComponent from "./spectralAnalyzerComponent";
+import PhaseCorrelationSpectrumComponent from "./phaseCorrelationSpectrumComponent";
 
-const MIN_PANE_HEIGHT = 120; // px
+const MIN_PANE_HEIGHT = 120;
+const MIN_PANE_WIDTH = 100;
+const GONIO_INFO_BAR_PX = 20;
+
+const GONIO_ROW_HTML = `
+  <div class="liveAnalysis__gonioRow">
+    <div class="goniometerPane" data-gonio-polar-mount></div>
+    <div class="liveAnalysis__gonioColHandle" data-gonio-col-handle aria-hidden="true"></div>
+    <div class="phaseCorrelationPane" data-gonio-phase-mount></div>
+  </div>`;
+
+type LiveAnalysisLayoutMode = "inline" | "overlay";
+
+interface LiveAnalysisSplits {
+  row: number;
+  col: number;
+}
+
+const DEFAULT_SPLITS: LiveAnalysisSplits = { row: 0.5, col: 0.38 };
 
 export default class LiveAnalysisComponent extends Component {
-  private _container: HTMLElement;
+  private _inner: HTMLElement;
   private _gonioWrap: HTMLElement;
   private _spectrumWrap: HTMLElement;
-  private _handle: HTMLElement;
-  private _expandBtn: HTMLButtonElement;
+  private _rowHandle: HTMLElement;
+  private _colHandle: HTMLElement;
   private _overlay: HTMLElement;
+  private _overlayInner: HTMLElement;
   private _overlayGonioWrap: HTMLElement;
   private _overlaySpectrumWrap: HTMLElement;
-  private _overlayHandle: HTMLElement;
+  private _overlayRowHandle: HTMLElement;
+  private _overlayColHandle: HTMLElement;
 
   private _goniometer: GoniometerComponent;
+  private _phaseCorrelation: PhaseCorrelationSpectrumComponent;
   private _spectrum: SpectralAnalyzerComponent;
   private _overlayGoniometer: GoniometerComponent;
+  private _overlayPhaseCorrelation: PhaseCorrelationSpectrumComponent;
   private _overlaySpectrum: SpectralAnalyzerComponent;
 
-  private _splitRatio: number = 0.5;
-  private _dragging: boolean = false;
+  private _inlineSplits: LiveAnalysisSplits = { ...DEFAULT_SPLITS };
+  private _overlaySplits: LiveAnalysisSplits = { ...DEFAULT_SPLITS };
+  private _draggingRow = false;
+  private _draggingCol = false;
 
   constructor(
     containerEl: HTMLElement,
@@ -31,35 +56,59 @@ export default class LiveAnalysisComponent extends Component {
     analyzeSettingsService: AnalyzeSettingsService,
   ) {
     super();
-    this._container = containerEl;
 
     containerEl.innerHTML = `
       <div class="liveAnalysisComponent" id="liveAnalysisInner">
-        <button type="button" class="liveAnalysis__expandBtn" id="expandBtn" title="Expand">\u2197</button>
-        <div class="liveAnalysis__goniometer" id="gonioWrap"></div>
-        <div class="liveAnalysis__resizeHandle" id="liveResizeHandle"></div>
+        <div class="liveAnalysis__goniometer" id="gonioWrap">${GONIO_ROW_HTML}</div>
+        <div class="liveAnalysis__resizeHandle" id="liveResizeHandle" aria-hidden="true"></div>
         <div class="liveAnalysis__spectrum" id="spectrumWrap"></div>
       </div>
       <div class="liveAnalysis__overlay hidden" id="liveOverlay">
-        <div class="liveAnalysisComponent" style="flex:1;position:relative;">
-          <div class="liveAnalysis__goniometer" id="overlayGonioWrap" style="flex:1;min-height:${MIN_PANE_HEIGHT}px;"></div>
-          <div class="liveAnalysis__resizeHandle" id="overlayHandle"></div>
-          <div class="liveAnalysis__spectrum" id="overlaySpectrumWrap" style="flex:1;min-height:${MIN_PANE_HEIGHT}px;"></div>
+        <div class="liveAnalysisComponent liveAnalysisComponent--overlay" id="liveOverlayInner">
+          <div class="liveAnalysis__goniometer" id="overlayGonioWrap">${GONIO_ROW_HTML}</div>
+          <div class="liveAnalysis__resizeHandle" id="overlayHandle" aria-hidden="true"></div>
+          <div class="liveAnalysis__spectrum" id="overlaySpectrumWrap"></div>
         </div>
       </div>`;
 
+    this._inner = containerEl.querySelector("#liveAnalysisInner");
     this._gonioWrap = containerEl.querySelector("#gonioWrap");
     this._spectrumWrap = containerEl.querySelector("#spectrumWrap");
-    this._handle = containerEl.querySelector("#liveResizeHandle");
-    this._expandBtn = containerEl.querySelector("#expandBtn");
+    this._rowHandle = containerEl.querySelector("#liveResizeHandle");
+    this._colHandle = this._gonioWrap.querySelector(
+      "[data-gonio-col-handle]",
+    ) as HTMLElement;
     this._overlay = containerEl.querySelector("#liveOverlay");
+    this._overlayInner = containerEl.querySelector("#liveOverlayInner");
     this._overlayGonioWrap = containerEl.querySelector("#overlayGonioWrap");
     this._overlaySpectrumWrap = containerEl.querySelector("#overlaySpectrumWrap");
-    this._overlayHandle = containerEl.querySelector("#overlayHandle");
+    this._overlayRowHandle = containerEl.querySelector("#overlayHandle");
+    this._overlayColHandle = this._overlayGonioWrap.querySelector(
+      "[data-gonio-col-handle]",
+    ) as HTMLElement;
 
-    // Create sub-components
+    const polarMount = this._gonioWrap.querySelector(
+      "[data-gonio-polar-mount]",
+    ) as HTMLElement;
+    const phaseMount = this._gonioWrap.querySelector(
+      "[data-gonio-phase-mount]",
+    ) as HTMLElement;
+    const overlayPolarMount = this._overlayGonioWrap.querySelector(
+      "[data-gonio-polar-mount]",
+    ) as HTMLElement;
+    const overlayPhaseMount = this._overlayGonioWrap.querySelector(
+      "[data-gonio-phase-mount]",
+    ) as HTMLElement;
+
     this._goniometer = this._register(
-      new GoniometerComponent(this._gonioWrap, playerService, analyzeSettingsService),
+      new GoniometerComponent(polarMount, playerService, analyzeSettingsService),
+    );
+    this._phaseCorrelation = this._register(
+      new PhaseCorrelationSpectrumComponent(
+        phaseMount,
+        playerService,
+        analyzeSettingsService,
+      ),
     );
     this._spectrum = this._register(
       new SpectralAnalyzerComponent(
@@ -70,7 +119,14 @@ export default class LiveAnalysisComponent extends Component {
     );
     this._overlayGoniometer = this._register(
       new GoniometerComponent(
-        this._overlayGonioWrap,
+        overlayPolarMount,
+        playerService,
+        analyzeSettingsService,
+      ),
+    );
+    this._overlayPhaseCorrelation = this._register(
+      new PhaseCorrelationSpectrumComponent(
+        overlayPhaseMount,
         playerService,
         analyzeSettingsService,
       ),
@@ -83,21 +139,20 @@ export default class LiveAnalysisComponent extends Component {
       ),
     );
 
-    this._applyInlineSplit();
-    this._initResizeHandle(this._handle, (ratio) => {
-      this._splitRatio = ratio;
-      this._applyInlineSplit();
-    });
-    this._initResizeHandle(this._overlayHandle, (ratio) => {
-      this._splitRatio = ratio;
-      this._applyInlineSplit();
-      this._applyOverlaySplit();
-    });
+    this._applyAllLayout();
 
-    // Expand / collapse
-    this._addEventlistener(this._expandBtn, "click", () => this._openOverlay());
-    this._addEventlistener(this._overlay, "contextmenu", (e) => {
-      (e as Event).preventDefault();
+    this._initRowResizeHandle(this._rowHandle, "inline");
+    this._initRowResizeHandle(this._overlayRowHandle, "overlay");
+
+    this._initColResizeHandle(this._colHandle, "inline");
+    this._initColResizeHandle(this._overlayColHandle, "overlay");
+
+    this._addEventlistener(this._inner, "contextmenu", (e: MouseEvent) => {
+      e.preventDefault();
+      this._openOverlay();
+    });
+    this._addEventlistener(this._overlay, "contextmenu", (e: MouseEvent) => {
+      e.preventDefault();
       this._closeOverlay();
     });
     this._addEventlistener(document, "keydown", (e: KeyboardEvent) => {
@@ -107,53 +162,174 @@ export default class LiveAnalysisComponent extends Component {
     });
 
     if (typeof ResizeObserver !== "undefined") {
-      const inner = this._container.querySelector("#liveAnalysisInner") as HTMLElement;
       const ro = new ResizeObserver(() => {
-        this._applyInlineSplit();
-        this._applyOverlaySplit();
+        this._applyAllLayout();
       });
-      if (inner) ro.observe(inner);
+      ro.observe(this._inner);
+      ro.observe(this._overlayInner);
       this._register({ dispose: () => ro.disconnect() });
     }
   }
 
-  private _applyInlineSplit() {
-    const total = this._container.querySelector<HTMLElement>("#liveAnalysisInner")?.clientHeight ?? 300;
-    const handleH = this._handle.offsetHeight;
-    const available = total - handleH;
-    const gonioH = Math.max(MIN_PANE_HEIGHT, Math.min(available - MIN_PANE_HEIGHT, this._splitRatio * available));
-    this._gonioWrap.style.height = `${gonioH}px`;
-    this._gonioWrap.style.flex = "0 0 auto";
+  private _splitsFor(mode: LiveAnalysisLayoutMode): LiveAnalysisSplits {
+    return mode === "overlay" ? this._overlaySplits : this._inlineSplits;
   }
 
-  private _applyOverlaySplit() {
-    const total = this._overlayGonioWrap.parentElement?.clientHeight ?? 600;
-    const handleH = this._overlayHandle.offsetHeight;
+  private _applyAllLayout() {
+    this._applyRowSplit("inline");
+    this._applyGonioColSplit("inline");
+    this._applyRowSplit("overlay");
+    this._applyGonioColSplit("overlay");
+  }
+
+  private _applyRowSplit(mode: LiveAnalysisLayoutMode) {
+    const splits = this._splitsFor(mode);
+    if (mode === "inline") {
+      const total = this._inner?.clientHeight ?? 300;
+      const handleH = this._rowHandle.offsetHeight;
+      const available = total - handleH;
+      const gonioH = Math.max(
+        MIN_PANE_HEIGHT,
+        Math.min(
+          available - MIN_PANE_HEIGHT,
+          splits.row * available,
+        ),
+      );
+      this._gonioWrap.style.height = `${gonioH}px`;
+      this._gonioWrap.style.flex = "0 0 auto";
+      return;
+    }
+
+    const total = this._overlayInner?.clientHeight ?? 600;
+    const handleH = this._overlayRowHandle.offsetHeight;
     const available = total - handleH;
-    const gonioH = Math.max(MIN_PANE_HEIGHT, Math.min(available - MIN_PANE_HEIGHT, this._splitRatio * available));
+    const gonioH = Math.max(
+      MIN_PANE_HEIGHT,
+      Math.min(
+        available - MIN_PANE_HEIGHT,
+        splits.row * available,
+      ),
+    );
     this._overlayGonioWrap.style.height = `${gonioH}px`;
     this._overlayGonioWrap.style.flex = "0 0 auto";
   }
 
-  private _initResizeHandle(handle: HTMLElement, onUpdate: (ratio: number) => void) {
+  private _applyGonioColSplit(mode: LiveAnalysisLayoutMode) {
+    const splits = this._splitsFor(mode);
+    const gonioWrap =
+      mode === "inline" ? this._gonioWrap : this._overlayGonioWrap;
+    const colHandle =
+      mode === "inline" ? this._colHandle : this._overlayColHandle;
+    const row = gonioWrap.querySelector(
+      ".liveAnalysis__gonioRow",
+    ) as HTMLElement | null;
+    const polar = gonioWrap.querySelector(
+      "[data-gonio-polar-mount]",
+    ) as HTMLElement | null;
+    const phase = gonioWrap.querySelector(
+      "[data-gonio-phase-mount]",
+    ) as HTMLElement | null;
+    if (!row || !polar || !phase) {
+      return;
+    }
+
+    const handleW = colHandle?.offsetWidth ?? 4;
+    const available = Math.max(0, row.clientWidth - handleW);
+    if (available <= MIN_PANE_WIDTH * 2) {
+      return;
+    }
+
+    const polarW = Math.max(
+      MIN_PANE_WIDTH,
+      Math.min(
+        available - MIN_PANE_WIDTH,
+        splits.col * available,
+      ),
+    );
+    polar.style.flex = `0 0 ${polarW}px`;
+    phase.style.flex = "1 1 0";
+
+    const rowH = row.clientHeight;
+    const squareSide = Math.max(
+      MIN_PANE_WIDTH,
+      Math.min(polarW, Math.max(0, rowH - GONIO_INFO_BAR_PX)),
+    );
+    polar.style.setProperty("--gonio-square-px", `${squareSide}px`);
+  }
+
+  private _initRowResizeHandle(
+    handle: HTMLElement,
+    mode: LiveAnalysisLayoutMode,
+  ) {
     this._addEventlistener(handle, "mousedown", (e: MouseEvent) => {
       e.preventDefault();
-      this._dragging = true;
+      this._draggingRow = true;
+      const splits = this._splitsFor(mode);
       const parent = handle.parentElement;
+      if (!parent) {
+        return;
+      }
       const onMove = (mv: MouseEvent) => {
-        if (!this._dragging) return;
+        if (!this._draggingRow) {
+          return;
+        }
         const rect = parent.getBoundingClientRect();
         const y = mv.clientY - rect.top;
         const handleH = handle.offsetHeight;
         const available = rect.height - handleH;
-        const ratio = Math.max(
+        if (available <= MIN_PANE_HEIGHT * 2) {
+          return;
+        }
+        splits.row = Math.max(
           MIN_PANE_HEIGHT / available,
           Math.min(1 - MIN_PANE_HEIGHT / available, y / available),
         );
-        onUpdate(ratio);
+        this._applyRowSplit(mode);
+        this._applyGonioColSplit(mode);
       };
       const onUp = () => {
-        this._dragging = false;
+        this._draggingRow = false;
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      };
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+  }
+
+  private _initColResizeHandle(
+    handle: HTMLElement,
+    mode: LiveAnalysisLayoutMode,
+  ) {
+    this._addEventlistener(handle, "mousedown", (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this._draggingCol = true;
+      const splits = this._splitsFor(mode);
+      const gonioWrap =
+        mode === "inline" ? this._gonioWrap : this._overlayGonioWrap;
+      const row = gonioWrap.querySelector(
+        ".liveAnalysis__gonioRow",
+      ) as HTMLElement;
+      const onMove = (mv: MouseEvent) => {
+        if (!this._draggingCol) {
+          return;
+        }
+        const rect = row.getBoundingClientRect();
+        const handleW = handle.offsetWidth;
+        const available = rect.width - handleW;
+        if (available <= MIN_PANE_WIDTH * 2) {
+          return;
+        }
+        const x = mv.clientX - rect.left;
+        splits.col = Math.max(
+          MIN_PANE_WIDTH / available,
+          Math.min(1 - MIN_PANE_WIDTH / available, x / available),
+        );
+        this._applyGonioColSplit(mode);
+      };
+      const onUp = () => {
+        this._draggingCol = false;
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("mouseup", onUp);
       };
@@ -164,7 +340,8 @@ export default class LiveAnalysisComponent extends Component {
 
   private _openOverlay() {
     this._overlay.classList.remove("hidden");
-    this._applyOverlaySplit();
+    this._applyRowSplit("overlay");
+    this._applyGonioColSplit("overlay");
   }
 
   private _closeOverlay() {

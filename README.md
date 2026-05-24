@@ -1,173 +1,295 @@
-# audio-preview
+<div align="center">
 
-Play audio, inspect metadata, and view **waveform** and **spectrogram** inside VS Code. Optimized for music analysis by @DDDPG.
+[![CI](https://github.com/DDDPG/vscode-audio-preview/actions/workflows/ci.yml/badge.svg)](https://github.com/DDDPG/vscode-audio-preview/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/api/extension-guides/custom-editors)
 
-**Formats:** `wav`, `mp3`, `aac`, `ogg`, `flac`, `opus`, `m4a`, `sph`, and more.
+</div>
 
-## Upstream
+<br />
 
-## This project is based on **[vscode-audio-preview](https://github.com/sukumo28/vscode-audio-preview)** by sukumo28 (published as **wav-preview** on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sukumo28.wav-preview)).
+<div align="center">
+  <img src="ear_audio.png" alt="EAR Audio Preview" width="100" />
 
-## What we changed
+  # EAR Audio Preview
 
-### 1. Decoding stack
+  **A professional-grade audio analysis tool inside VS Code.**
 
-- Replaced the monolithic FFmpeg WASM decoder (required Docker build) with a layered decoder stack under `src/webview/decoders/`.
-- Format-specific WASM decoders: MP3 (`mpg123-decoder`), FLAC (`@wasm-audio-decoders/flac`), Ogg Vorbis / Opus (`ogg-vorbis`, `ogg-opus-decoder`).
-- **Web Audio `decodeAudioData`** as fallback for WAV, AAC, and browser-native formats.
-- No Docker required; `npm install` is sufficient for development.
+  Waveform · GPU Spectrogram · Goniometer · Phase Correlation
+  <br />LUFS Loudness · True Peak · Stereo Metering · WAV Export
 
-### 2. Build
+  [![earlab](https://img.shields.io/badge/earlab-Eps--Acoustic--Revolution--Lab-2ea44f?logo=github)](https://github.com/Eps-Acoustic-Revolution-Lab)
 
-- Webpack webview config enables **async WebAssembly** and emits `.wasm` files as assets.
-- CSP updated to allow `worker-src` and `connect-src` so WASM decoders load correctly inside the webview sandbox.
+</div>
 
-### 3. STFT / spectrogram analysis
+<br />
 
-- Added **multiple FFT window types**: Hann, Hamming, Blackman–Harris, Triangular.
-- Integrated **Essentia.js** (async WASM) as an optional FFT backend for windowing and spectrum; also used for **LUFS / EBU R128** loudness measurement.
-- FFT backend is **user-selectable** via the *FFT backend* setting in the Analyze panel: Ooura (default, faster) or Essentia WASM (multi-window + LUFS).
-- Optional **high-resolution STFT** mode (`WavPreview.highResolutionSpectrogram`) doubles canvas pixel density for sharper plots.
-- **Auto FFT window size** (`fftWindowAuto`) infers an appropriate window from the visible time range and sample rate.
-
-### 4. Spectrogram rendering
-
-- **WebGL2 rendering path** (`spectrogramRenderer.ts`, `twgl.js`): packs all STFT frames into a single GPU texture and draws with one call, replacing per-pixel `fillRect` on Canvas2D. Measured **5–7× faster** CPU-side (e.g. 40.9 ms → 6.0 ms for 300 s audio).
-- **Independent low / high dB** range controls replace the single amplitude-range slider.
-- **Log-frequency axis** layout rewritten in `spectrogramFrequencyLayout.ts` with correct piecewise-log mapping.
-
-### 5. Interaction & readouts
-
-- Drag on any plot to select a time/frequency/amplitude range and re-analyze that region; hold **Ctrl** or **Shift** to constrain the axis.
-- Right-click to reset the visible range (with Ctrl / Shift variants).
-- Waveform / spectrogram hover emits `CURSOR_READOUT` on `window` (for tests/extensions) and shows **RMS, peak, and frequency** in a white overlay on the **figure itself** (top-left, clear of axis ticks). Spectrogram figures also get a **white crosshair** at the cursor.
-
-### 6. Extension UX
-
-- **Analyze UI cache** (`WavPreview.cacheAnalyzeUi`, default on): persists window type, dB range, FFT backend, and other panel settings across files via `globalState`.
-- Phased UI initialization: player and info table appear immediately; analyzer initializes in an idle callback after the audio buffer is ready.
+> [!NOTE]
+> This project began as a fork of [sukumo28/vscode-audio-preview](https://github.com/sukumo28/vscode-audio-preview) but has been **comprehensively rebuilt** — every major subsystem (decode, FFT, rendering, metering, loudness, configuration) was replaced or substantially rewritten. The only surviving artifact from upstream is the `postMessage` wire protocol. See [What's new](#whats-new) for details.
 
 ---
 
-## Compared to upstream (architecture & everyday flows)
+## What's new
 
-The upstream webview shipped a **single FFmpeg-based WASM decoder** that had to be **compiled via Docker** before development or packaging. This fork replaces that core with **small format-specific WASM decoders** and **browser `decodeAudioData`** where possible, and upgrades analysis/rendering around the same host → webview file transfer.
+The upstream extension pioneered the VS Code Custom Editor model for audio, but its monolithic FFmpeg WASM decoder required Docker to build. This project replaces the entire stack while keeping the same extension-host-to-webview message contract.
 
-> **Benchmark methodology:** Numbers below come from `tmp_files/benchmark.js` (Node.js, Apple Silicon). Rendering figures measure CPU-side work only (texture pack vs. per-pixel color string); actual GPU draw is 1 call vs. millions of `fillRect` calls. Decoder figures measure WASM module init time. STFT figures are excluded here — see the FFT backend setting note below.
+| Subsystem | Upstream | This project |
+|---|---|---|
+| **Decode** | Single FFmpeg WASM (Docker build) | Per-format WASM decoders + Web Audio fallback |
+| **Spectrogram** | Canvas2D point-by-point | WebGL2 GPU texture renderer (~7× faster) |
+| **FFT** | Ooura only | Ooura + Essentia.js (multi-window, LUFS) |
+| **Metering** | Basic waveform only | LUFS, true peak, goniometer, phase correlation spectrum, stereo level meter |
+| **Live monitoring** | None | Full analyser tap: L/R/M/S solo, 5-band monitor matrix |
+| **Loudness** | None | Offline EBU R128 profile + live loudness-worklet |
+| **Onboarding** | Docker + manual build | `npm install && npm run webpack` |
 
+---
 
-| Area                         | Original (upstream-style)                               | This fork                                                                                                                                                                           | Measured delta                                                                                              |
-| ---------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Developer setup**          | Docker image + `make` to build decoder WASM before `F5` | `npm install` + webpack only; **no Docker** on the decode path                                                                                                                      | —                                                                                                           |
-| **Decoder footprint**        | One large general-purpose FFmpeg WASM blob              | **Targeted** codec packages (MP3/FLAC/Ogg/Opus) + native decode fallback                                                                                                            | —                                                                                                           |
-| **Decoder WASM init**        | FFmpeg WASM: requires Docker build + ~8 MB blob load    | Format-specific WASM (e.g. `mpg123-decoder`): **cold ~4 ms, warm ~0.15 ms**                                                                                                         | Cold start measured at **3.94 ms**; warm (cached) **0.15 ms**                                               |
-| **Spectrogram redraw (CPU)** | Canvas2D `fillRect` + color string per pixel            | **WebGL2** texture pack + 1 draw call (`spectrogramRenderer.ts`)                                                                                                                    | **5–7× faster** CPU-side across 10 s / 60 s / 300 s audio (e.g. 40.9 ms → 6.0 ms for 300 s)                 |
-| **STFT / spectrogram math**  | Ooura FFT (JS), single Hann window                      | Ooura (default, faster) **or** Essentia.js WASM (multi-window types) — user-selectable via *FFT backend* setting                                                                    | Ooura is the faster path; Essentia adds Hamming / Blackman–Harris / Triangular windows and LUFS calculation |
-| **Host ↔ webview file I/O**  | Chunked `postMessage` transfer                          | Same chunked transfer; perceived readiness improves from faster decode + phased UI init                                                                                             | —                                                                                                           |
-| **Analysis UX**              | Good baseline                                           | **dB range**, **log axis fixes**, optional **high-res STFT**, **cursor RMS/peak/freq** on-figure readouts + live-spectrum crosshair, **analyze UI cache**, **FFT backend selector** | —                                                                                                           |
+## Quick Start
 
+```sh
+git clone https://github.com/DDDPG/vscode-audio-preview.git
+cd vscode-audio-preview
+npm install
+npm run webpack
+```
 
-**Common operations in plain terms**
+Press **F5** in VS Code, open any audio file, and the editor activates automatically.
 
-- **Clone and hack:** No decoder container — you get to a running extension faster and CI is simpler.
-- **Open a file:** Same data copy into the webview; advantage is **faster decode** and richer analysis options once bytes arrive.
-- **Tweak window / range / scale and re-analyze:** More control (windows, dB limits, high-res mode); STFT path is **engineered for throughput** (WASM + optional GPU draw).
-- **Scrub or resize the spectrogram:** WebGL path targets **smoother** interaction on large canvases than pure CPU Canvas fills.
+To make Audio Preview the default for audio files:
+
+```jsonc
+"workbench.editorAssociations": {
+  "*.wav":  "wavPreview.audioPreview",
+  "*.mp3":  "wavPreview.audioPreview",
+  "*.flac": "wavPreview.audioPreview",
+  "*.ogg":  "wavPreview.audioPreview",
+  "*.opus": "wavPreview.audioPreview",
+  "*.aac":  "wavPreview.audioPreview",
+  "*.m4a":  "wavPreview.audioPreview"
+}
+```
+
+---
+
+## Capabilities
+
+### Supported Formats
+
+| Extension | Decoder |
+|-----------|---------|
+| `.wav` `.aac` `.m4a` `.sph` | Browser `decodeAudioData` |
+| `.mp3` | `mpg123-decoder` (WASM worker) |
+| `.flac` | `@wasm-audio-decoders/flac` |
+| `.ogg` | Ogg Vorbis WASM |
+| `.opus` | `ogg-opus-decoder` |
+
+Files stream from the extension host in 3 MB chunks. The webview assembles the full buffer, then decodes in one pass. A circular SVG progress ring on the FAB button tracks transfer + decode progress.
+
+### Workspace Panes
+
+Four tabbed views, each mounted lazily on first access:
+
+| Pane | Purpose |
+|------|---------|
+| **STFT** | Multi-channel waveform + GPU spectrogram with drag-to-zoom on time, frequency, and amplitude axes. Right-click to reset any axis. |
+| **Live Spec** | Real-time goniometer (3 modes), per-bin phase correlation spectrum, log-spaced spectral bars with peak hold and configurable HF tilt. Expandable to fullscreen. |
+| **Loudness** | Offline EBU R128 profile over the full file — integrated/short-term/momentary LUFS curves, true-peak markers, LRA, PLR. Drag to select a time region. |
+| **Edit & Export** | WAV export of selected region (EasyCut). |
+
+### Live Monitoring
+
+Enable **Show live analysis** in the FAB settings sheet. A dedicated analyser node taps the playback graph without affecting the main output:
+
+- **Stereo level meter** (right column) — L/R or M/S RMS + peak bars, peak-hold with 2 s decay, clip LEDs. Resizable width. Green → yellow → red gradient.
+- **Goniometer** — three sound-field modes: **Polar Sample** (scatter), **Polar Level** (Insight-style directional gate), and **Lissajous**. WebGL2 or Canvas2D rendering.
+- **Phase correlation spectrum** — per-frequency-bin ρ ∈ [−1, 1] plus broadband correlation readout.
+- **Live spectrum analyzer** — log-spaced bars, configurable release rate (dB/s), peak hold, and per-octave tilt (0–6 dB/oct).
+- **Monitoring matrix** — solo L, R, M (mid), or S (side). 5-band parametric monitor with configurable crossover edges.
+- **Fullscreen overlay** — click **↗** to expand the Live Spec pane; **Esc** or right-click to close.
+
+### FFT & Analysis
+
+Two backends, switchable at any time:
+
+| Backend | Strengths |
+|---------|-----------|
+| **Ooura** (default) | Pure JS, instant startup, fast for most workloads |
+| **Essentia.js** | Hann, Hamming, Blackman-Harris, Triangular windows + offline LUFS |
+
+Frequency scales: **linear**, **log piecewise**, or **mel** (configurable filter bank). Optional **auto-FFT** mode adapts window size to the visible time range for optimal frequency resolution. **High-resolution mode** doubles spectrogram pixel dimensions for pixel-dense displays.
+
+### Loudness & Dynamics
+
+- **Offline profile** — `LoudnessService` runs an `OfflineAudioContext` with `loudness-worklet` over the full file. Produces LUFS-M/S/I curves, LRA, PLR, and max true-peak. BSpline-smoothed for display.
+- **True peak** everywhere — `ebur128-wasm` powers per-window true-peak in waveform hover readouts, per-buffer true-peak in the level meter, and full-file true-peak in the info table.
+- **Live EBU R128** — `loudness-worklet` provides real-time LUFS-M/S/I during playback. Session max true-peak is tracked continuously.
+
+### Graph Interaction
+
+Consistent across waveform, spectrogram, and loudness panes:
+
+| Action | Result |
+|--------|--------|
+| **Click** | Set cue position (white line) |
+| **Drag** | Select range → re-analyze with new bounds |
+| **Ctrl + drag** | Constrain to time axis only |
+| **Shift + drag** | Constrain to value axis only |
+| **Right-click** | Reset view range (Ctrl/Shift for single-axis reset) |
+| **Hover** | RMS, peak, true-peak, and frequency readout |
+
+### Playback
+
+Full Web Audio graph: **source → HPF/LPF biquad filters → gain → destination**. Optional auto-play on seek, spacebar toggle, dB or linear volume scale. The live monitoring sub-graph (splitter → analysers → gain matrix → merger) connects in parallel when enabled.
+
+---
+
+## Architecture
+
+```
+┌── Extension Host (Node.js) ────────────────────────────────────┐
+│  AudioPreviewEditorProvider                                    │
+│  Chunked streaming (3 MB) · VS Code settings · globalState     │
+└──────────────────────┬─────────────────────────────────────────┘
+                       │ postMessage: CONFIG · DATA · RELOAD
+┌──────────────────────▼─────────────────────────────────────────┐
+│  Webview (browser sandbox)                                     │
+│                                                                │
+│  DecoderFactory ──→ PlayerService (Web Audio graph + live tap) │
+│      │                    │                                    │
+│      │                    └──→ Live meters (Level · Gonio ·    │
+│      │                         Spectrum · Phase Correlation)   │
+│      │                                                         │
+│      └──→ AnalyzeService (Ooura / Essentia STFT)               │
+│                └──→ SpectrogramRenderer (WebGL2, twgl.js)      │
+│                                                                │
+│  LoudnessService (OfflineAudioContext + ebur128-wasm)          │
+│                                                                │
+│  Workspace panes: STFT | Live Spec | Loudness | Edit           │
+│  All services extend Service → EventTarget                     │
+│  All UI extends Component → Disposable                         │
+└────────────────────────────────────────────────────────────────┘
+```
+
+Message types: `src/message.ts`. Deep dive into component tree, event system, and CSS layout conventions: [CLAUDE.md](./CLAUDE.md).
+
+Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms → ~6 ms** with WebGL2.
 
 ---
 
 ## Usage
 
-how-to-use
+### UI Layout
 
-- **Drag** on a plot to select a range and re-run analysis on that range. Hold **Ctrl** for time-focused selection, **Shift** for value-focused selection.
-- **Right-click** to reset the visible range (with Ctrl / Shift variants for time-only or value-only reset).
-- Use the in-editor **Analyze** tab for precise numeric settings.
-- The **live spectrum** panel shows frequency / graticule dB / peak & RMS at the cursor in an overlay, with a **white crosshair** to the plot edges. **Peak hold** (seconds) optionally keeps each bin’s outline flat before applying the spectrum release slope.
+| Element | Location | Role |
+|---------|----------|------|
+| **Info table** | Top-left | Metadata: format, sample rate, bit depth, duration, true peak |
+| **Player bar** | Top-right | Play/pause, volume, seek bar, time readout |
+| **Workspace tabs** | Below player | STFT · Live Spec · Loudness · Edit & Export |
+| **FAB** | Bottom-left | Settings sheet: Options / Player / EasyCut |
+| **Monitoring bar** | Below info table | Solo L, R, M (mid), or S (side) |
 
-To open audio with this editor by default, set `workbench.editorAssociations` for your extensions (e.g. `*.wav`, `*.mp3`) to `wavPreview.audioPreview`.
+### Settings
 
----
+Click the FAB (bottom-left) to open the settings sheet. Three tabs:
 
-## Settings
+- **Options** — waveform/spectrogram toggles, FFT size, frequency scale, dB range, window type, FFT backend, auto-FFT, high-res mode, live analysis toggles
+- **Player** — HPF/LPF filters, frequency cutoffs, volume scale, seek behavior
+- **EasyCut** — WAV export of selected region
 
-All optional. See `src/config.ts` and `package.json` → `contributes.configuration` for the full list.
-
-```jsonc
-"WavPreview.autoAnalyze": true
-```
-
-```jsonc
-"WavPreview.playerDefault": {
-  "initialVolume": 50
-}
-```
-
-```jsonc
-"WavPreview.analyzeDefault": {
-  "spectrogramVisible": false
-}
-```
-
-Fork-specific examples:
-
-```jsonc
-"WavPreview.highResolutionSpectrogram": false,
-"WavPreview.cacheAnalyzeUi": true
-```
+Settings persist to VS Code `globalState` (debounced, 500 ms). Full configuration reference: [doc/configuration.md](./doc/configuration.md).
 
 ---
 
 ## Development
 
-1. Clone the repo
-2. `npm install`
-3. Press **F5** in VS Code to launch the Extension Development Host
+```sh
+npm install
+npm run webpack-dev    # watch mode
+npm test               # Jest (jsdom + jest-canvas-mock)
+npm run lint           # ESLint
+npm run format         # Prettier
+```
 
-Web assets are bundled to `dist/audioPreview.js`. Run `npm run test`, `npm run lint`, and `npm run format` as needed.
+| Script | Purpose |
+|--------|---------|
+| `npm run webpack` | One-shot build → `dist/` |
+| `npm run webpack-dev` | Watch + rebuild |
+| `npm test` | Unit tests |
+| `npm run lint-check` / `format-check` | CI checks |
 
-### References
+### Build targets
 
-- [Custom Editor API](https://code.visualstudio.com/api/extension-guides/custom-editors)  
-- [custom-editor-sample](https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample)
+Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webview), `dist/web/extension.js` (VS Code for Web).
+
+### Key dependencies
+
+| Layer | Packages |
+|-------|----------|
+| Decode | `mpg123-decoder`, `@wasm-audio-decoders/flac`, `@wasm-audio-decoders/ogg-vorbis`, `ogg-opus-decoder` |
+| FFT | `ooura`, `essentia.js` |
+| GPU | `twgl.js` (WebGL2) |
+| Loudness | `loudness-worklet`, `ebur128-wasm` |
 
 ---
 
-## TODO
+## Roadmap
 
-### ~~Live meters (next major feature)~~
+### Done
 
-1. ~~**Playback tap** — branch the Web Audio graph so stereo output can feed analyser nodes during playback without affecting normal listening.~~
-2. ~~**Stereo level meter** — classic L/R RMS / peak / hold / clip display in a slim column beside the existing waveform/spectrogram area.~~
-3. ~~**Live spectrum** — real-time log-frequency spectrum updated each animation frame during playback, sharing the live-analysis column.~~
-4. ~~**Goniometer** — phase / stereo goniometer (mid–side “X” display) with correlation readout, co-located with the live spectrum.~~
-5. ~~**Layout & chrome** — extend the webview shell to host the above modules in resizable extra columns; support vertical split and fullscreen overlay; expose FFT size and toggle controls in the existing settings style.~~
+- [x] Per-format WASM decoders (no Docker)
+- [x] WebGL2 GPU spectrogram
+- [x] Essentia FFT backend + offline LUFS
+- [x] Four workspace panes (STFT / Live Spec / Loudness / Edit)
+- [x] Stereo level meter (L/R and M/S, resizable)
+- [x] Live log spectrum (peak hold, configurable release, HF tilt)
+- [x] Goniometer (polar sample / polar level / Lissajous)
+- [x] Frequency-domain phase correlation spectrum
+- [x] Live + offline EBU R128 loudness (LUFS, LRA, PLR, true peak)
+- [x] `ebur128-wasm` true peak (file, window, buffer levels)
+- [x] Live monitoring matrix (L/R/M/S + 5-band solo)
+- [x] Mid/side derived offline analysis
+- [x] Loudness profile pane with BSpline-smoothed curves
+- [x] Auto-FFT window inference from visible time range
+- [x] Settings persistence via `globalState`
 
-### Live feature extractor
+### Planned
 
-1. **F0 / pitch tracking** — frame-by-frame fundamental frequency estimate (e.g. YIN or autocorrelation), displayed as a pitch curve overlay on the spectrogram or as a dedicated readout. Useful for monophonic melody, voice, and instrument tuning checks.
-2. **Time-aware loudness** — rolling EBU R128 metrics updated each hop:
-  - **LUFS-M** (momentary, 400 ms window) and **LUFS-S** (short-term, 3 s window) as live bar graphs.
-  - **LUFS-I** (integrated, gated) accumulated from playback start.
-  - **PLR** (peak-to-loudness ratio) and **LRA** (loudness range) derived from the same measurement window.
-  - Reuses the Essentia `LoudnessEBUR128` path already wired in `analyzeService.ts`.
-3. **Chroma** — 12-bin pitch-class energy vector per frame, computed via:
-  - **CQT-based chroma** for harmonic content (better octave invariance).
-  - **STFT-based chroma** as a lighter fallback when Essentia is unavailable.
-  - Displayed as a scrolling chromagram strip (time × 12 pitch classes, color-coded by energy).
-4. **Auto-tagging / event detection** — lightweight onset and structure markers overlaid on the timeline:
-  - **Onset detection** (spectral flux or HFC) marks transient events (beats, note attacks, percussive hits).
-  - **Structural segmentation** groups the timeline into coarse regions (intro, verse, chorus, etc.) using self-similarity or novelty-curve analysis.
-  - Markers rendered as vertical lines / region shading on the waveform canvas; clicking a marker seeks playback to that position.
+- [ ] Pitch (F0) curve overlay
+- [ ] Chromagram strip (CQT)
+- [ ] Onset detection / structure markers
+- [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
+- [ ] Edit tab wire-up to EasyCut
 
-### ETC
+See [open issues](https://github.com/DDDPG/vscode-audio-preview/issues).
 
-1. ~~True Peak detect~~
-2. ~~live spec peak hold~~
-3. Phase corr ADPTR version, insight version
-  1. 沿着频率展开的phase corr表, metric ab的
-4. RMS LB(dB+3), RMS(dBA+3)
-5. freq-weighted wave form(minimeter)
-6. ~~loudness meter positive dB~~
-7. ~~inshght2-like meter~~
+---
 
+## Contributing
+
+Bug reports, documentation, and pull requests are welcome.
+
+1. Fork the repo
+2. `git checkout -b feature/amazing-feature`
+3. Commit and push
+4. Open a Pull Request
+
+Run `npm test && npm run lint-check` before submitting.
+
+---
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
+
+Original work copyright (c) 2020 [sukumo28](https://github.com/sukumo28). Fork modifications © [earlab](https://github.com/Eps-Acoustic-Revolution-Lab) contributors.
+
+---
+
+## Acknowledgments
+
+- [earlab](https://github.com/Eps-Acoustic-Revolution-Lab) — development and maintenance
+- [sukumo28](https://github.com/sukumo28) — original Custom Editor foundation
+- [Microsoft custom-editor-sample](https://github.com/microsoft/vscode-extension-samples/tree/main/custom-editor-sample)
+- Audio DSP stack: Ooura, Essentia.js, mpg123-decoder, wasm-audio-decoders, loudness-worklet, ebur128-wasm, twgl.js
