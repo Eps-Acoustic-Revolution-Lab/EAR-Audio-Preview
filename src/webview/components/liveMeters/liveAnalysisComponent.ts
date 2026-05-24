@@ -81,7 +81,9 @@ export default class LiveAnalysisComponent extends Component {
     this._overlay = containerEl.querySelector("#liveOverlay");
     this._overlayInner = containerEl.querySelector("#liveOverlayInner");
     this._overlayGonioWrap = containerEl.querySelector("#overlayGonioWrap");
-    this._overlaySpectrumWrap = containerEl.querySelector("#overlaySpectrumWrap");
+    this._overlaySpectrumWrap = containerEl.querySelector(
+      "#overlaySpectrumWrap",
+    );
     this._overlayRowHandle = containerEl.querySelector("#overlayHandle");
     this._overlayColHandle = this._overlayGonioWrap.querySelector(
       "[data-gonio-col-handle]",
@@ -101,7 +103,11 @@ export default class LiveAnalysisComponent extends Component {
     ) as HTMLElement;
 
     this._goniometer = this._register(
-      new GoniometerComponent(polarMount, playerService, analyzeSettingsService),
+      new GoniometerComponent(
+        polarMount,
+        playerService,
+        analyzeSettingsService,
+      ),
     );
     this._phaseCorrelation = this._register(
       new PhaseCorrelationSpectrumComponent(
@@ -190,10 +196,7 @@ export default class LiveAnalysisComponent extends Component {
       const available = total - handleH;
       const gonioH = Math.max(
         minPaneHeight,
-        Math.min(
-          available - minPaneHeight,
-          splits.row * available,
-        ),
+        Math.min(available - minPaneHeight, splits.row * available),
       );
       this._gonioWrap.style.height = `${gonioH}px`;
       this._gonioWrap.style.flex = "0 0 auto";
@@ -205,10 +208,7 @@ export default class LiveAnalysisComponent extends Component {
     const available = total - handleH;
     const gonioH = Math.max(
       minPaneHeight,
-      Math.min(
-        available - minPaneHeight,
-        splits.row * available,
-      ),
+      Math.min(available - minPaneHeight, splits.row * available),
     );
     this._overlayGonioWrap.style.height = `${gonioH}px`;
     this._overlayGonioWrap.style.flex = "0 0 auto";
@@ -241,10 +241,7 @@ export default class LiveAnalysisComponent extends Component {
 
     const polarW = Math.max(
       minPaneWidth,
-      Math.min(
-        available - minPaneWidth,
-        splits.col * available,
-      ),
+      Math.min(available - minPaneWidth, splits.col * available),
     );
     polar.style.flex = `0 0 ${polarW}px`;
     phase.style.flex = "1 1 0";

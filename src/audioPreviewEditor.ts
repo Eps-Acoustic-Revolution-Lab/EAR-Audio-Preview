@@ -105,15 +105,16 @@ export class AudioPreviewEditorProvider
     fileExt: string;
   } {
     const config = vscode.workspace.getConfiguration("WavPreview");
-    const fileExt =
-      document.uri.fsPath.split(".").pop()?.toLowerCase() ?? "";
+    const fileExt = document.uri.fsPath.split(".").pop()?.toLowerCase() ?? "";
     const workspaceAnalyze =
-      (config.get("analyzeDefault") as AnalyzeDefault) ?? ({} as AnalyzeDefault);
+      (config.get("analyzeDefault") as AnalyzeDefault) ??
+      ({} as AnalyzeDefault);
     let analyzeDefault = { ...workspaceAnalyze } as AnalyzeDefault;
     if (config.get("cacheAnalyzeUi") !== false) {
-      const cached = this._context.globalState.get<Record<string, unknown>>(
-        analyzeUiCacheKey,
-      );
+      const cached =
+        this._context.globalState.get<Record<string, unknown>>(
+          analyzeUiCacheKey,
+        );
       if (cached && typeof cached === "object") {
         analyzeDefault = { ...analyzeDefault, ...cached } as AnalyzeDefault;
       }
@@ -214,10 +215,7 @@ export class AudioPreviewEditorProvider
         if (WebviewMessageType.isSaveAnalyzeUi(msg)) {
           const cfg = vscode.workspace.getConfiguration("WavPreview");
           if (cfg.get("cacheAnalyzeUi") !== false) {
-            await this._context.globalState.update(
-              analyzeUiCacheKey,
-              msg.data,
-            );
+            await this._context.globalState.update(analyzeUiCacheKey, msg.data);
           }
         }
         break;

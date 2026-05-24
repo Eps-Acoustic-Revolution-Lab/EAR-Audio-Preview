@@ -16,7 +16,9 @@ export interface RhoPerBinResult {
 function hannWindow(n: number): Float64Array {
   const w = new Float64Array(n);
   if (n <= 1) {
-    if (n === 1) {w[0] = 1;}
+    if (n === 1) {
+      w[0] = 1;
+    }
     return w;
   }
   for (let i = 0; i < n; i++) {
@@ -34,7 +36,9 @@ export function normalizedCrossSpectrumReal(
 ): number {
   const crossRe = lRe * rRe + lIm * rIm;
   const magProd = Math.hypot(lRe, lIm) * Math.hypot(rRe, rIm);
-  if (magProd < energyFloor) {return 0;}
+  if (magProd < energyFloor) {
+    return 0;
+  }
   return Math.max(-1, Math.min(1, crossRe / magProd));
 }
 
@@ -50,7 +54,9 @@ export class FrequencyPhaseCorrelationEngine {
   private _srcYs = new Float64Array(0);
 
   ensureFftSize(fftSize: number): void {
-    if (this._fftSize === fftSize) {return;}
+    if (this._fftSize === fftSize) {
+      return;
+    }
     this._fftSize = fftSize;
     this._ooura = new Ooura(fftSize, { type: "real", radix: 4 });
     this._hann = hannWindow(fftSize);
@@ -95,14 +101,8 @@ export class FrequencyPhaseCorrelationEngine {
       if (f < freqMin || f > Math.min(freqMax, sampleRate / 2)) {
         continue;
       }
-      const rho = normalizedCrossSpectrumReal(
-        reL[k],
-        imL[k],
-        reR[k],
-        imR[k],
-      );
-      const w =
-        Math.hypot(reL[k], imL[k]) * Math.hypot(reR[k], imR[k]);
+      const rho = normalizedCrossSpectrumReal(reL[k], imL[k], reR[k], imR[k]);
+      const w = Math.hypot(reL[k], imL[k]) * Math.hypot(reR[k], imR[k]);
       this._srcXs[outCount] = f;
       this._srcYs[outCount] = rho;
       outCount++;
@@ -112,8 +112,7 @@ export class FrequencyPhaseCorrelationEngine {
       }
     }
 
-    const broadbandRho =
-      weightSum > energyFloor ? rhoWeighted / weightSum : 0;
+    const broadbandRho = weightSum > energyFloor ? rhoWeighted / weightSum : 0;
 
     return {
       srcXs: this._srcXs.subarray(0, outCount),

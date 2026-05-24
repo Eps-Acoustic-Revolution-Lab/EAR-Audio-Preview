@@ -125,8 +125,7 @@ export default class FigureInteractionComponent extends Component {
       componentRoot.appendChild(crossH);
     }
 
-    const fmtLin = (v: number) =>
-      Number.isFinite(v) ? v.toFixed(5) : "—";
+    const fmtLin = (v: number) => (Number.isFinite(v) ? v.toFixed(5) : "—");
     /** Linear amplitude (±1 full scale) → dBFS, aligned with live spectrum readout. */
     const fmtDbfs = (lin: number) => {
       if (!Number.isFinite(lin) || lin <= 0) {
@@ -139,9 +138,7 @@ export default class FigureInteractionComponent extends Component {
       if (!Number.isFinite(sec) || sec <= 0) {
         return "";
       }
-      return sec >= 1
-        ? `${sec.toFixed(3)} s`
-        : `${(sec * 1000).toFixed(2)} ms`;
+      return sec >= 1 ? `${sec.toFixed(3)} s` : `${(sec * 1000).toFixed(2)} ms`;
     };
     const fmtTp = (db: number | undefined) => {
       if (db === undefined || !Number.isFinite(db)) {
@@ -174,11 +171,11 @@ export default class FigureInteractionComponent extends Component {
       }
       readoutEl.style.visibility = "visible";
       const w = fmtRmsWindow(d.rmsWindowDurationSec);
-      const winHtml = w ? `<br><span class="figureHoverReadout__meta">win ${w}</span>` : "";
+      const winHtml = w
+        ? `<br><span class="figureHoverReadout__meta">win ${w}</span>`
+        : "";
       const tpHtml =
-        d.truePeakDbTp !== undefined
-          ? `<br>TP ${fmtTp(d.truePeakDbTp)}`
-          : "";
+        d.truePeakDbTp !== undefined ? `<br>TP ${fmtTp(d.truePeakDbTp)}` : "";
       if (d.kind === "waveform") {
         readoutEl.innerHTML = `Ch ${channelIndex + 1}<br>RMS ${fmtLin(d.rms)}<br>Peak ${fmtLin(d.peak)}${tpHtml}${winHtml}`;
       } else {
@@ -211,14 +208,8 @@ export default class FigureInteractionComponent extends Component {
       if (rect.width <= 0 || rect.height <= 0) {
         return;
       }
-      const xn = Math.min(
-        Math.max(0, lastClientX - rect.left),
-        rect.width,
-      );
-      const yn = Math.min(
-        Math.max(0, lastClientY - rect.top),
-        rect.height,
-      );
+      const xn = Math.min(Math.max(0, lastClientX - rect.left), rect.width);
+      const yn = Math.min(Math.max(0, lastClientY - rect.top), rect.height);
       const trng = props.maxTime - props.minTime;
       if (trng <= 0) {
         return;
@@ -300,9 +291,13 @@ export default class FigureInteractionComponent extends Component {
         publishCursorReadout();
       });
     };
-    this._addEventlistener(userInputDiv, EventType.MOUSE_MOVE, (event: MouseEvent) => {
-      scheduleCursorReadout(event.clientX, event.clientY);
-    });
+    this._addEventlistener(
+      userInputDiv,
+      EventType.MOUSE_MOVE,
+      (event: MouseEvent) => {
+        scheduleCursorReadout(event.clientX, event.clientY);
+      },
+    );
     this._addEventlistener(userInputDiv, "mouseleave", () => {
       if (cursorReadoutRaf) {
         cancelAnimationFrame(cursorReadoutRaf);

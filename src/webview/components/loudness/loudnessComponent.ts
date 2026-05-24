@@ -31,10 +31,18 @@ export default class LoudnessComponent extends Component {
         </div>
       </div>`;
 
-    const inlineMount = containerEl.querySelector(".js-loudnessInlineMount") as HTMLElement;
-    const overlayMount = containerEl.querySelector(".js-loudnessOverlayMount") as HTMLElement;
-    const expandBtn = containerEl.querySelector(".loudnessHost__expandBtn") as HTMLButtonElement;
-    this._overlay = containerEl.querySelector(".loudnessHost__overlay") as HTMLElement;
+    const inlineMount = containerEl.querySelector(
+      ".js-loudnessInlineMount",
+    ) as HTMLElement;
+    const overlayMount = containerEl.querySelector(
+      ".js-loudnessOverlayMount",
+    ) as HTMLElement;
+    const expandBtn = containerEl.querySelector(
+      ".loudnessHost__expandBtn",
+    ) as HTMLButtonElement;
+    this._overlay = containerEl.querySelector(
+      ".loudnessHost__overlay",
+    ) as HTMLElement;
 
     const closeOverlay = () => {
       this._overlay.classList.add("hidden");

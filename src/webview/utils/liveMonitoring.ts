@@ -81,7 +81,9 @@ export function composeSwapAfter(base: MonitoringGains): MonitoringGains {
   };
 }
 
-export function monitoringGainsForMode(mode: LiveMonitoringMode): MonitoringGains {
+export function monitoringGainsForMode(
+  mode: LiveMonitoringMode,
+): MonitoringGains {
   switch (mode) {
     case "l":
       return { ll: 1, lr: 1, rl: 0, rr: 0 };
@@ -129,7 +131,9 @@ export function spectrumTiltDb(
   slopeDbPerOct: number,
   fRefHz: number = 1000,
 ): number {
-  if (slopeDbPerOct === 0 || !Number.isFinite(fHz) || fHz <= 0) {return 0;}
+  if (slopeDbPerOct === 0 || !Number.isFinite(fHz) || fHz <= 0) {
+    return 0;
+  }
   return slopeDbPerOct * (Math.log(fHz / fRefHz) / Math.LN2);
 }
 
@@ -150,8 +154,13 @@ export function spectrumTiltDbAboveFloor(
   fRefHz: number = 1000,
 ): number {
   const t = spectrumTiltDb(fHz, slopeDbPerOct, fRefHz);
-  if (t === 0) {return 0;}
-  const w = Math.max(0, Math.min(1, (rawDb - floorDb) / Math.max(1e-6, blendDb)));
+  if (t === 0) {
+    return 0;
+  }
+  const w = Math.max(
+    0,
+    Math.min(1, (rawDb - floorDb) / Math.max(1e-6, blendDb)),
+  );
   return t * w;
 }
 

@@ -59,7 +59,9 @@ export function mergeSnapshots(snapshots: LoudnessSnapshot[]): LoudnessProfile {
 
   for (const snap of snapshots) {
     const m = primaryMeasurement(snap);
-    if (!m) {continue;}
+    if (!m) {
+      continue;
+    }
     times.push(snap.currentTime);
     momentary.push(sanitizeLufs(m.momentaryLoudness));
     shortTerm.push(sanitizeLufs(m.shortTermLoudness));
@@ -213,20 +215,14 @@ export default class LoudnessService {
   }
 
   /** Per-buffer true peak for live meter (analyser time-domain chunk). */
-  public truePeakBuffer(
-    samples: Float32Array,
-    sampleRate: number,
-  ): number {
+  public truePeakBuffer(samples: Float32Array, sampleRate: number): number {
     if (samples.length < 1) {
       return NaN;
     }
     return this._safeTruePeakMono(sampleRate, samples);
   }
 
-  private _safeTruePeakMono(
-    sampleRate: number,
-    samples: Float32Array,
-  ): number {
+  private _safeTruePeakMono(sampleRate: number, samples: Float32Array): number {
     try {
       return ebur128TruePeakMono(sampleRate, samples);
     } catch {
@@ -248,23 +244,31 @@ export default class LoudnessService {
 }
 
 export function formatLufs(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) {return "—";}
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
   return `${value.toFixed(digits)} LUFS`;
 }
 
 export function formatLu(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) {return "—";}
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
   return `${value.toFixed(digits)} LU`;
 }
 
 export function formatDbTp(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) {return "—";}
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(digits)} dBTP`;
 }
 
 export function formatDbFs(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) {return "—";}
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(digits)} dBFS`;
 }

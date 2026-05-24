@@ -1,33 +1,33 @@
 /* ── CSS custom properties for live meter color theming ───────────────────── */
 :root {
-  --meter-bg:              #1a1a1a;
-  --meter-green:           #4caf50;
-  --meter-yellow:          #ffeb3b;
-  --meter-red:             #f44336;
-  --meter-rms-alpha:       0.75;
+  --meter-bg: #1a1a1a;
+  --meter-green: #4caf50;
+  --meter-yellow: #ffeb3b;
+  --meter-red: #f44336;
+  --meter-rms-alpha: 0.75;
   --meter-peak-hold-color: #ffffff;
-  --meter-clip-color:      #f44336;
-  --meter-clip-clear-color:#333333;
-  --meter-scale-color:     rgba(255,255,255,0.45);
-  --meter-col-width:       0px;
+  --meter-clip-color: #f44336;
+  --meter-clip-clear-color: #333333;
+  --meter-scale-color: rgba(255, 255, 255, 0.45);
+  --meter-col-width: 0px;
 
-  --gonioMeter-bg:             #111111;
-  --gonioMeter-grid:           rgba(255,255,255,0.12);
-  --gonioMeter-axis:           rgba(255,255,255,0.3);
-  --gonioMeter-point:          #00e5ff;
-  --gonioMeter-beam-inphase:   rgba(0, 229, 255, 0.85);
-  --gonioMeter-beam-oophase:   rgba(255, 152, 0, 0.85);
-  --gonioMeter-corr-negative:  #f44336;
-  --gonioMeter-corr-positive:  #4caf50;
+  --gonioMeter-bg: #111111;
+  --gonioMeter-grid: rgba(255, 255, 255, 0.12);
+  --gonioMeter-axis: rgba(255, 255, 255, 0.3);
+  --gonioMeter-point: #00e5ff;
+  --gonioMeter-beam-inphase: rgba(0, 229, 255, 0.85);
+  --gonioMeter-beam-oophase: rgba(255, 152, 0, 0.85);
+  --gonioMeter-corr-negative: #f44336;
+  --gonioMeter-corr-positive: #4caf50;
 
-  --spectrum-bg:           #0f0f0f;
-  --spectrum-grid:         rgba(255,255,255,0.1);
-  --spectrum-fill-top:     rgba(0,180,216,0.85);
-  --spectrum-fill-bottom:  rgba(0,100,160,0.2);
-  --spectrum-line:         #00b4d8;
+  --spectrum-bg: #0f0f0f;
+  --spectrum-grid: rgba(255, 255, 255, 0.1);
+  --spectrum-fill-top: rgba(0, 180, 216, 0.85);
+  --spectrum-fill-bottom: rgba(0, 100, 160, 0.2);
+  --spectrum-line: #00b4d8;
 
-  --live-col-width:        0px;
-  --live-split-ratio:      0.5;
+  --live-col-width: 0px;
+  --live-split-ratio: 0.5;
 }
 
 /* ── Main visualizer: left column (tabs + waves + graphs scrolls) | full-height meter ─ */
@@ -344,7 +344,7 @@
   width: 22px;
   flex: 0 0 22px;
   min-height: 0;
-  border-left: 1px solid rgba(255,255,255,0.12);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .levelMeter__tick {
@@ -480,24 +480,24 @@
 
 .liveAnalysis__gonioColHandle {
   flex: 0 0 4px;
-  background: var(--vscode-sash-hoverBorder, rgba(255,255,255,0.1));
+  background: var(--vscode-sash-hoverBorder, rgba(255, 255, 255, 0.1));
   cursor: ew-resize;
   z-index: 1;
   transition: background 0.15s;
 }
 .liveAnalysis__gonioColHandle:hover {
-  background: var(--vscode-focusBorder, rgba(0,120,212,0.7));
+  background: var(--vscode-focusBorder, rgba(0, 120, 212, 0.7));
 }
 
 .liveAnalysis__resizeHandle {
   flex: 0 0 4px;
-  background: var(--vscode-sash-hoverBorder, rgba(255,255,255,0.1));
+  background: var(--vscode-sash-hoverBorder, rgba(255, 255, 255, 0.1));
   cursor: ns-resize;
   z-index: 1;
   transition: background 0.15s;
 }
 .liveAnalysis__resizeHandle:hover {
-  background: var(--vscode-focusBorder, rgba(0,120,212,0.7));
+  background: var(--vscode-focusBorder, rgba(0, 120, 212, 0.7));
 }
 
 .liveAnalysis__spectrum {
@@ -521,7 +521,9 @@
   display: flex;
   flex-direction: column;
 }
-.liveAnalysis__overlay.hidden { display: none; }
+.liveAnalysis__overlay.hidden {
+  display: none;
+}
 
 /* ── Goniometer component ─────────────────────────────────────────────────── */
 .goniometerComponent {
@@ -641,7 +643,7 @@
   flex-wrap: wrap;
   padding: 2px 0;
   font-size: 11px;
-  color: var(--vscode-descriptionForeground, rgba(255,255,255,0.7));
+  color: var(--vscode-descriptionForeground, rgba(255, 255, 255, 0.7));
   width: 100%;
   min-width: 0;
 }
@@ -688,7 +690,10 @@
   padding: 2px 6px !important;
   font-size: 10px !important;
   line-height: 1.2;
-  background: var(--vscode-button-secondaryBackground, rgba(255,255,255,0.08)) !important;
+  background: var(
+    --vscode-button-secondaryBackground,
+    rgba(255, 255, 255, 0.08)
+  ) !important;
   color: var(--vscode-button-secondaryForeground, #ccc) !important;
   outline-offset: 1px;
 }

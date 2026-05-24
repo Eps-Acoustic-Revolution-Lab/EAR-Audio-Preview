@@ -31,7 +31,7 @@ describe("buildModifiedAkima", () => {
 
   test("interpolates a linear ramp exactly", () => {
     const xs = [0, 1, 2, 3, 4, 5];
-    const ys = xs.map(x => 2 * x + 1);
+    const ys = xs.map((x) => 2 * x + 1);
     const interp = buildModifiedAkima(xs, ys);
     for (let x = 0; x <= 5; x += 0.25) {
       expect(interp.evaluate(x)).toBeCloseTo(2 * x + 1, 5);

@@ -48,7 +48,11 @@ async function decodeWithWasm(
         const decoder = new OggOpusDecoderWebWorker();
         await decoder.ready;
         // ogg-opus-decoder's decode signature varies; cast to access it
-        const result = await (decoder as unknown as { decode: (d: Uint8Array) => Promise<WasmDecoderResult> }).decode(data);
+        const result = await (
+          decoder as unknown as {
+            decode: (d: Uint8Array) => Promise<WasmDecoderResult>;
+          }
+        ).decode(data);
         await decoder.free();
         return result;
       }
@@ -57,7 +61,11 @@ async function decodeWithWasm(
       const { OggOpusDecoderWebWorker } = await import("ogg-opus-decoder");
       const decoder = new OggOpusDecoderWebWorker();
       await decoder.ready;
-      const result = await (decoder as unknown as { decode: (d: Uint8Array) => Promise<WasmDecoderResult> }).decode(data);
+      const result = await (
+        decoder as unknown as {
+          decode: (d: Uint8Array) => Promise<WasmDecoderResult>;
+        }
+      ).decode(data);
       await decoder.free();
       return result;
     }

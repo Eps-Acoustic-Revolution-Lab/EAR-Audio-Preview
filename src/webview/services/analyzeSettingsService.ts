@@ -86,8 +86,7 @@ export function inferFftWindowSamplesForTimeRange(
   const tauLo = 0.009;
   const tauHi = 0.051;
   const tauS = 138;
-  const tauStat =
-    tauLo + (tauHi - tauLo) * (1 - Math.exp(-tVal / tauS));
+  const tauStat = tauLo + (tauHi - tauLo) * (1 - Math.exp(-tVal / tauS));
   const nStationary = tauStat * fs;
 
   const kFloor = 410;
@@ -238,7 +237,9 @@ export default class AnalyzeSettingsService extends Service {
     return inferFftWindowSamplesForTimeRange(
       tVal,
       this._sampleRate,
-      AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
+      AnalyzeSettingsService.spectrogramRenderWidth(
+        this._highResolutionSpectrogram,
+      ),
     );
   }
 
@@ -824,12 +825,10 @@ export default class AnalyzeSettingsService extends Service {
   }
   public set liveSpectrumTiltDbPerOct(value: number) {
     const v = Number(value);
-    const ok = (AnalyzeSettingsService.liveTiltValues as readonly number[]).includes(
-      v,
-    );
-    this._liveSpectrumTiltDbPerOct = ok
-      ? (v as 0 | 1.5 | 3 | 4.5 | 6)
-      : 0;
+    const ok = (
+      AnalyzeSettingsService.liveTiltValues as readonly number[]
+    ).includes(v);
+    this._liveSpectrumTiltDbPerOct = ok ? (v as 0 | 1.5 | 3 | 4.5 | 6) : 0;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_LIVE_SPECTRUM_TILT, {
         detail: { value: this._liveSpectrumTiltDbPerOct },
@@ -844,7 +843,9 @@ export default class AnalyzeSettingsService extends Service {
   public set liveMonitoringMode(value: LiveMonitoringMode) {
     const v = String(value).toLowerCase();
     const allowed = ["lr", "swap", "l", "r", "m", "s"];
-    this._liveMonitoringMode = (allowed.includes(v) ? v : "lr") as LiveMonitoringMode;
+    this._liveMonitoringMode = (
+      allowed.includes(v) ? v : "lr"
+    ) as LiveMonitoringMode;
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_LIVE_MONITORING_MODE, {
         detail: { value: this._liveMonitoringMode },
@@ -853,9 +854,7 @@ export default class AnalyzeSettingsService extends Service {
   }
 
   /** Six ascending Hz edges `[e0…e5]` defining five bands `[eᵢ,eᵢ₊₁]`. */
-  private _monitorBandEdgesHz: number[] = [
-    20, 60, 240, 900, 5000, 24000,
-  ];
+  private _monitorBandEdgesHz: number[] = [20, 60, 240, 900, 5000, 24000];
   private _monitorBandSoloMask: number = 0;
 
   /** When true, monitor band solo is inactive (mask 0 or all five bits). */
@@ -916,7 +915,10 @@ export default class AnalyzeSettingsService extends Service {
     edges?: readonly number[],
     soloMask?: number,
   ): void {
-    this._monitorBandEdgesHz = sanitizeMonitorBandEdges(edges, this._sampleRate);
+    this._monitorBandEdgesHz = sanitizeMonitorBandEdges(
+      edges,
+      this._sampleRate,
+    );
     if (soloMask !== undefined && Number.isFinite(soloMask)) {
       this._monitorBandSoloMask = Math.max(
         0,
@@ -1148,9 +1150,10 @@ export default class AnalyzeSettingsService extends Service {
     setting.livePolarSampleRadiusGamma = clampPolarSampleRadiusGamma(
       defaultSetting.livePolarSampleRadiusGamma ?? 1,
     );
-    setting.livePolarSampleFillBrightnessPct = clampPolarSampleFillBrightnessPct(
-      defaultSetting.livePolarSampleFillBrightnessPct ?? 10,
-    );
+    setting.livePolarSampleFillBrightnessPct =
+      clampPolarSampleFillBrightnessPct(
+        defaultSetting.livePolarSampleFillBrightnessPct ?? 10,
+      );
     if (defaultSetting.liveSoundFieldMode !== undefined) {
       setting.liveSoundFieldMode = defaultSetting.liveSoundFieldMode;
     }
@@ -1200,7 +1203,9 @@ export default class AnalyzeSettingsService extends Service {
     this._windowSize = inferFftWindowSamplesForTimeRange(
       tVal,
       this._sampleRate,
-      AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
+      AnalyzeSettingsService.spectrogramRenderWidth(
+        this._highResolutionSpectrogram,
+      ),
     );
     if (this._autoCalcHopSize) {
       this._hopSize = this.calcHopSize();
@@ -1213,7 +1218,9 @@ export default class AnalyzeSettingsService extends Service {
       const n = inferFftWindowSamplesForTimeRange(
         tVal,
         this._sampleRate,
-        AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
+        AnalyzeSettingsService.spectrogramRenderWidth(
+          this._highResolutionSpectrogram,
+        ),
       );
       return Math.round(Math.log2(n)) - 8;
     }
@@ -1250,11 +1257,7 @@ export default class AnalyzeSettingsService extends Service {
   private get effectiveWindowSize(): number {
     const totalDuration = this._duration;
     const currentRange = this._maxTime - this._minTime;
-    if (
-      !totalDuration ||
-      !currentRange ||
-      currentRange >= totalDuration
-    ) {
+    if (!totalDuration || !currentRange || currentRange >= totalDuration) {
       return this._windowSize;
     }
     const zoomRatio = totalDuration / currentRange;

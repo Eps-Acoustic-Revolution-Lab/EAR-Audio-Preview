@@ -66,12 +66,7 @@ describe("computeRhoPerBin", () => {
   test("180° out-of-phase sine yields negative rho near tone frequency", () => {
     const freq = 1000;
     const { mixL, mixR } = sineFrame(freq, Math.PI);
-    const { srcXs, srcYs } = computeRhoPerBin(
-      mixL,
-      mixR,
-      sampleRate,
-      engine,
-    );
+    const { srcXs, srcYs } = computeRhoPerBin(mixL, mixR, sampleRate, engine);
     let worstRho = 2;
     for (let i = 0; i < srcXs.length; i++) {
       if (Math.abs(srcXs[i] - freq) < 120) {

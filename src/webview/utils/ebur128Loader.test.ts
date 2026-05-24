@@ -25,11 +25,13 @@ describe("ebur128Loader", () => {
   test("resolves top-level ebur128 exports", () => {
     const api = resolveEbur128Api(apiShape());
     expect(api?.truePeakMono(48000, new Float32Array([1]))).toBe(-1);
-    expect(api?.truePeakStereo(
-      48000,
-      new Float32Array([1]),
-      new Float32Array([0.5]),
-    )).toBe(-0.5);
+    expect(
+      api?.truePeakStereo(
+        48000,
+        new Float32Array([1]),
+        new Float32Array([0.5]),
+      ),
+    ).toBe(-0.5);
   });
 
   test("resolves default-wrapped ebur128 exports", () => {

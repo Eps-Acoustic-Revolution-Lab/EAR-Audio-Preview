@@ -283,20 +283,12 @@ export default class AnalyzeSettingsComponent extends Component {
         syncWindowSizeSelectUi();
       },
     );
-    this._addEventlistener(
-      settings,
-      EventType.AS_UPDATE_MIN_TIME,
-      () => {
-        syncWindowSizeSelectUi();
-      },
-    );
-    this._addEventlistener(
-      settings,
-      EventType.AS_UPDATE_MAX_TIME,
-      () => {
-        syncWindowSizeSelectUi();
-      },
-    );
+    this._addEventlistener(settings, EventType.AS_UPDATE_MIN_TIME, () => {
+      syncWindowSizeSelectUi();
+    });
+    this._addEventlistener(settings, EventType.AS_UPDATE_MAX_TIME, () => {
+      syncWindowSizeSelectUi();
+    });
 
     // init window type select
     const windowTypeSelect = <HTMLSelectElement>(
@@ -304,7 +296,9 @@ export default class AnalyzeSettingsComponent extends Component {
     );
     windowTypeSelect.selectedIndex = settings.windowType;
     this._addEventlistener(windowTypeSelect, EventType.CHANGE, () => {
-      settings.windowType = Number(windowTypeSelect.selectedIndex) as WindowType;
+      settings.windowType = Number(
+        windowTypeSelect.selectedIndex,
+      ) as WindowType;
     });
     this._addEventlistener(
       settings,
@@ -320,7 +314,9 @@ export default class AnalyzeSettingsComponent extends Component {
     );
     fftBackendSelect.selectedIndex = settings.fftBackend;
     this._addEventlistener(fftBackendSelect, EventType.CHANGE, () => {
-      settings.fftBackend = Number(fftBackendSelect.selectedIndex) as FftBackend;
+      settings.fftBackend = Number(
+        fftBackendSelect.selectedIndex,
+      ) as FftBackend;
     });
     this._addEventlistener(
       settings,
@@ -464,9 +460,15 @@ export default class AnalyzeSettingsComponent extends Component {
     );
     spectrogramAmplitudeLowInput.value = `${settings.spectrogramAmplitudeLow}`;
     this.updateColorBar(settings.toProps());
-    this._addEventlistener(spectrogramAmplitudeLowInput, EventType.CHANGE, () => {
-      settings.spectrogramAmplitudeLow = Number(spectrogramAmplitudeLowInput.value);
-    });
+    this._addEventlistener(
+      spectrogramAmplitudeLowInput,
+      EventType.CHANGE,
+      () => {
+        settings.spectrogramAmplitudeLow = Number(
+          spectrogramAmplitudeLowInput.value,
+        );
+      },
+    );
     this._addEventlistener(
       settings,
       EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_LOW,
@@ -483,9 +485,15 @@ export default class AnalyzeSettingsComponent extends Component {
       )
     );
     spectrogramAmplitudeHighInput.value = `${settings.spectrogramAmplitudeHigh}`;
-    this._addEventlistener(spectrogramAmplitudeHighInput, EventType.CHANGE, () => {
-      settings.spectrogramAmplitudeHigh = Number(spectrogramAmplitudeHighInput.value);
-    });
+    this._addEventlistener(
+      spectrogramAmplitudeHighInput,
+      EventType.CHANGE,
+      () => {
+        settings.spectrogramAmplitudeHigh = Number(
+          spectrogramAmplitudeHighInput.value,
+        );
+      },
+    );
     this._addEventlistener(
       settings,
       EventType.AS_UPDATE_SPECTROGRAM_AMPLITUDE_HIGH,
@@ -496,11 +504,17 @@ export default class AnalyzeSettingsComponent extends Component {
     );
 
     const liveAnalysisFftSizeSelect = <HTMLSelectElement>(
-      this._componentRoot.querySelector(".js-analyzeSetting-liveAnalysisFftSize")
+      this._componentRoot.querySelector(
+        ".js-analyzeSetting-liveAnalysisFftSize",
+      )
     );
     liveAnalysisFftSizeSelect.value = String(settings.liveAnalysisFftSize);
     this._addEventlistener(liveAnalysisFftSizeSelect, EventType.CHANGE, () => {
-      settings.liveAnalysisFftSize = Number(liveAnalysisFftSizeSelect.value) as 512 | 1024 | 2048 | 4096;
+      settings.liveAnalysisFftSize = Number(liveAnalysisFftSizeSelect.value) as
+        | 512
+        | 1024
+        | 2048
+        | 4096;
     });
     this._addEventlistener(
       settings,
@@ -518,7 +532,9 @@ export default class AnalyzeSettingsComponent extends Component {
       eventType: string,
       format: (v: number) => string = (v) => String(v),
     ) => {
-      const input = this._componentRoot.querySelector(inputSel) as HTMLInputElement;
+      const input = this._componentRoot.querySelector(
+        inputSel,
+      ) as HTMLInputElement;
       const label = this._componentRoot.querySelector(labelSel) as HTMLElement;
       const sync = () => {
         label.textContent = format(getVal());
@@ -529,10 +545,14 @@ export default class AnalyzeSettingsComponent extends Component {
         setVal(Number(input.value));
         sync();
       });
-      this._addEventlistener(settings, eventType, (e: CustomEventInit<{ value: number }>) => {
-        input.value = String(e.detail.value);
-        label.textContent = format(e.detail.value);
-      });
+      this._addEventlistener(
+        settings,
+        eventType,
+        (e: CustomEventInit<{ value: number }>) => {
+          input.value = String(e.detail.value);
+          label.textContent = format(e.detail.value);
+        },
+      );
     };
 
     const wireReleaseSlider = (
@@ -542,7 +562,9 @@ export default class AnalyzeSettingsComponent extends Component {
       setVal: (n: number) => void,
       eventType: string,
     ) => {
-      const input = this._componentRoot.querySelector(inputSel) as HTMLInputElement;
+      const input = this._componentRoot.querySelector(
+        inputSel,
+      ) as HTMLInputElement;
       const label = this._componentRoot.querySelector(labelSel) as HTMLElement;
       const sync = () => {
         label.textContent = formatReleaseDbPerSecLabel(getVal());
@@ -553,17 +575,23 @@ export default class AnalyzeSettingsComponent extends Component {
         setVal(Number(input.value));
         sync();
       });
-      this._addEventlistener(settings, eventType, (e: CustomEventInit<{ value: number }>) => {
-        input.value = String(e.detail.value);
-        label.textContent = formatReleaseDbPerSecLabel(e.detail.value);
-      });
+      this._addEventlistener(
+        settings,
+        eventType,
+        (e: CustomEventInit<{ value: number }>) => {
+          input.value = String(e.detail.value);
+          label.textContent = formatReleaseDbPerSecLabel(e.detail.value);
+        },
+      );
     };
 
     wirePctSlider(
       ".js-analyzeSetting-livePolarLevelGatePct",
       ".js-analyzeSetting-livePolarLevelGatePctLabel",
       () => settings.livePolarLevelGatePct,
-      (n) => { settings.livePolarLevelGatePct = n; },
+      (n) => {
+        settings.livePolarLevelGatePct = n;
+      },
       EventType.AS_UPDATE_LIVE_POLAR_LEVEL_GATE,
       (v) => `${v}%`,
     );
@@ -571,7 +599,9 @@ export default class AnalyzeSettingsComponent extends Component {
       ".js-analyzeSetting-livePolarSampleRadiusGamma",
       ".js-analyzeSetting-livePolarSampleRadiusGammaLabel",
       () => settings.livePolarSampleRadiusGamma,
-      (n) => { settings.livePolarSampleRadiusGamma = n; },
+      (n) => {
+        settings.livePolarSampleRadiusGamma = n;
+      },
       EventType.AS_UPDATE_LIVE_POLAR_SAMPLE_RADIUS_GAMMA,
       (v) => `γ ${v.toFixed(2)}`,
     );
@@ -579,7 +609,9 @@ export default class AnalyzeSettingsComponent extends Component {
       ".js-analyzeSetting-livePolarSampleFillBrightnessPct",
       ".js-analyzeSetting-livePolarSampleFillBrightnessPctLabel",
       () => settings.livePolarSampleFillBrightnessPct,
-      (n) => { settings.livePolarSampleFillBrightnessPct = n; },
+      (n) => {
+        settings.livePolarSampleFillBrightnessPct = n;
+      },
       EventType.AS_UPDATE_LIVE_POLAR_SAMPLE_FILL_BRIGHTNESS,
       (v) => `+${v}%`,
     );
@@ -587,19 +619,25 @@ export default class AnalyzeSettingsComponent extends Component {
       ".js-analyzeSetting-livePolarFieldReleaseDbPerSec",
       ".js-analyzeSetting-livePolarFieldReleaseDbPerSecLabel",
       () => settings.livePolarFieldReleaseDbPerSec,
-      (n) => { settings.livePolarFieldReleaseDbPerSec = n; },
+      (n) => {
+        settings.livePolarFieldReleaseDbPerSec = n;
+      },
       EventType.AS_UPDATE_LIVE_POLAR_FIELD_SMOOTHING,
     );
     wireReleaseSlider(
       ".js-analyzeSetting-liveSpectrumReleaseDbPerSec",
       ".js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel",
       () => settings.liveSpectrumReleaseDbPerSec,
-      (n) => { settings.liveSpectrumReleaseDbPerSec = n; },
+      (n) => {
+        settings.liveSpectrumReleaseDbPerSec = n;
+      },
       EventType.AS_UPDATE_LIVE_SPECTRUM_SMOOTHING,
     );
     {
       const input = <HTMLInputElement>(
-        this._componentRoot.querySelector(".js-analyzeSetting-liveSpectrumPeakHoldSec")
+        this._componentRoot.querySelector(
+          ".js-analyzeSetting-liveSpectrumPeakHoldSec",
+        )
       );
       const label = <HTMLSpanElement>(
         this._componentRoot.querySelector(
@@ -616,16 +654,22 @@ export default class AnalyzeSettingsComponent extends Component {
         settings.liveSpectrumPeakHoldSec = Number(input.value);
         sync();
       });
-      this._addEventlistener(settings, EventType.AS_UPDATE_LIVE_SPECTRUM_PEAK_HOLD, (e: CustomEventInit<{ value: number }>) => {
-        input.value = String(e.detail.value);
-        label.textContent = fmt(e.detail.value);
-      });
+      this._addEventlistener(
+        settings,
+        EventType.AS_UPDATE_LIVE_SPECTRUM_PEAK_HOLD,
+        (e: CustomEventInit<{ value: number }>) => {
+          input.value = String(e.detail.value);
+          label.textContent = fmt(e.detail.value);
+        },
+      );
     }
     wireReleaseSlider(
       ".js-analyzeSetting-liveLevelMeterReleaseDbPerSec",
       ".js-analyzeSetting-liveLevelMeterReleaseDbPerSecLabel",
       () => settings.liveLevelMeterReleaseDbPerSec,
-      (n) => { settings.liveLevelMeterReleaseDbPerSec = n; },
+      (n) => {
+        settings.liveLevelMeterReleaseDbPerSec = n;
+      },
       EventType.AS_UPDATE_LIVE_LEVEL_METER_SMOOTHING,
     );
 
@@ -681,13 +725,22 @@ export default class AnalyzeSettingsComponent extends Component {
     const high = settings.spectrogramAmplitudeHigh;
     const range = high - low;
 
-    colorAxisContext.clearRect(0, 0, colorAxisCanvas.width, colorAxisCanvas.height);
+    colorAxisContext.clearRect(
+      0,
+      0,
+      colorAxisCanvas.width,
+      colorAxisCanvas.height,
+    );
     colorAxisContext.font = `15px Arial`;
     colorAxisContext.fillStyle = "white";
     for (let i = 0; i < 10; i++) {
       const amp = low + (i * range) / 10;
       const x = (i * colorAxisCanvas.width) / 10;
-      colorAxisContext.fillText(`${amp.toFixed(0)} dB`, x, colorAxisCanvas.height);
+      colorAxisContext.fillText(
+        `${amp.toFixed(0)} dB`,
+        x,
+        colorAxisCanvas.height,
+      );
     }
 
     for (let i = 0; i < 100; i++) {

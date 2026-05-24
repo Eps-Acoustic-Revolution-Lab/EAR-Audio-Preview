@@ -51,7 +51,12 @@ export function parseFlacBitsPerSample(data: Uint8Array): number | null {
   if (data.byteLength < 8 + 34) {
     return null;
   }
-  if (data[0] !== 0x66 || data[1] !== 0x4c || data[2] !== 0x61 || data[3] !== 0x43) {
+  if (
+    data[0] !== 0x66 ||
+    data[1] !== 0x4c ||
+    data[2] !== 0x61 ||
+    data[3] !== 0x43
+  ) {
     return null;
   }
   const h0 = data[4];

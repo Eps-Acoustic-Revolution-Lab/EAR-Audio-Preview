@@ -5,9 +5,13 @@ function samplePeakDbTp(samples: Float32Array): number {
   let peak = 0;
   for (let i = 0; i < samples.length; i++) {
     const a = Math.abs(samples[i]);
-    if (a > peak) {peak = a;}
+    if (a > peak) {
+      peak = a;
+    }
   }
-  if (peak <= 0) {return Number.NEGATIVE_INFINITY;}
+  if (peak <= 0) {
+    return Number.NEGATIVE_INFINITY;
+  }
   return 20 * Math.log10(peak);
 }
 

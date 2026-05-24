@@ -26,11 +26,7 @@ function logFreqPoints(): Float64Array {
 
 export const logFreqs = logFreqPoints();
 
-export function freqToCanvasX(
-  f: number,
-  padL: number,
-  drawW: number,
-): number {
+export function freqToCanvasX(f: number, padL: number, drawW: number): number {
   return (
     padL +
     ((Math.log10(f) - Math.log10(freqMin)) /
@@ -57,16 +53,24 @@ export function logIndexFromHz(hz: number): number {
 
 export function lerpF32(arr: Float32Array, idx: number, fallback = 0): number {
   const n = arr.length;
-  if (n < 2) {return n === 1 ? arr[0] : fallback;}
+  if (n < 2) {
+    return n === 1 ? arr[0] : fallback;
+  }
   const i = Math.max(0, Math.min(n - 2, Math.floor(idx)));
   const f = idx - i;
   return arr[i] * (1 - f) + arr[i + 1] * f;
 }
 
 export function fmtHzLive(hz: number): string {
-  if (!Number.isFinite(hz)) {return "—";}
-  if (hz >= 10000) {return `${(hz / 1000).toFixed(2)} kHz`;}
-  if (hz >= 1000) {return `${(hz / 1000).toFixed(3)} kHz`;}
+  if (!Number.isFinite(hz)) {
+    return "—";
+  }
+  if (hz >= 10000) {
+    return `${(hz / 1000).toFixed(2)} kHz`;
+  }
+  if (hz >= 1000) {
+    return `${(hz / 1000).toFixed(3)} kHz`;
+  }
   return `${hz.toFixed(1)} Hz`;
 }
 

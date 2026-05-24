@@ -110,7 +110,10 @@ export class SpectrogramRenderer {
       throw new Error("WebGL2 not supported");
     }
     this._gl = gl;
-    this._programInfo = twgl.createProgramInfo(gl, [vertexShader, fragmentShader]);
+    this._programInfo = twgl.createProgramInfo(gl, [
+      vertexShader,
+      fragmentShader,
+    ]);
     this._bufferInfo = twgl.createBufferInfoFromArrays(gl, quadAttributes);
   }
 

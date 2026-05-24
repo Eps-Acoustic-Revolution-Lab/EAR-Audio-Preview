@@ -22,7 +22,7 @@
 /** Symmetric 5-point uniform quintic B-spline kernel, sums to 1. */
 const w0 = 66 / 120;
 const w1 = 26 / 120;
-const w2 =  1 / 120;
+const w2 = 1 / 120;
 
 /**
  * Smooth an array of values with the uniform quintic B-spline kernel.
@@ -33,9 +33,13 @@ const w2 =  1 / 120;
  * @param data  Input values (will not be mutated).
  * @returns     Smoothed values, same length as input.
  */
-export function quinticBSplineSmooth(data: Float32Array | number[]): Float32Array {
+export function quinticBSplineSmooth(
+  data: Float32Array | number[],
+): Float32Array {
   const n = data.length;
-  if (n === 0) {return new Float32Array(0);}
+  if (n === 0) {
+    return new Float32Array(0);
+  }
 
   const out = new Float32Array(n);
   for (let i = 0; i < n; i++) {
@@ -46,7 +50,12 @@ export function quinticBSplineSmooth(data: Float32Array | number[]): Float32Arra
     const i3 = Math.min(n - 1, i + 1);
     const i4 = Math.min(n - 1, i + 2);
 
-    out[i] = w2 * data[i0] + w1 * data[i1] + w0 * data[i2] + w1 * data[i3] + w2 * data[i4];
+    out[i] =
+      w2 * data[i0] +
+      w1 * data[i1] +
+      w0 * data[i2] +
+      w1 * data[i3] +
+      w2 * data[i4];
   }
   return out;
 }

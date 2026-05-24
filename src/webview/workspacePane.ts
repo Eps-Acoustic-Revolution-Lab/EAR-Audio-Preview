@@ -1,6 +1,11 @@
 import { EventType } from "./events";
 
-export type WorkspacePaneId = "none" | "stft" | "liveSpec" | "edit" | "loudness";
+export type WorkspacePaneId =
+  | "none"
+  | "stft"
+  | "liveSpec"
+  | "edit"
+  | "loudness";
 
 let _activeWorkspacePane: WorkspacePaneId = "none";
 

@@ -43,8 +43,7 @@ export default class PlayerService extends Service {
       new CustomEvent(EventType.UPDATE_PLAYBACK_POSITION, {
         detail: {
           sec: this._playbackPosition,
-          percent:
-            (100 * this._playbackPosition) / this._audioBuffer.duration,
+          percent: (100 * this._playbackPosition) / this._audioBuffer.duration,
         },
       }),
     );
@@ -170,8 +169,12 @@ export default class PlayerService extends Service {
       EventType.AS_UPDATE_LIVE_ANALYSIS_FFT_SIZE,
       () => {
         const fftSize = this._analyzeSettingsService.liveAnalysisFftSize;
-        if (this._analyserL) {this._analyserL.fftSize = fftSize;}
-        if (this._analyserR) {this._analyserR.fftSize = fftSize;}
+        if (this._analyserL) {
+          this._analyserL.fftSize = fftSize;
+        }
+        if (this._analyserR) {
+          this._analyserR.fftSize = fftSize;
+        }
       },
     );
 
@@ -246,8 +249,12 @@ export default class PlayerService extends Service {
   }
 
   private _applyMonitoringGains(): void {
-    if (!this._gLL || !this._gLR || !this._gRL || !this._gRR) {return;}
-    const g = monitoringGainsForMode(this._analyzeSettingsService.liveMonitoringMode);
+    if (!this._gLL || !this._gLR || !this._gRL || !this._gRR) {
+      return;
+    }
+    const g = monitoringGainsForMode(
+      this._analyzeSettingsService.liveMonitoringMode,
+    );
     this._gLL.gain.value = g.ll;
     this._gLR.gain.value = g.lr;
     this._gRL.gain.value = g.rl;
@@ -429,14 +436,46 @@ export default class PlayerService extends Service {
     } catch {
       /* ok */
     }
-    try { this._merger?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._gLL?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._gLR?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._gRL?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._gRR?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._analyserL?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._analyserR?.disconnect(); } catch (_) { /* already disconnected */ }
-    try { this._splitter?.disconnect(); } catch (_) { /* already disconnected */ }
+    try {
+      this._merger?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._gLL?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._gLR?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._gRL?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._gRR?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._analyserL?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._analyserR?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
+    try {
+      this._splitter?.disconnect();
+    } catch (_) {
+      /* already disconnected */
+    }
 
     this._splitter = null;
     this._merger = null;
@@ -468,9 +507,13 @@ export default class PlayerService extends Service {
         const node = new LoudnessWorkletNode(this._audioContext, {
           processorOptions: { interval: 0.05, capacity: 0 },
         });
-        node.port.onmessage = (e: MessageEvent<{ currentMeasurements: LoudnessMeasurements[] }>) => {
+        node.port.onmessage = (
+          e: MessageEvent<{ currentMeasurements: LoudnessMeasurements[] }>,
+        ) => {
           const m = e.data.currentMeasurements?.[0];
-          if (!m) {return;}
+          if (!m) {
+            return;
+          }
           this._latestLoudness = m;
           if (
             Number.isFinite(m.maximumTruePeakLevel) &&
@@ -539,7 +582,11 @@ export default class PlayerService extends Service {
    */
   private _connectGainOutput(): void {
     // gainNode always disconnects before reconnecting to avoid double-connections
-    try { this._gainNode.disconnect(); } catch (_) { /* ok */ }
+    try {
+      this._gainNode.disconnect();
+    } catch (_) {
+      /* ok */
+    }
 
     this._updateLiveGraph();
 

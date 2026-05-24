@@ -43,8 +43,12 @@ describe("LoudnessService", () => {
 
   test("truePeakFile stereo returns finite max", async () => {
     const sr = 44100;
-    const buf = makeBuffer(sr, 2, 0.02, (ch, i) =>
-      (ch === 0 ? 0.5 : -0.5) * Math.sin((2 * Math.PI * 440 * i) / sr),
+    const buf = makeBuffer(
+      sr,
+      2,
+      0.02,
+      (ch, i) =>
+        (ch === 0 ? 0.5 : -0.5) * Math.sin((2 * Math.PI * 440 * i) / sr),
     );
     const svc = new LoudnessService(buf);
     await svc.ensureReady();
@@ -63,28 +67,32 @@ describe("LoudnessService", () => {
       {
         currentFrame: 1,
         currentTime: 0.1,
-        currentMeasurements: [{
-          momentaryLoudness: -20,
-          shortTermLoudness: -18,
-          integratedLoudness: -19,
-          maximumMomentaryLoudness: -20,
-          maximumShortTermLoudness: -18,
-          loudnessRange: 4,
-          maximumTruePeakLevel: -1,
-        }],
+        currentMeasurements: [
+          {
+            momentaryLoudness: -20,
+            shortTermLoudness: -18,
+            integratedLoudness: -19,
+            maximumMomentaryLoudness: -20,
+            maximumShortTermLoudness: -18,
+            loudnessRange: 4,
+            maximumTruePeakLevel: -1,
+          },
+        ],
       },
       {
         currentFrame: 2,
         currentTime: 0.2,
-        currentMeasurements: [{
-          momentaryLoudness: -15,
-          shortTermLoudness: -16,
-          integratedLoudness: -17,
-          maximumMomentaryLoudness: -15,
-          maximumShortTermLoudness: -16,
-          loudnessRange: 5,
-          maximumTruePeakLevel: 0.4,
-        }],
+        currentMeasurements: [
+          {
+            momentaryLoudness: -15,
+            shortTermLoudness: -16,
+            integratedLoudness: -17,
+            maximumMomentaryLoudness: -15,
+            maximumShortTermLoudness: -16,
+            loudnessRange: 5,
+            maximumTruePeakLevel: 0.4,
+          },
+        ],
       },
     ]);
 

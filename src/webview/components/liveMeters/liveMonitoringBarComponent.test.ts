@@ -80,14 +80,19 @@ describe("liveMonitoringBarComponent", () => {
     const bands = document.querySelectorAll(".js-lm-band");
     expect(
       [...bands].every(
-        (b) => !(b as HTMLElement).classList.contains("liveMonitoringBar__btn--active"),
+        (b) =>
+          !(b as HTMLElement).classList.contains(
+            "liveMonitoringBar__btn--active",
+          ),
       ),
     ).toBe(true);
   });
 
   test("band toggle flips bitmask and active class", () => {
     analyzeSettingsService.resetMonitorBandSolo();
-    const b1 = document.querySelector('.js-lm-band[data-band="1"]') as HTMLButtonElement;
+    const b1 = document.querySelector(
+      '.js-lm-band[data-band="1"]',
+    ) as HTMLButtonElement;
     click(b1);
     expect((analyzeSettingsService.monitorBandSoloMask >> 1) & 1).toBe(1);
     expect(b1.classList.contains("liveMonitoringBar__btn--active")).toBe(true);

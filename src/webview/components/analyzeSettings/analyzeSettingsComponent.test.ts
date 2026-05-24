@@ -409,8 +409,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum release slider updates service and label", () => {
-      const range = <HTMLInputElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumReleaseDbPerSec",
+      const range = <HTMLInputElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumReleaseDbPerSec")
       );
       const label = document.querySelector(
         ".js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel",
@@ -424,8 +424,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum peak hold slider updates service and label", () => {
-      const range = <HTMLInputElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumPeakHoldSec",
+      const range = <HTMLInputElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumPeakHoldSec")
       );
       const label = document.querySelector(
         ".js-analyzeSetting-liveSpectrumPeakHoldSecLabel",
@@ -439,8 +439,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum peak hold UI syncs from AS_UPDATE_LIVE_SPECTRUM_PEAK_HOLD", () => {
-      const range = <HTMLInputElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumPeakHoldSec",
+      const range = <HTMLInputElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumPeakHoldSec")
       );
       const label = document.querySelector(
         ".js-analyzeSetting-liveSpectrumPeakHoldSecLabel",
@@ -455,8 +455,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum release UI syncs from AS_UPDATE_LIVE_SPECTRUM_SMOOTHING", () => {
-      const range = <HTMLInputElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumReleaseDbPerSec",
+      const range = <HTMLInputElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumReleaseDbPerSec")
       );
       const label = document.querySelector(
         ".js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel",
@@ -471,8 +471,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("sound field mode select updates service", () => {
-      const sel = <HTMLSelectElement>document.querySelector(
-        ".js-analyzeSetting-liveSoundFieldMode",
+      const sel = <HTMLSelectElement>(
+        document.querySelector(".js-analyzeSetting-liveSoundFieldMode")
       );
       sel.value = "polarSample";
       sel.dispatchEvent(new Event(EventType.CHANGE));
@@ -480,8 +480,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum tilt select updates service", () => {
-      const sel = <HTMLSelectElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumTilt",
+      const sel = <HTMLSelectElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumTilt")
       );
       expect(sel.value).toBe("0");
       sel.value = "3";
@@ -490,8 +490,8 @@ describe("analyzeSettingsComponent", () => {
     });
 
     test("live spectrum tilt select syncs from AS_UPDATE_LIVE_SPECTRUM_TILT", () => {
-      const sel = <HTMLSelectElement>document.querySelector(
-        ".js-analyzeSetting-liveSpectrumTilt",
+      const sel = <HTMLSelectElement>(
+        document.querySelector(".js-analyzeSetting-liveSpectrumTilt")
       );
       analyzeSettingsService.dispatchEvent(
         new CustomEvent(EventType.AS_UPDATE_LIVE_SPECTRUM_TILT, {

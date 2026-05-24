@@ -2,9 +2,7 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
-import {
-  emaDecayFromReleaseDbPerSec,
-} from "../../utils/liveBallistics";
+import { emaDecayFromReleaseDbPerSec } from "../../utils/liveBallistics";
 import {
   encodeMidSideTimeDomain,
   applyMonitoringToTimeDomain,
@@ -38,7 +36,9 @@ interface ChannelState {
 }
 
 function formatDb(db: number): string {
-  if (!Number.isFinite(db)) {return "—";}
+  if (!Number.isFinite(db)) {
+    return "—";
+  }
   return db.toFixed(1);
 }
 
@@ -148,7 +148,9 @@ export default class LevelMeterComponent extends Component {
     this._addEventlistener(this._inner, "contextmenu", (ev: MouseEvent) => {
       ev.preventDefault();
       const mon = this._analyzeSettingsService.liveMonitoringMode;
-      if (mon === "m" || mon === "s") {return;}
+      if (mon === "m" || mon === "s") {
+        return;
+      }
       this._meterLayout = this._meterLayout === "lr" ? "ms" : "lr";
     });
 
@@ -173,7 +175,9 @@ export default class LevelMeterComponent extends Component {
       }
     });
 
-    if (playerService.isPlaying) {this._startRaf();}
+    if (playerService.isPlaying) {
+      this._startRaf();
+    }
 
     const lm = analyzeSettingsService.liveMonitoringMode;
     if (lm === "m" || lm === "s") {
@@ -188,7 +192,9 @@ export default class LevelMeterComponent extends Component {
   }
 
   private _startRaf() {
-    if (this._rafId) {return;}
+    if (this._rafId) {
+      return;
+    }
     const loop = () => {
       this._tick();
       this._rafId = requestAnimationFrame(loop);
@@ -209,7 +215,9 @@ export default class LevelMeterComponent extends Component {
 
   private _tick() {
     const analysers = this._playerService.getAnalysers();
-    if (!analysers) {return;}
+    if (!analysers) {
+      return;
+    }
 
     const fftSize = analysers.left.fftSize;
     if (this._bufL.length !== fftSize) {
@@ -301,7 +309,9 @@ export default class LevelMeterComponent extends Component {
     for (let i = 0; i < buf.length; i++) {
       const s = Math.abs(buf[i]);
       sumSq += buf[i] * buf[i];
-      if (s > peak) {peak = s;}
+      if (s > peak) {
+        peak = s;
+      }
     }
     const rms = Math.sqrt(sumSq / buf.length);
     const rmsDb = 20 * Math.log10(Math.max(rms, 1e-9));
@@ -347,11 +357,15 @@ export default class LevelMeterComponent extends Component {
       canvas.height = h;
     }
     const ctx = canvas.getContext("2d");
-    if (!ctx) {return;}
+    if (!ctx) {
+      return;
+    }
 
     ctx.clearRect(0, 0, w, h);
     const barW = w;
-    if (barW <= 0 || h <= 0) {return;}
+    if (barW <= 0 || h <= 0) {
+      return;
+    }
 
     const dbToY = (db: number) => h * (1 - dbToNorm(db));
 
@@ -402,9 +416,13 @@ export default class LevelMeterComponent extends Component {
 
   private _layoutScaleTicks() {
     const col = this._inner.querySelector(".levelMeter__scaleCol");
-    if (!col) {return;}
+    if (!col) {
+      return;
+    }
     const ch = col.clientHeight;
-    if (ch < 10) {return;}
+    if (ch < 10) {
+      return;
+    }
     const dbToPct = (db: number) => 100 * (1 - dbToNorm(db));
     for (const el of col.querySelectorAll<HTMLElement>(".levelMeter__tick")) {
       const db = Number(el.dataset.db);

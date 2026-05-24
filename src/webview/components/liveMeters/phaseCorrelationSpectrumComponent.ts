@@ -47,7 +47,9 @@ function corrFromCanvasY(y: number, padT: number, drawH: number): number {
 }
 
 function clampCorr(v: number): number {
-  if (!Number.isFinite(v)) {return 0;}
+  if (!Number.isFinite(v)) {
+    return 0;
+  }
   return Math.max(corrMin, Math.min(corrMax, v));
 }
 
@@ -94,21 +96,29 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
       <canvas class="phaseCorrelationSpectrum__canvas"></canvas>
       <div class="phaseCorrelationSpectrum__hoverReadout" style="visibility:hidden" aria-live="polite"></div>
     </div>`;
-    this._canvas = containerEl.querySelector(".phaseCorrelationSpectrum__canvas");
+    this._canvas = containerEl.querySelector(
+      ".phaseCorrelationSpectrum__canvas",
+    );
     this._readoutEl = containerEl.querySelector(
       ".phaseCorrelationSpectrum__hoverReadout",
     ) as HTMLElement;
 
-    this._addEventlistener(containerEl, EventType.MOUSE_MOVE, (e: MouseEvent) => {
-      const r = this._canvas.getBoundingClientRect();
-      if (r.width <= 0 || r.height <= 0) {return;}
-      this._hoverActive = true;
-      this._hoverClientX = e.clientX;
-      this._hoverClientY = e.clientY;
-      this._hoverCx = (e.clientX - r.left) * (this._canvas.width / r.width);
-      this._hoverCy = (e.clientY - r.top) * (this._canvas.height / r.height);
-      this._syncRafToState();
-    });
+    this._addEventlistener(
+      containerEl,
+      EventType.MOUSE_MOVE,
+      (e: MouseEvent) => {
+        const r = this._canvas.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) {
+          return;
+        }
+        this._hoverActive = true;
+        this._hoverClientX = e.clientX;
+        this._hoverClientY = e.clientY;
+        this._hoverCx = (e.clientX - r.left) * (this._canvas.width / r.width);
+        this._hoverCy = (e.clientY - r.top) * (this._canvas.height / r.height);
+        this._syncRafToState();
+      },
+    );
     this._addEventlistener(containerEl, "mouseleave", () => {
       this._hoverActive = false;
       this._readoutEl.style.visibility = "hidden";
@@ -134,7 +144,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   }
 
   private _startRaf() {
-    if (!this._shouldRunRaf() || this._rafId) {return;}
+    if (!this._shouldRunRaf() || this._rafId) {
+      return;
+    }
     const loop = () => {
       this._draw();
       if (this._shouldRunRaf()) {
@@ -164,7 +176,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
       this._canvas.height = h;
     }
     const ctx = this._canvas.getContext("2d");
-    if (!ctx || w <= 0 || h <= 0) {return;}
+    if (!ctx || w <= 0 || h <= 0) {
+      return;
+    }
 
     const padL = 28 * dpr;
     const padB = 16 * dpr;
@@ -177,7 +191,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     ctx.fillStyle = "#0f0f0f";
     ctx.fillRect(0, 0, w, h);
 
-    if (drawW <= 0 || drawH <= 0) {return;}
+    if (drawW <= 0 || drawH <= 0) {
+      return;
+    }
 
     const corrToY = (c: number) =>
       padT + ((corrMax - c) / (corrMax - corrMin)) * drawH;
@@ -227,7 +243,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
       ctx.stroke();
     }
     for (const f of phaseCorrFreqTicks) {
-      if (f < freqMin || f > freqMax) {continue;}
+      if (f < freqMin || f > freqMax) {
+        continue;
+      }
       const x = freqToCanvasX(f, padL, drawW);
       ctx.beginPath();
       ctx.moveTo(x, padT);
@@ -254,7 +272,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
 
     ctx.textAlign = "center";
     for (const f of phaseCorrFreqTicks) {
-      if (f < freqMin || f > freqMax) {continue;}
+      if (f < freqMin || f > freqMax) {
+        continue;
+      }
       ctx.fillText(
         formatFreqTickLabel(f),
         freqToCanvasX(f, padL, drawW),
@@ -342,8 +362,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     const bb = clampCorr(this._broadbandRho);
     const fillTop = bb >= 0 ? corrToY(bb) : zeroY;
     const fillBottom = bb >= 0 ? zeroY : corrToY(bb);
-    ctx.fillStyle =
-      bb >= 0 ? "rgba(0, 180, 216, 0.75)" : antiPhaseStroke;
+    ctx.fillStyle = bb >= 0 ? "rgba(0, 180, 216, 0.75)" : antiPhaseStroke;
     ctx.fillRect(barX, fillTop, barW, fillBottom - fillTop);
 
     if (this._hoverActive && drawW > 0 && drawH > 0) {

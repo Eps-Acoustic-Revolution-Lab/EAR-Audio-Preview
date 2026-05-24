@@ -2,9 +2,7 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
-import {
-  applyMonitoringToTimeDomain,
-} from "../../utils/liveMonitoring";
+import { applyMonitoringToTimeDomain } from "../../utils/liveMonitoring";
 import {
   emaDecayFromReleaseDbPerSec,
   peakFallDbPerFrameFromRelease,
@@ -163,14 +161,19 @@ export default class GoniometerComponent extends Component {
     );
   }
 
-  private _ensurePolarSampleAcc(w: number, h: number): CanvasRenderingContext2D | null {
+  private _ensurePolarSampleAcc(
+    w: number,
+    h: number,
+  ): CanvasRenderingContext2D | null {
     if (!this._polarSampleAcc) {
       this._polarSampleAcc = document.createElement("canvas");
       this._polarSampleAccCtx = this._polarSampleAcc.getContext("2d");
     }
     const acc = this._polarSampleAcc;
     const accCtx = this._polarSampleAccCtx;
-    if (!acc || !accCtx) {return null;}
+    if (!acc || !accCtx) {
+      return null;
+    }
     if (acc.width !== w || acc.height !== h) {
       acc.width = w;
       acc.height = h;
@@ -232,13 +235,19 @@ export default class GoniometerComponent extends Component {
       const left = this._mixL[i];
       const right = this._mixR[i];
       const mag = Math.hypot(left, right);
-      if (mag < 1e-9) {continue;}
+      if (mag < 1e-9) {
+        continue;
+      }
       const theta = stereoFieldAngleRad(left, right);
       const smoothMag = interpolatePolarRmsAtAngle(this._polarSampleRms, theta);
-      if (smoothMag < 1e-9) {continue;}
+      if (smoothMag < 1e-9) {
+        continue;
+      }
       const r = polarSampleDisplayRadius(smoothMag, gamma);
       const { x, y } = polarFieldCanvasXY(cx, cy, radius, theta, r);
-      if (y > cy + 0.5) {continue;}
+      if (y > cy + 0.5) {
+        continue;
+      }
       const path = isInPhaseStereoAngle(theta) ? pathIn : pathOut;
       path.rect(x - half, y - half, dot, dot);
     }
@@ -276,7 +285,9 @@ export default class GoniometerComponent extends Component {
   }
 
   private _startRaf() {
-    if (this._rafId) {return;}
+    if (this._rafId) {
+      return;
+    }
     const loop = () => {
       this._drawFrame(true);
       if (this._playerService.isPlaying) {
@@ -328,7 +339,9 @@ export default class GoniometerComponent extends Component {
 
   private _updateAudioData() {
     const analysers = this._playerService.getAnalysers();
-    if (!analysers || !this._playerService.isPlaying) {return;}
+    if (!analysers || !this._playerService.isPlaying) {
+      return;
+    }
 
     const fftSize = analysers.left.fftSize;
     if (this._bufL.length !== fftSize) {
@@ -379,10 +392,14 @@ export default class GoniometerComponent extends Component {
 
     if (mode === "polarSample") {
       const sized = this._resizeCanvas(this._canvas, this._canvasWrap);
-      if (!sized) {return;}
+      if (!sized) {
+        return;
+      }
       const { w, h, dpr } = sized;
       const accCtx = this._ensurePolarSampleAcc(w, h);
-      if (!accCtx) {return;}
+      if (!accCtx) {
+        return;
+      }
 
       computeInstantPolarBins(
         this._mixL,
@@ -454,15 +471,24 @@ export default class GoniometerComponent extends Component {
   }
 
   private _drawFrame(updateAudio: boolean) {
-    if (updateAudio) {this._updateAudioData();}
+    if (updateAudio) {
+      this._updateAudioData();
+    }
     this._drawSoundField();
   }
 
   private _resizeCanvas(
     canvas: HTMLCanvasElement,
     wrap: HTMLElement,
-  ): { w: number; h: number; dpr: number; ctx: CanvasRenderingContext2D } | null {
-    if (!this._canvasReady(wrap)) {return null;}
+  ): {
+    w: number;
+    h: number;
+    dpr: number;
+    ctx: CanvasRenderingContext2D;
+  } | null {
+    if (!this._canvasReady(wrap)) {
+      return null;
+    }
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.floor(wrap.clientWidth);
@@ -474,7 +500,9 @@ export default class GoniometerComponent extends Component {
       canvas.height = h;
     }
     const ctx = canvas.getContext("2d");
-    if (!ctx) {return null;}
+    if (!ctx) {
+      return null;
+    }
     return { w, h, dpr, ctx };
   }
 
@@ -493,8 +521,7 @@ export default class GoniometerComponent extends Component {
   private _semicircleLayout(w: number, h: number, dpr: number) {
     const pad = 14 * dpr;
     const cx = w / 2;
-    const radius =
-      Math.min(cx - pad, (h - 2 * pad) / 2) * scatterUnitRadius;
+    const radius = Math.min(cx - pad, (h - 2 * pad) / 2) * scatterUnitRadius;
     const cy = h / 2 + radius / 2;
     return { cx, cy, radius, pad };
   }
@@ -631,7 +658,9 @@ export default class GoniometerComponent extends Component {
 
   private _drawSoundField() {
     const sized = this._resizeCanvas(this._canvas, this._canvasWrap);
-    if (!sized) {return;}
+    if (!sized) {
+      return;
+    }
     const { w, h, dpr, ctx } = sized;
     const mode = this._analyzeSettingsService.liveSoundFieldMode;
 
@@ -679,7 +708,9 @@ export default class GoniometerComponent extends Component {
     w: number,
     h: number,
   ) {
-    if (!this._polarSampleAcc) {return;}
+    if (!this._polarSampleAcc) {
+      return;
+    }
     ctx.drawImage(this._polarSampleAcc, 0, 0, w, h);
   }
 
@@ -695,8 +726,7 @@ export default class GoniometerComponent extends Component {
       const px = cx - pt.s * radius;
       const py = cy - pt.m * radius;
       const radial = Math.min(1, Math.hypot(pt.s, pt.m) / scatterUnitRadius);
-      ctx.globalAlpha =
-        pt.alpha * scatterDrawAlpha * (0.75 + 0.25 * radial);
+      ctx.globalAlpha = pt.alpha * scatterDrawAlpha * (0.75 + 0.25 * radial);
       ctx.fillStyle = "rgba(0, 180, 216, 0.9)";
       ctx.fillRect(px - dot * 0.5, py - dot * 0.5, dot, dot);
     }
@@ -710,7 +740,9 @@ export default class GoniometerComponent extends Component {
     radius: number,
   ) {
     const norm = polarLevelDrawNorm(this._polarDisplayScale);
-    if (norm <= 0) {return;}
+    if (norm <= 0) {
+      return;
+    }
 
     const toXY = (theta: number, lenPx: number) =>
       polarFieldCanvasXY(cx, cy, radius, theta, lenPx / radius);

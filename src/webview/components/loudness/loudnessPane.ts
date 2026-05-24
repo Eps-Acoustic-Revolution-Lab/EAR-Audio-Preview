@@ -273,7 +273,11 @@ export default class LoudnessPane extends Component {
     }
     const { minTime, maxTime } = this._visibleTimeRange();
     const span = maxTime - minTime;
-    if (span <= 0 || this._playbackSec < minTime || this._playbackSec > maxTime) {
+    if (
+      span <= 0 ||
+      this._playbackSec < minTime ||
+      this._playbackSec > maxTime
+    ) {
       this._playhead.style.display = "none";
       return;
     }
@@ -284,7 +288,10 @@ export default class LoudnessPane extends Component {
 
   private _visibleTimeRange(): { minTime: number; maxTime: number } {
     const minTime = Math.max(0, this._analyzeSettingsService.minTime);
-    const maxTime = Math.min(this._durationSec, this._analyzeSettingsService.maxTime);
+    const maxTime = Math.min(
+      this._durationSec,
+      this._analyzeSettingsService.maxTime,
+    );
     if (maxTime <= minTime) {
       return { minTime: 0, maxTime: this._durationSec };
     }
@@ -399,48 +406,64 @@ export default class LoudnessPane extends Component {
     const plot = this._plotCssRect();
     const { minTime, maxTime } = this._visibleTimeRange();
     const xNorm =
-      plot.width > 0 ? clamp01((clientX - rect.left - plot.left) / plot.width) : 0;
+      plot.width > 0
+        ? clamp01((clientX - rect.left - plot.left) / plot.width)
+        : 0;
     return minTime + xNorm * (maxTime - minTime);
   }
 
   private _wirePointerInteraction(): void {
-    this._addEventlistener(this._canvasWrap, EventType.MOUSE_MOVE, (event: MouseEvent) => {
-      if (!this._profile) {
-        return;
-      }
-      const rect = this._canvasWrap.getBoundingClientRect();
-      const plot = this._plotCssRect();
-      const x = clamp01((event.clientX - rect.left - plot.left) / Math.max(1, plot.width));
-      const sec = this._secFromClientX(event.clientX);
-      const { minTime, maxTime } = this._visibleTimeRange();
-      const marker = this._nearestPositiveTp(
-        sec,
-        ((maxTime - minTime) / Math.max(1, plot.width)) * 6,
-      );
-      const shortTerm = nearestValue(this._profile.timeSec, this._displayShort, sec);
-      const momentary = nearestValue(this._profile.timeSec, this._displayMomentary, sec);
-      this._hoverLine.style.display = "block";
-      this._hoverLine.style.left = `${plot.left + x * plot.width}px`;
-      this._hoverReadout.style.visibility = "visible";
-      this._hoverReadout.textContent = marker
-        ? `${formatTime(marker.timeSec)} | TP ${dbTpLabel(marker.dbTp)}`
-        : `${formatTime(sec)} | S ${lufsLabel(shortTerm)} | M ${lufsLabel(momentary)}`;
-      this._hoverReadout.style.left = `${Math.min(
-        event.clientX + 12,
-        window.innerWidth - this._hoverReadout.offsetWidth - 8,
-      )}px`;
-      this._hoverReadout.style.top = `${Math.max(4, event.clientY - this._hoverReadout.offsetHeight - 10)}px`;
+    this._addEventlistener(
+      this._canvasWrap,
+      EventType.MOUSE_MOVE,
+      (event: MouseEvent) => {
+        if (!this._profile) {
+          return;
+        }
+        const rect = this._canvasWrap.getBoundingClientRect();
+        const plot = this._plotCssRect();
+        const x = clamp01(
+          (event.clientX - rect.left - plot.left) / Math.max(1, plot.width),
+        );
+        const sec = this._secFromClientX(event.clientX);
+        const { minTime, maxTime } = this._visibleTimeRange();
+        const marker = this._nearestPositiveTp(
+          sec,
+          ((maxTime - minTime) / Math.max(1, plot.width)) * 6,
+        );
+        const shortTerm = nearestValue(
+          this._profile.timeSec,
+          this._displayShort,
+          sec,
+        );
+        const momentary = nearestValue(
+          this._profile.timeSec,
+          this._displayMomentary,
+          sec,
+        );
+        this._hoverLine.style.display = "block";
+        this._hoverLine.style.left = `${plot.left + x * plot.width}px`;
+        this._hoverReadout.style.visibility = "visible";
+        this._hoverReadout.textContent = marker
+          ? `${formatTime(marker.timeSec)} | TP ${dbTpLabel(marker.dbTp)}`
+          : `${formatTime(sec)} | S ${lufsLabel(shortTerm)} | M ${lufsLabel(momentary)}`;
+        this._hoverReadout.style.left = `${Math.min(
+          event.clientX + 12,
+          window.innerWidth - this._hoverReadout.offsetWidth - 8,
+        )}px`;
+        this._hoverReadout.style.top = `${Math.max(4, event.clientY - this._hoverReadout.offsetHeight - 10)}px`;
 
-      if (this._isDragging) {
-        const x0 = Math.min(this._dragStartX, event.clientX) - rect.left;
-        const x1 = Math.max(this._dragStartX, event.clientX) - rect.left;
-        const clampedX0 = Math.max(plot.left, Math.min(plot.right, x0));
-        const clampedX1 = Math.max(plot.left, Math.min(plot.right, x1));
-        this._selectionEl.style.display = "block";
-        this._selectionEl.style.left = `${clampedX0}px`;
-        this._selectionEl.style.width = `${Math.max(0, clampedX1 - clampedX0)}px`;
-      }
-    });
+        if (this._isDragging) {
+          const x0 = Math.min(this._dragStartX, event.clientX) - rect.left;
+          const x1 = Math.max(this._dragStartX, event.clientX) - rect.left;
+          const clampedX0 = Math.max(plot.left, Math.min(plot.right, x0));
+          const clampedX1 = Math.max(plot.left, Math.min(plot.right, x1));
+          this._selectionEl.style.display = "block";
+          this._selectionEl.style.left = `${clampedX0}px`;
+          this._selectionEl.style.width = `${Math.max(0, clampedX1 - clampedX0)}px`;
+        }
+      },
+    );
 
     this._addEventlistener(this._canvasWrap, "mouseleave", () => {
       this._hoverLine.style.display = "none";
@@ -450,49 +473,63 @@ export default class LoudnessPane extends Component {
       }
     });
 
-    this._addEventlistener(this._canvasWrap, EventType.MOUSE_DOWN, (event: MouseEvent) => {
-      if (event.button === 0) {
-        this._dragStartX = event.clientX;
-        this._dragStartY = event.clientY;
-        this._isDragging = true;
+    this._addEventlistener(
+      this._canvasWrap,
+      EventType.MOUSE_DOWN,
+      (event: MouseEvent) => {
+        if (event.button === 0) {
+          this._dragStartX = event.clientX;
+          this._dragStartY = event.clientY;
+          this._isDragging = true;
+          this._selectionEl.style.display = "none";
+        } else if (event.button === 2) {
+          event.preventDefault();
+          if (this._variant === "fullscreen") {
+            this._handlers?.onExitFullscreen?.();
+          } else {
+            this._analyzeSettingsService.resetToDefaultTimeRange();
+          }
+        }
+      },
+    );
+
+    this._addEventlistener(
+      this._canvasWrap,
+      EventType.MOUSE_UP,
+      (event: MouseEvent) => {
+        if (!this._isDragging) {
+          return;
+        }
+        this._isDragging = false;
         this._selectionEl.style.display = "none";
-      } else if (event.button === 2) {
+        const moved =
+          Math.abs(event.clientX - this._dragStartX) >= 3 ||
+          Math.abs(event.clientY - this._dragStartY) >= 3;
+        if (!moved) {
+          this._playerService.setPlaybackPosition(
+            this._secFromClientX(event.clientX),
+          );
+          return;
+        }
+        const t0 = this._secFromClientX(this._dragStartX);
+        const t1 = this._secFromClientX(event.clientX);
+        if (Math.abs(t1 - t0) > 0.01) {
+          this._analyzeSettingsService.minTime = Math.min(t0, t1);
+          this._analyzeSettingsService.maxTime = Math.max(t0, t1);
+        }
+      },
+    );
+
+    this._addEventlistener(
+      this._canvasWrap,
+      EventType.CONTEXT_MENU,
+      (event: MouseEvent) => {
         event.preventDefault();
         if (this._variant === "fullscreen") {
           this._handlers?.onExitFullscreen?.();
-        } else {
-          this._analyzeSettingsService.resetToDefaultTimeRange();
         }
-      }
-    });
-
-    this._addEventlistener(this._canvasWrap, EventType.MOUSE_UP, (event: MouseEvent) => {
-      if (!this._isDragging) {
-        return;
-      }
-      this._isDragging = false;
-      this._selectionEl.style.display = "none";
-      const moved =
-        Math.abs(event.clientX - this._dragStartX) >= 3 ||
-        Math.abs(event.clientY - this._dragStartY) >= 3;
-      if (!moved) {
-        this._playerService.setPlaybackPosition(this._secFromClientX(event.clientX));
-        return;
-      }
-      const t0 = this._secFromClientX(this._dragStartX);
-      const t1 = this._secFromClientX(event.clientX);
-      if (Math.abs(t1 - t0) > 0.01) {
-        this._analyzeSettingsService.minTime = Math.min(t0, t1);
-        this._analyzeSettingsService.maxTime = Math.max(t0, t1);
-      }
-    });
-
-    this._addEventlistener(this._canvasWrap, EventType.CONTEXT_MENU, (event: MouseEvent) => {
-      event.preventDefault();
-      if (this._variant === "fullscreen") {
-        this._handlers?.onExitFullscreen?.();
-      }
-    });
+      },
+    );
   }
 
   private _draw() {
@@ -529,7 +566,9 @@ export default class LoudnessPane extends Component {
     const lufsRange = this._dynamicLufsRange(minTime, maxTime);
 
     const lufsToY = (lufs: number) => {
-      const n = clamp01((lufs - lufsRange.min) / (lufsRange.max - lufsRange.min));
+      const n = clamp01(
+        (lufs - lufsRange.min) / (lufsRange.max - lufsRange.min),
+      );
       if (!Number.isFinite(n)) {
         return NaN;
       }
@@ -568,7 +607,11 @@ export default class LoudnessPane extends Component {
       ctx.fillStyle = "rgba(244, 67, 54, 0.7)";
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
-      ctx.fillText(`I ${profile.integratedLufs.toFixed(1)}`, padL + 4 * dpr, integratedY - 2 * dpr);
+      ctx.fillText(
+        `I ${profile.integratedLufs.toFixed(1)}`,
+        padL + 4 * dpr,
+        integratedY - 2 * dpr,
+      );
       ctx.restore();
     }
 

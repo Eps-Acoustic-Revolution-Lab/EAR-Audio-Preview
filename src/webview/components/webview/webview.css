@@ -98,7 +98,8 @@ body > #root {
   border: 1px solid var(--vscode-panel-border);
   background: var(--vscode-editorWidget-background);
   color: var(--vscode-foreground);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--vscode-widget-shadow) 40%, transparent);
+  box-shadow: 0 2px 8px
+    color-mix(in srgb, var(--vscode-widget-shadow) 40%, transparent);
   cursor: pointer;
   z-index: 2;
   overflow: visible;
@@ -124,7 +125,11 @@ body > #root {
 }
 
 .settingsDock__fabRingTrack {
-  stroke: color-mix(in srgb, var(--vscode-descriptionForeground) 38%, transparent);
+  stroke: color-mix(
+    in srgb,
+    var(--vscode-descriptionForeground) 38%,
+    transparent
+  );
 }
 
 .settingsDock__fabRingBar {
@@ -189,7 +194,11 @@ body > #root {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: color-mix(in srgb, var(--vscode-editor-background) 55%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 55%,
+    transparent
+  );
 }
 
 .settingsDock__sheet {
@@ -209,7 +218,8 @@ body > #root {
   border-radius: 6px;
   background: var(--vscode-editorWidget-background);
   color: var(--vscode-foreground);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
+  box-shadow: 0 4px 16px
+    color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
 }
 
 .settingsDock__sheet.settingsDock__sheet--animating {

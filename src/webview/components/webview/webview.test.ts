@@ -148,7 +148,9 @@ describe("webview", () => {
 
   test("init wave band after finish receiving data", async () => {
     const waveBand = document.getElementById("waveBand");
-    expect(waveBand?.querySelectorAll(".waveBand__channel").length).toBeGreaterThan(0);
+    expect(
+      waveBand?.querySelectorAll(".waveBand__channel").length,
+    ).toBeGreaterThan(0);
   });
 
   test("reload webview", async () => {

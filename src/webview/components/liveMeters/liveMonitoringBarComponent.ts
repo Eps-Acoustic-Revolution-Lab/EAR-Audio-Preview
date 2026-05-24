@@ -14,7 +14,9 @@ export default class LiveMonitoringBarComponent extends Component {
   ) {
     super();
     const root = document.querySelector(rootSelector) as HTMLElement;
-    if (!root) {return;}
+    if (!root) {
+      return;
+    }
 
     const bandLabels = ["SUB", "LOW", "LOW-MID", "HIGH-MID", "HIGH"];
 
@@ -47,9 +49,7 @@ export default class LiveMonitoringBarComponent extends Component {
       </div>`;
 
     const setModeActive = (mode: LiveMonitoringMode) => {
-      for (const b of root.querySelectorAll<HTMLButtonElement>(
-        ".js-lm-mode",
-      )) {
+      for (const b of root.querySelectorAll<HTMLButtonElement>(".js-lm-mode")) {
         b.classList.remove("liveMonitoringBar__btn--active");
       }
       const map: Record<LiveMonitoringMode, string> = {
@@ -60,7 +60,9 @@ export default class LiveMonitoringBarComponent extends Component {
         m: ".js-lm-m",
         s: ".js-lm-s",
       };
-      root.querySelector(map[mode])?.classList.add("liveMonitoringBar__btn--active");
+      root
+        .querySelector(map[mode])
+        ?.classList.add("liveMonitoringBar__btn--active");
     };
 
     const syncBands = () => {
@@ -70,7 +72,9 @@ export default class LiveMonitoringBarComponent extends Component {
         const btn = root.querySelector(
           `.js-lm-band[data-band="${i}"]`,
         ) as HTMLButtonElement | null;
-        if (!btn) {continue;}
+        if (!btn) {
+          continue;
+        }
         const lit = !bypass && ((mask >> i) & 1) !== 0;
         btn.classList.toggle("liveMonitoringBar__btn--active", lit);
       }
@@ -92,7 +96,9 @@ export default class LiveMonitoringBarComponent extends Component {
     wireMode(".js-lm-m", "m");
     wireMode(".js-lm-s", "s");
 
-    const resetBandsBtn = root.querySelector(".js-lm-bands-reset") as HTMLButtonElement;
+    const resetBandsBtn = root.querySelector(
+      ".js-lm-bands-reset",
+    ) as HTMLButtonElement;
     this._addEventlistener(resetBandsBtn, EventType.CLICK, () => {
       analyzeSettingsService.resetMonitorBandSolo();
     });

@@ -26,8 +26,10 @@ export default class WaveFormComponent {
     /** Match layout width so the bitmap is not narrower than the flex-stretched box (avoids empty right margin). */
     const layoutW = Math.max(
       1,
-      Math.floor(componentRoot.clientWidth || componentRoot.getBoundingClientRect().width) ||
-        width,
+      Math.floor(
+        componentRoot.clientWidth ||
+          componentRoot.getBoundingClientRect().width,
+      ) || width,
     );
 
     const canvasW = Math.max(1, Math.floor(layoutW * dpr));

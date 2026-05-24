@@ -46,7 +46,13 @@ export default class WaveFormComponent {
       case FrequencyScale.Linear:
         this.drawLinearAxis(axisCanvas, settings, ch, numOfCh);
         if (isWebGL2Supported(canvas)) {
-          this.drawSpectrogramWebGL(canvas, sampleRate, settings, ch, FrequencyScale.Linear);
+          this.drawSpectrogramWebGL(
+            canvas,
+            sampleRate,
+            settings,
+            ch,
+            FrequencyScale.Linear,
+          );
         } else {
           this.drawLinearSpectrogram(canvas, sampleRate, settings, ch);
         }
@@ -54,7 +60,13 @@ export default class WaveFormComponent {
       case FrequencyScale.Log:
         this.drawLogAxis(axisCanvas, settings, ch, numOfCh);
         if (isWebGL2Supported(canvas)) {
-          this.drawSpectrogramWebGL(canvas, sampleRate, settings, ch, FrequencyScale.Log);
+          this.drawSpectrogramWebGL(
+            canvas,
+            sampleRate,
+            settings,
+            ch,
+            FrequencyScale.Log,
+          );
         } else {
           this.drawLogSpectrogram(canvas, sampleRate, settings, ch);
         }
@@ -62,7 +74,13 @@ export default class WaveFormComponent {
       case FrequencyScale.Mel:
         this.drawMelAxis(axisCanvas, settings, ch, numOfCh);
         if (isWebGL2Supported(canvas)) {
-          this.drawSpectrogramWebGL(canvas, sampleRate, settings, ch, FrequencyScale.Mel);
+          this.drawSpectrogramWebGL(
+            canvas,
+            sampleRate,
+            settings,
+            ch,
+            FrequencyScale.Mel,
+          );
         } else {
           this.drawMelSpectrogram(canvas, sampleRate, settings, ch);
         }

@@ -137,7 +137,10 @@ describe("playerComponent", () => {
       audioContext,
       audioBuffer,
       playerSettingService,
-      AnalyzeSettingsService.fromDefaultSetting({} as AnalyzeDefault, audioBuffer),
+      AnalyzeSettingsService.fromDefaultSetting(
+        {} as AnalyzeDefault,
+        audioBuffer,
+      ),
     );
     const playerComponent = new PlayerComponent(
       "#player2",
@@ -224,7 +227,10 @@ describe("playerComponent", () => {
       audioContext,
       audioBuffer,
       playerSettingService,
-      AnalyzeSettingsService.fromDefaultSetting({} as AnalyzeDefault, audioBuffer),
+      AnalyzeSettingsService.fromDefaultSetting(
+        {} as AnalyzeDefault,
+        audioBuffer,
+      ),
     );
     const playerComponent = new PlayerComponent(
       "#player2",

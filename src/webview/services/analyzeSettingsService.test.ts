@@ -637,7 +637,9 @@ describe("analyzeSettingsService", () => {
       audioBuffer,
     );
     const detail = await waitEventForAction(
-      () => { as.showLevelMeter = true; },
+      () => {
+        as.showLevelMeter = true;
+      },
       as,
       EventType.AS_UPDATE_SHOW_LEVEL_METER,
     );
@@ -674,7 +676,9 @@ describe("analyzeSettingsService", () => {
       audioBuffer,
     );
     const detail = await waitEventForAction(
-      () => { as.showLiveAnalysis = true; },
+      () => {
+        as.showLiveAnalysis = true;
+      },
       as,
       EventType.AS_UPDATE_SHOW_LIVE_ANALYSIS,
     );
@@ -711,7 +715,9 @@ describe("analyzeSettingsService", () => {
       audioBuffer,
     );
     const detail = await waitEventForAction(
-      () => { as.liveAnalysisFftSize = 512; },
+      () => {
+        as.liveAnalysisFftSize = 512;
+      },
       as,
       EventType.AS_UPDATE_LIVE_ANALYSIS_FFT_SIZE,
     );
@@ -823,7 +829,9 @@ describe("analyzeSettingsService", () => {
       audioBuffer,
     );
     const detail = await waitEventForAction(
-      () => { as.liveSpectrumPeakHoldSec = 1; },
+      () => {
+        as.liveSpectrumPeakHoldSec = 1;
+      },
       as,
       EventType.AS_UPDATE_LIVE_SPECTRUM_PEAK_HOLD,
     );
@@ -887,9 +895,7 @@ describe("analyzeSettingsService", () => {
       audioBuffer,
     );
     as.liveMonitoringMode = "swap";
-    expect(as.toCachedDefaults().liveMonitoringMode).toBe(
-      "swap",
-    );
+    expect(as.toCachedDefaults().liveMonitoringMode).toBe("swap");
   });
 
   test("migrates legacy monitorStereoSwap into liveMonitoringMode swap", () => {
@@ -917,10 +923,7 @@ describe("analyzeSettingsService", () => {
       defaultSettings,
       audioBuffer,
     );
-    as.applyMonitorBandsSnapshot(
-      [30, 70, 200, 800, 4000, 20000],
-      0b011,
-    );
+    as.applyMonitorBandsSnapshot([30, 70, 200, 800, 4000, 20000], 0b011);
     expect(as.monitorBandSoloMask).toBe(0b011);
   });
 });

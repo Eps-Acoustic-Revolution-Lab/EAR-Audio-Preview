@@ -32,7 +32,10 @@ describe("encodeMidSideTimeDomain", () => {
 
 describe("spectrumTiltDbAboveFloor", () => {
   test("adds no tilt when level is at the floor (flat silence)", () => {
-    expect(spectrumTiltDbAboveFloor(20000, 4.5, -90, -90, 18)).toBeCloseTo(0, 5);
+    expect(spectrumTiltDbAboveFloor(20000, 4.5, -90, -90, 18)).toBeCloseTo(
+      0,
+      5,
+    );
     expect(spectrumTiltDbAboveFloor(40, 4.5, -90, -90, 18)).toBeCloseTo(0, 5);
   });
 

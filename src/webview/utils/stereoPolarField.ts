@@ -51,7 +51,9 @@ export function interpolatePolarRmsAtAngle(
   theta: number,
 ): number {
   const n = bins.length;
-  if (n < 2) {return n === 1 ? bins[0] : 0;}
+  if (n < 2) {
+    return n === 1 ? bins[0] : 0;
+  }
   const t = Math.max(0, Math.min(Math.PI, theta));
   const f = (1 - t / Math.PI) * n - 0.5;
   const i0 = Math.max(0, Math.min(n - 2, Math.floor(f)));
@@ -78,8 +80,12 @@ export function depositPolarBinEnergy(
 ): void {
   const keep = 1 - neighborMix;
   bins[idx] += energy * keep;
-  if (idx > 0) {bins[idx - 1] += energy * (neighborMix * 0.5);}
-  if (idx < bins.length - 1) {bins[idx + 1] += energy * (neighborMix * 0.5);}
+  if (idx > 0) {
+    bins[idx - 1] += energy * (neighborMix * 0.5);
+  }
+  if (idx < bins.length - 1) {
+    bins[idx + 1] += energy * (neighborMix * 0.5);
+  }
 }
 
 /**
@@ -102,7 +108,9 @@ export function computeInstantPolarBins(
     const left = lBuf[i];
     const right = rBuf[i];
     const mag = stereoFieldMagnitude(left, right);
-    if (mag < 1e-9) {continue;}
+    if (mag < 1e-9) {
+      continue;
+    }
     const theta = stereoFieldAngleRad(left, right);
     const idx = binIndexForAngle(theta, numBins);
     sumSq[idx] += mag * mag;
@@ -113,10 +121,14 @@ export function computeInstantPolarBins(
       out[i] = Math.sqrt(sumSq[i] / counts[i]);
     }
   }
-  if (neighborMix <= 0) {return;}
+  if (neighborMix <= 0) {
+    return;
+  }
   const scratch = new Float32Array(numBins);
   for (let i = 0; i < numBins; i++) {
-    if (out[i] <= 0) {continue;}
+    if (out[i] <= 0) {
+      continue;
+    }
     depositPolarBinEnergy(scratch, i, out[i], neighborMix);
   }
   for (let i = 0; i < numBins; i++) {
@@ -140,7 +152,9 @@ export function collectPolarSamplePoints(
     const left = lBuf[i];
     const right = rBuf[i];
     const mag = stereoFieldMagnitude(left, right);
-    if (mag < 1e-9) {continue;}
+    if (mag < 1e-9) {
+      continue;
+    }
     outTheta.push(stereoFieldAngleRad(left, right));
     outRadius.push(polarSampleDisplayRadius(mag, radiusGamma));
   }
@@ -156,7 +170,9 @@ export const polarSampleFillBrightnessPctDefault = 10;
 
 export function clampPolarSampleRadiusGamma(gamma: number): number {
   const v = Number(gamma);
-  if (!Number.isFinite(v)) {return polarSampleRadiusGammaDefault;}
+  if (!Number.isFinite(v)) {
+    return polarSampleRadiusGammaDefault;
+  }
   const clamped = Math.max(
     polarSampleRadiusGammaMin,
     Math.min(polarSampleRadiusGammaMax, v),
@@ -166,7 +182,9 @@ export function clampPolarSampleRadiusGamma(gamma: number): number {
 
 export function clampPolarSampleFillBrightnessPct(pct: number): number {
   const v = Number(pct);
-  if (!Number.isFinite(v)) {return polarSampleFillBrightnessPctDefault;}
+  if (!Number.isFinite(v)) {
+    return polarSampleFillBrightnessPctDefault;
+  }
   return Math.max(
     polarSampleFillBrightnessPctMin,
     Math.min(polarSampleFillBrightnessPctMax, Math.round(v)),
@@ -174,7 +192,10 @@ export function clampPolarSampleFillBrightnessPct(pct: number): number {
 }
 
 /** Scale scatter/fill alpha by brightness pct (0 = unchanged, 10 = +10%). */
-export function polarSampleFillAlpha(base: number, brightnessPct: number): number {
+export function polarSampleFillAlpha(
+  base: number,
+  brightnessPct: number,
+): number {
   const boost = 1 + clampPolarSampleFillBrightnessPct(brightnessPct) / 100;
   return Math.min(1, base * boost);
 }
@@ -193,15 +214,23 @@ export function applyPolarDirectionalGate(
   bins: Float32Array,
   floorRatio = 0.28,
 ): void {
-  if (floorRatio <= 0) {return;}
+  if (floorRatio <= 0) {
+    return;
+  }
   let max = 0;
   for (let i = 0; i < bins.length; i++) {
-    if (bins[i] > max) {max = bins[i];}
+    if (bins[i] > max) {
+      max = bins[i];
+    }
   }
-  if (max < 1e-9) {return;}
+  if (max < 1e-9) {
+    return;
+  }
   const floor = max * floorRatio;
   for (let i = 0; i < bins.length; i++) {
-    if (bins[i] < floor) {bins[i] = 0;}
+    if (bins[i] < floor) {
+      bins[i] = 0;
+    }
   }
 }
 
@@ -235,9 +264,7 @@ export function updatePolarRmsPeak(
   peakFallDbPerFrame: number,
 ): void {
   const fallScale =
-    peakFallDbPerFrame > 0
-      ? 1 - Math.pow(10, -peakFallDbPerFrame / 20)
-      : 0;
+    peakFallDbPerFrame > 0 ? 1 - Math.pow(10, -peakFallDbPerFrame / 20) : 0;
   for (let i = 0; i < instant.length; i++) {
     const v = instant[i];
     const pk = peak[i];
@@ -252,14 +279,15 @@ export function updatePolarRmsPeak(
 }
 
 /** Max linear magnitude across bins (shared peak/rms scale). */
-export function polarDisplayMax(
-  rms: Float32Array,
-  peak: Float32Array,
-): number {
+export function polarDisplayMax(rms: Float32Array, peak: Float32Array): number {
   let m = 0;
   for (let i = 0; i < rms.length; i++) {
-    if (rms[i] > m) {m = rms[i];}
-    if (peak[i] > m) {m = peak[i];}
+    if (rms[i] > m) {
+      m = rms[i];
+    }
+    if (peak[i] > m) {
+      m = peak[i];
+    }
   }
   return m;
 }
@@ -295,10 +323,10 @@ export function polarLevelDisplayScaleDecay(releaseDbPerSec: number): number {
  * Uses only {@link smoothedScale} so zoom is not hard-coupled to instantaneous
  * `max(rms, peak)` (which caused violent radial pumping on level jumps).
  */
-export function polarLevelDrawNorm(
-  smoothedScale: number,
-): number {
-  if (!Number.isFinite(smoothedScale) || smoothedScale <= 1e-8) {return 0;}
+export function polarLevelDrawNorm(smoothedScale: number): number {
+  if (!Number.isFinite(smoothedScale) || smoothedScale <= 1e-8) {
+    return 0;
+  }
   return 1 / (smoothedScale * polarLevelDisplayHeadroom);
 }
 

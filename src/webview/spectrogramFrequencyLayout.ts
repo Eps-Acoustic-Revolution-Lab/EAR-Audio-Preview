@@ -21,7 +21,10 @@ export function logScaleGridHz(minF: number, maxF: number): number[] {
 }
 
 /** Sorted unique Hz boundaries: always [minF, …grid points in (minF,maxF), maxF]. */
-export function piecewiseLogAxisBoundaries(minF: number, maxF: number): number[] {
+export function piecewiseLogAxisBoundaries(
+  minF: number,
+  maxF: number,
+): number[] {
   const s = new Set<number>();
   s.add(minF);
   s.add(maxF);

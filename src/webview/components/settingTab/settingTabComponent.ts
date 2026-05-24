@@ -136,8 +136,12 @@ export default class SettingTab extends Component {
       return;
     }
 
-    const fab = dock.querySelector(".js-settingsFab") as HTMLButtonElement | null;
-    const backdrop = dock.querySelector(".js-settingsBackdrop") as HTMLElement | null;
+    const fab = dock.querySelector(
+      ".js-settingsFab",
+    ) as HTMLButtonElement | null;
+    const backdrop = dock.querySelector(
+      ".js-settingsBackdrop",
+    ) as HTMLElement | null;
     const sheet = dock.querySelector(".js-settingsSheet") as HTMLElement | null;
     if (!fab || !backdrop || !sheet) {
       return;

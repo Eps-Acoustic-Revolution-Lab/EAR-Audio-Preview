@@ -24,8 +24,10 @@ describe("quinticBSplineSmooth", () => {
     // the B-spline should strongly attenuate it.
     const data = Array.from({ length: 40 }, (_, i) => (i % 2 === 0 ? 1 : -1));
     const out = quinticBSplineSmooth(data);
-    const rmsIn  = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
-    const rmsOut = Math.sqrt(Array.from(out).reduce((s, v) => s + v * v, 0) / out.length);
+    const rmsIn = Math.sqrt(data.reduce((s, v) => s + v * v, 0) / data.length);
+    const rmsOut = Math.sqrt(
+      Array.from(out).reduce((s, v) => s + v * v, 0) / out.length,
+    );
     // Smoothed RMS should be substantially lower than input RMS.
     expect(rmsOut).toBeLessThan(rmsIn * 0.5);
   });

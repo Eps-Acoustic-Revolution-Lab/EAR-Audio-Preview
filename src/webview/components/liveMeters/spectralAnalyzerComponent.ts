@@ -37,7 +37,8 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   const t = (y - padT) / drawH;
   const tl = Math.max(0, Math.min(1, t));
   return dbFloor + (1 - tl) * (dbCeil - dbFloor);
-}export default class SpectralAnalyzerComponent extends Component {
+}
+export default class SpectralAnalyzerComponent extends Component {
   private _container: HTMLElement;
   private _canvas: HTMLCanvasElement;
   private _readoutEl: HTMLElement;
@@ -97,16 +98,22 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     this._emaRms.fill(dbFloor);
     this._peakHoldUntilMs.fill(0);
 
-    this._addEventlistener(containerEl, EventType.MOUSE_MOVE, (e: MouseEvent) => {
-      const r = this._canvas.getBoundingClientRect();
-      if (r.width <= 0 || r.height <= 0) {return;}
-      this._hoverActive = true;
-      this._hoverClientX = e.clientX;
-      this._hoverClientY = e.clientY;
-      this._hoverCx = (e.clientX - r.left) * (this._canvas.width / r.width);
-      this._hoverCy = (e.clientY - r.top) * (this._canvas.height / r.height);
-      this._syncRafToState();
-    });
+    this._addEventlistener(
+      containerEl,
+      EventType.MOUSE_MOVE,
+      (e: MouseEvent) => {
+        const r = this._canvas.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) {
+          return;
+        }
+        this._hoverActive = true;
+        this._hoverClientX = e.clientX;
+        this._hoverClientY = e.clientY;
+        this._hoverCx = (e.clientX - r.left) * (this._canvas.width / r.width);
+        this._hoverCy = (e.clientY - r.top) * (this._canvas.height / r.height);
+        this._syncRafToState();
+      },
+    );
     this._addEventlistener(containerEl, "mouseleave", () => {
       this._hoverActive = false;
       this._readoutEl.style.visibility = "hidden";
@@ -124,7 +131,9 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   }
 
   private _startRaf() {
-    if (!this._shouldRunRaf() || this._rafId) {return;}
+    if (!this._shouldRunRaf() || this._rafId) {
+      return;
+    }
     const loop = () => {
       this._draw();
       if (this._shouldRunRaf()) {
@@ -157,7 +166,9 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       this._canvas.height = h;
     }
     const ctx = this._canvas.getContext("2d");
-    if (!ctx || w <= 0 || h <= 0) {return;}
+    if (!ctx || w <= 0 || h <= 0) {
+      return;
+    }
 
     const padL = 28 * dpr;
     const padB = 16 * dpr;
@@ -171,7 +182,9 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     ctx.fillStyle = "#0f0f0f";
     ctx.fillRect(0, 0, w, h);
 
-    if (drawW <= 0 || drawH <= 0) {return;}
+    if (drawW <= 0 || drawH <= 0) {
+      return;
+    }
 
     const freqToX = (f: number) => freqToCanvasX(f, padL, drawW);
     const dbToY = (db: number) =>
@@ -202,7 +215,11 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
 
     ctx.textAlign = "right";
     for (const db of dbTicks) {
-      ctx.fillText(db === 0 ? "0" : String(db), padL - 3 * dpr, dbToY(db) + 3 * dpr);
+      ctx.fillText(
+        db === 0 ? "0" : String(db),
+        padL - 3 * dpr,
+        dbToY(db) + 3 * dpr,
+      );
     }
 
     ctx.textAlign = "center";
@@ -212,7 +229,9 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     }
 
     const clampDb = (v: number): number => {
-      if (!Number.isFinite(v)) {return dbFloor;}
+      if (!Number.isFinite(v)) {
+        return dbFloor;
+      }
       return Math.min(dbCeil + 6, Math.max(dbFloor, v));
     };
 
@@ -241,8 +260,11 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       for (let i = 0; i < logPoints; i++) {
         const x = freqToX(logFreqs[i]);
         const y = dbToY(clampDb(this._emaPeakDisplay[i]));
-        if (i === 0) {ctx.moveTo(x, y);}
-        else {ctx.lineTo(x, y);}
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
       ctx.stroke();
     };
@@ -308,7 +330,8 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
         );
         const peakHoldMs =
           this._analyzeSettingsService.liveSpectrumPeakHoldSec * 1000;
-        const nowMs = typeof performance !== "undefined" ? performance.now() : 0;
+        const nowMs =
+          typeof performance !== "undefined" ? performance.now() : 0;
 
         for (let i = 0; i < logPoints; i++) {
           const v = clampDb(inst[i]);

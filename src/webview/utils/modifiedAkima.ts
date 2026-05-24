@@ -46,12 +46,14 @@ export function buildModifiedAkima(
   //  Standard Akima extension: reflect differences across the boundary.
   const mExt = new Float64Array(n + 3); // indices [0..n+2], interior [2..n]
   mExt[2] = m[0];
-  for (let i = 1; i < n - 1; i++) {mExt[i + 2] = m[i];}
+  for (let i = 1; i < n - 1; i++) {
+    mExt[i + 2] = m[i];
+  }
   mExt[n] = m[n - 2];
 
   // Phantom points: each extra slope is mirrored once more.
-  mExt[0] = 2 * mExt[2] - mExt[4];   // m[-2]
-  mExt[1] = 2 * mExt[2] - mExt[3];   // m[-1]
+  mExt[0] = 2 * mExt[2] - mExt[4]; // m[-2]
+  mExt[1] = 2 * mExt[2] - mExt[3]; // m[-1]
   mExt[n + 1] = 2 * mExt[n] - mExt[n - 1]; // m[n]
   mExt[n + 2] = 2 * mExt[n] - mExt[n - 2]; // m[n+1]
 
@@ -60,9 +62,9 @@ export function buildModifiedAkima(
   for (let i = 0; i < n; i++) {
     const base = i + 2; // mExt index for m[i-1..i+2]
     const mm1 = mExt[base - 2];
-    const m0  = mExt[base - 1];
-    const m1  = mExt[base];
-    const m2  = mExt[base + 1];
+    const m0 = mExt[base - 1];
+    const m1 = mExt[base];
+    const m2 = mExt[base + 1];
 
     // Modified weights: |Δm| + 0.5 * |mean of adjacent pair|
     const w1 = Math.abs(m1 - m0) + 0.5 * Math.abs(m1 + m0);
@@ -70,8 +72,8 @@ export function buildModifiedAkima(
     // Also need w0, w3 for the other pair ... but the standard makima formula
     // weights t_i by (|m[i+1]-m[i]| + modifier) and t_{i-1} by the same
     // with the previous pair.  Concretely:
-    const wa = Math.abs(m0  - mm1) + 0.5 * Math.abs(m0  + mm1);
-    const wb = Math.abs(m1  - m0 ) + 0.5 * Math.abs(m1  + m0);
+    const wa = Math.abs(m0 - mm1) + 0.5 * Math.abs(m0 + mm1);
+    const wb = Math.abs(m1 - m0) + 0.5 * Math.abs(m1 + m0);
 
     const denomFwd = w1 + w2;
     const denomBwd = wa + wb;
@@ -112,8 +114,12 @@ export function buildModifiedAkima(
 
   return {
     evaluate(x: number): number {
-      if (x <= xs[0]) {return ys[0];}
-      if (x >= xs[n - 1]) {return ys[n - 1];}
+      if (x <= xs[0]) {
+        return ys[0];
+      }
+      if (x >= xs[n - 1]) {
+        return ys[n - 1];
+      }
 
       // Binary search for the knot interval.
       let lo = 0;
@@ -132,10 +138,10 @@ export function buildModifiedAkima(
       const t2 = t * t;
       const t3 = t2 * t;
 
-      const h00 =  2 * t3 - 3 * t2 + 1;
-      const h10 =      t3 - 2 * t2 + t;
+      const h00 = 2 * t3 - 3 * t2 + 1;
+      const h10 = t3 - 2 * t2 + t;
       const h01 = -2 * t3 + 3 * t2;
-      const h11 =      t3 -     t2;
+      const h11 = t3 - t2;
 
       return (
         h00 * ys[k] +

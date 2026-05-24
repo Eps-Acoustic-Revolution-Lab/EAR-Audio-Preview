@@ -13,8 +13,12 @@ export function stepSpectralPeakDisplay(
   peakFallDbPerFrame: number,
   chaseK: number = spectralPeakDisplayChaseK,
 ): number {
-  if (!Number.isFinite(peakLogical)) {return peakDisplayPrev;}
-  if (!Number.isFinite(peakDisplayPrev)) {return peakLogical;}
+  if (!Number.isFinite(peakLogical)) {
+    return peakDisplayPrev;
+  }
+  if (!Number.isFinite(peakDisplayPrev)) {
+    return peakLogical;
+  }
   if (peakLogical >= peakDisplayPrev) {
     return peakLogical;
   }
@@ -35,12 +39,14 @@ export function stepPolarPeakDisplayLinear(
   peakFallDbPerFrame: number,
   chaseK?: number,
 ): number {
-  if (!Number.isFinite(peakLogicalLin)) {return peakDisplayPrevLin;}
-  if (!Number.isFinite(peakDisplayPrevLin)) {return peakLogicalLin;}
-  const logicalDb =
-    20 * Math.log10(Math.max(peakLogicalLin, polarPeakLinEps));
-  const prevDb =
-    20 * Math.log10(Math.max(peakDisplayPrevLin, polarPeakLinEps));
+  if (!Number.isFinite(peakLogicalLin)) {
+    return peakDisplayPrevLin;
+  }
+  if (!Number.isFinite(peakDisplayPrevLin)) {
+    return peakLogicalLin;
+  }
+  const logicalDb = 20 * Math.log10(Math.max(peakLogicalLin, polarPeakLinEps));
+  const prevDb = 20 * Math.log10(Math.max(peakDisplayPrevLin, polarPeakLinEps));
   const nextDb = stepSpectralPeakDisplay(
     logicalDb,
     prevDb,
@@ -62,13 +68,14 @@ export function smoothPeakDisplayAlongBinsInto(
   const wEdge = 0.12;
   const wCtr = 1 - 2 * wEdge;
   if (n < 2) {
-    if (n === 1) {dst[0] = src[0];}
+    if (n === 1) {
+      dst[0] = src[0];
+    }
     return;
   }
   dst[0] = (1 - wEdge) * src[0] + wEdge * src[1];
   for (let i = 1; i < n - 1; i++) {
-    dst[i] =
-      wEdge * src[i - 1] + wCtr * src[i] + wEdge * src[i + 1];
+    dst[i] = wEdge * src[i - 1] + wCtr * src[i] + wEdge * src[i + 1];
   }
   dst[n - 1] = wEdge * src[n - 2] + (1 - wEdge) * src[n - 1];
 }
@@ -85,7 +92,9 @@ export function smoothPeakDisplayCircularBinsInto(
   const wEdge = 0.12;
   const wCtr = 1 - 2 * wEdge;
   if (n < 2) {
-    if (n === 1) {dst[0] = src[0];}
+    if (n === 1) {
+      dst[0] = src[0];
+    }
     return;
   }
   for (let i = 0; i < n; i++) {

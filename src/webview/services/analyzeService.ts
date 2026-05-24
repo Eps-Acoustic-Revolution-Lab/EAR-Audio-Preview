@@ -111,7 +111,8 @@ export default class AnalyzeService extends Service {
     const numCh = this._audioBuffer.numberOfChannels;
     const leftData = this._audioBuffer.getChannelData(0);
     // EBU R128 needs stereo; mono files get the single channel duplicated
-    const rightData = numCh >= 2 ? this._audioBuffer.getChannelData(1) : leftData;
+    const rightData =
+      numCh >= 2 ? this._audioBuffer.getChannelData(1) : leftData;
 
     const leftVec = this._essentia.arrayToVector(leftData);
     const rightVec = this._essentia.arrayToVector(rightData);
@@ -278,7 +279,9 @@ export default class AnalyzeService extends Service {
       for (let j = minFreqIndex; j < maxFreqIndex; j++) {
         const v = specArr[j] * specArr[j];
         ps.push(v);
-        if (maxValue < v) {maxValue = v;}
+        if (maxValue < v) {
+          maxValue = v;
+        }
       }
       spectrogram.push(ps);
     }
@@ -505,7 +508,9 @@ export default class AnalyzeService extends Service {
     let maxValue = Number.EPSILON;
     for (const frame of spectrogram) {
       for (const v of frame) {
-        if (maxValue < v) {maxValue = v;}
+        if (maxValue < v) {
+          maxValue = v;
+        }
       }
     }
     for (let i = 0; i < spectrogram.length; i++) {

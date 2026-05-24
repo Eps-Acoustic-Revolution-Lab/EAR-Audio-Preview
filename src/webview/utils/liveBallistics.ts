@@ -7,11 +7,10 @@ export const liveFrameRate = 60;
 
 export function clampReleaseDbPerSec(value: number): number {
   const v = Number(value);
-  if (!Number.isFinite(v)) {return liveReleaseDbpsDefault;}
-  const clamped = Math.max(
-    liveReleaseDbpsMin,
-    Math.min(liveReleaseDbpsMax, v),
-  );
+  if (!Number.isFinite(v)) {
+    return liveReleaseDbpsDefault;
+  }
+  const clamped = Math.max(liveReleaseDbpsMin, Math.min(liveReleaseDbpsMax, v));
   return Math.round(clamped * 2) / 2;
 }
 
@@ -64,7 +63,9 @@ export const liveSpectrumPeakHoldSecMax = 3;
 
 export function clampLiveSpectrumPeakHoldSec(value: number): number {
   const v = Number(value);
-  if (!Number.isFinite(v)) {return 0;}
+  if (!Number.isFinite(v)) {
+    return 0;
+  }
   const clamped = Math.max(
     liveSpectrumPeakHoldSecMin,
     Math.min(liveSpectrumPeakHoldSecMax, v),
