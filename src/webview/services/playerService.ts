@@ -6,6 +6,7 @@ import {
   monitorBandMaskAll,
   monitoringGainsForMode,
   sanitizeMonitorBandEdges,
+  populationCountBits,
 } from "../utils/liveMonitoring";
 import {
   LoudnessWorkletNode,
@@ -339,13 +340,15 @@ export default class PlayerService extends Service {
     );
     const mask =
       this._analyzeSettingsService.monitorBandSoloMask & monitorBandMaskAll;
+    const activeBandCount = populationCountBits(mask);
 
     const splitIn = ctx.createChannelSplitter(2);
     const mergeStereo = ctx.createChannelMerger(2);
     const sumL = ctx.createGain();
     const sumR = ctx.createGain();
-    sumL.gain.value = 1;
-    sumR.gain.value = 1;
+    const normalizedGain = activeBandCount > 0 ? 1 / activeBandCount : 1;
+    sumL.gain.value = normalizedGain;
+    sumR.gain.value = normalizedGain;
     this._monitorBandNodes.push(splitIn, mergeStereo, sumL, sumR);
 
     let anyBand = false;
