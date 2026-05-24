@@ -172,8 +172,7 @@ Full Web Audio graph: **source → HPF/LPF biquad filters → gain → destinati
 └────────────────────────────────────────────────────────────────┘
 ```
 
-Message types: `src/message.ts`. Deep dive into component tree, event system, and CSS layout conventions: [CLAUDE.md](./CLAUDE.md).
-
+Message types: `src/message.ts`. 
 Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms → ~6 ms** with WebGL2.
 
 ---
