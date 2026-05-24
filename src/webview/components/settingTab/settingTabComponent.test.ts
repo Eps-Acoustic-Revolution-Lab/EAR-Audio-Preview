@@ -8,7 +8,7 @@ import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import SettingTab from "./settingTabComponent";
 
-const SETTINGS_DOCK_HTML = `
+const settingsDockHtml = `
   <div id="settingsDock">
     <button
       type="button"
@@ -38,7 +38,7 @@ describe("settingTabComponent", () => {
   let analyzeSettingsService: AnalyzeSettingsService;
   let settingTabComponent: SettingTab;
   beforeAll(() => {
-    document.body.innerHTML = SETTINGS_DOCK_HTML;
+    document.body.innerHTML = settingsDockHtml;
     const audioBuffer = new MockAudioBuffer(
       44100,
       1,

@@ -9,7 +9,7 @@ import AnalyzeSettingsComponent from "../analyzeSettings/analyzeSettingsComponen
 import EasyCutComponent from "../easyCut/easyCutComponent";
 import { PostMessage } from "../../../message";
 
-const FOCUSABLE_SELECTOR =
+const focusableSelector =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export default class SettingTab extends Component {
@@ -170,7 +170,7 @@ export default class SettingTab extends Component {
           sheet.classList.add("settingsDock__sheet--open");
         });
       });
-      const firstFocus = sheet.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
+      const firstFocus = sheet.querySelector<HTMLElement>(focusableSelector);
       firstFocus?.focus();
     };
 
@@ -198,7 +198,7 @@ export default class SettingTab extends Component {
         return;
       }
       const focusables = Array.from(
-        sheet.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+        sheet.querySelectorAll<HTMLElement>(focusableSelector),
       );
       if (focusables.length === 0) {
         return;

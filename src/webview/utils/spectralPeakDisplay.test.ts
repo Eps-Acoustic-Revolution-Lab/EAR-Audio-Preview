@@ -1,5 +1,5 @@
 import {
-  SPECTRAL_PEAK_DISPLAY_CHASE_K,
+  spectralPeakDisplayChaseK,
   smoothPeakDisplayAlongBinsInto,
   smoothPeakDisplayCircularBinsInto,
   stepPolarPeakDisplayLinear,
@@ -14,7 +14,7 @@ describe("spectralPeakDisplay", () => {
 
   test("fall chases logical down at chaseK * peakFall per frame", () => {
     const df = 0.1;
-    const k = SPECTRAL_PEAK_DISPLAY_CHASE_K;
+    const k = spectralPeakDisplayChaseK;
     expect(stepSpectralPeakDisplay(-60, -10, df)).toBe(
       Math.max(-60, -10 - df * k),
     );

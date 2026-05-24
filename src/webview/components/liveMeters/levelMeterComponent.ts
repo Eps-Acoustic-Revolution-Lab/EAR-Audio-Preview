@@ -12,18 +12,18 @@ import {
 } from "../../utils/liveMonitoring";
 import { formatDbFs } from "../../services/loudnessService";
 
-const DB_MIN = -60;
-const DB_MAX = 6;
+const dbMin = -60;
+const dbMax = 6;
 /** Clip LED triggers at 0 dBFS even though the scale extends to +6 dBFS. */
-const DB_CLIP_THRESHOLD = 0;
-const PEAK_HOLD_FRAMES = 120;
-const TICKS: number[] = [6, 0, -3, -6, -12, -18, -24, -36, -48, -60];
+const dbClipThreshold = 0;
+const peakHoldFrames = 120;
+const ticks: number[] = [6, 0, -3, -6, -12, -18, -24, -36, -48, -60];
 
 function dbToNorm(db: number): number {
-  return Math.max(0, Math.min(1, (db - DB_MIN) / (DB_MAX - DB_MIN)));
+  return Math.max(0, Math.min(1, (db - dbMin) / (dbMax - dbMin)));
 }
 
-const MAX_CANVAS_PX = 4096;
+const maxCanvasPx = 4096;
 
 type MeterLayout = "lr" | "ms";
 
@@ -38,7 +38,7 @@ interface ChannelState {
 }
 
 function formatDb(db: number): string {
-  if (!Number.isFinite(db)) return "—";
+  if (!Number.isFinite(db)) {return "—";}
   return db.toFixed(1);
 }
 
@@ -66,17 +66,17 @@ export default class LevelMeterComponent extends Component {
   private _mixL: Float32Array = new Float32Array(2048);
   private _mixR: Float32Array = new Float32Array(2048);
   private _stateL: ChannelState = {
-    smoothedRms: DB_MIN,
-    peakDb: DB_MIN,
-    peakHold: DB_MIN,
+    smoothedRms: dbMin,
+    peakDb: dbMin,
+    peakHold: dbMin,
     peakHoldFrames: 0,
     clipped: false,
     sessionMaxSamplePeakDbFs: Number.NEGATIVE_INFINITY,
   };
   private _stateR: ChannelState = {
-    smoothedRms: DB_MIN,
-    peakDb: DB_MIN,
-    peakHold: DB_MIN,
+    smoothedRms: dbMin,
+    peakDb: dbMin,
+    peakHold: dbMin,
     peakHoldFrames: 0,
     clipped: false,
     sessionMaxSamplePeakDbFs: Number.NEGATIVE_INFINITY,
@@ -118,7 +118,7 @@ export default class LevelMeterComponent extends Component {
           </div>
         </div>
         <div class="levelMeter__scaleCol" aria-hidden="true">
-          ${TICKS.map((db) => `<div class="levelMeter__tick" data-db="${db}"><span>${db > 0 ? `+${db}` : String(db)}</span></div>`).join("")}
+          ${ticks.map((db) => `<div class="levelMeter__tick" data-db="${db}"><span>${db > 0 ? `+${db}` : String(db)}</span></div>`).join("")}
         </div>
       </div>`;
 
@@ -148,7 +148,7 @@ export default class LevelMeterComponent extends Component {
     this._addEventlistener(this._inner, "contextmenu", (ev: MouseEvent) => {
       ev.preventDefault();
       const mon = this._analyzeSettingsService.liveMonitoringMode;
-      if (mon === "m" || mon === "s") return;
+      if (mon === "m" || mon === "s") {return;}
       this._meterLayout = this._meterLayout === "lr" ? "ms" : "lr";
     });
 
@@ -173,7 +173,7 @@ export default class LevelMeterComponent extends Component {
       }
     });
 
-    if (playerService.isPlaying) this._startRaf();
+    if (playerService.isPlaying) {this._startRaf();}
 
     const lm = analyzeSettingsService.liveMonitoringMode;
     if (lm === "m" || lm === "s") {
@@ -188,7 +188,7 @@ export default class LevelMeterComponent extends Component {
   }
 
   private _startRaf() {
-    if (this._rafId) return;
+    if (this._rafId) {return;}
     const loop = () => {
       this._tick();
       this._rafId = requestAnimationFrame(loop);
@@ -209,7 +209,7 @@ export default class LevelMeterComponent extends Component {
 
   private _tick() {
     const analysers = this._playerService.getAnalysers();
-    if (!analysers) return;
+    if (!analysers) {return;}
 
     const fftSize = analysers.left.fftSize;
     if (this._bufL.length !== fftSize) {
@@ -301,7 +301,7 @@ export default class LevelMeterComponent extends Component {
     for (let i = 0; i < buf.length; i++) {
       const s = Math.abs(buf[i]);
       sumSq += buf[i] * buf[i];
-      if (s > peak) peak = s;
+      if (s > peak) {peak = s;}
     }
     const rms = Math.sqrt(sumSq / buf.length);
     const rmsDb = 20 * Math.log10(Math.max(rms, 1e-9));
@@ -316,14 +316,14 @@ export default class LevelMeterComponent extends Component {
 
     if (peakDb > state.peakHold) {
       state.peakHold = peakDb;
-      state.peakHoldFrames = PEAK_HOLD_FRAMES;
+      state.peakHoldFrames = peakHoldFrames;
     } else if (state.peakHoldFrames > 0) {
       state.peakHoldFrames--;
     } else {
-      state.peakHold = state.peakHold * decay + DB_MIN * (1 - decay);
+      state.peakHold = state.peakHold * decay + dbMin * (1 - decay);
     }
 
-    if (peakDb >= DB_CLIP_THRESHOLD) {
+    if (peakDb >= dbClipThreshold) {
       state.clipped = true;
       led.classList.add("clipped");
       if (peakDb > state.sessionMaxSamplePeakDbFs) {
@@ -340,18 +340,18 @@ export default class LevelMeterComponent extends Component {
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.max(1, Math.floor(wrap.clientWidth));
     const cssH = Math.max(1, Math.floor(wrap.clientHeight));
-    const w = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssW * dpr)));
-    const h = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssH * dpr)));
+    const w = Math.min(maxCanvasPx, Math.max(1, Math.round(cssW * dpr)));
+    const h = Math.min(maxCanvasPx, Math.max(1, Math.round(cssH * dpr)));
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
     }
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     ctx.clearRect(0, 0, w, h);
     const barW = w;
-    if (barW <= 0 || h <= 0) return;
+    if (barW <= 0 || h <= 0) {return;}
 
     const dbToY = (db: number) => h * (1 - dbToNorm(db));
 
@@ -387,7 +387,7 @@ export default class LevelMeterComponent extends Component {
     if (
       state.clipped &&
       Number.isFinite(state.sessionMaxSamplePeakDbFs) &&
-      state.sessionMaxSamplePeakDbFs > DB_CLIP_THRESHOLD
+      state.sessionMaxSamplePeakDbFs > dbClipThreshold
     ) {
       const clipY = dbToY(state.sessionMaxSamplePeakDbFs);
       const headroomTop = dbToY(0);
@@ -402,9 +402,9 @@ export default class LevelMeterComponent extends Component {
 
   private _layoutScaleTicks() {
     const col = this._inner.querySelector(".levelMeter__scaleCol");
-    if (!col) return;
+    if (!col) {return;}
     const ch = col.clientHeight;
-    if (ch < 10) return;
+    if (ch < 10) {return;}
     const dbToPct = (db: number) => 100 * (1 - dbToNorm(db));
     for (const el of col.querySelectorAll<HTMLElement>(".levelMeter__tick")) {
       const db = Number(el.dataset.db);

@@ -2,7 +2,7 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import {
-  MONITOR_BAND_COUNT,
+  monitorBandCount,
   monitorBandSoloBypassActive,
   type LiveMonitoringMode,
 } from "../../utils/liveMonitoring";
@@ -14,7 +14,7 @@ export default class LiveMonitoringBarComponent extends Component {
   ) {
     super();
     const root = document.querySelector(rootSelector) as HTMLElement;
-    if (!root) return;
+    if (!root) {return;}
 
     const bandLabels = ["SUB", "LOW", "LOW-MID", "HIGH-MID", "HIGH"];
 
@@ -66,11 +66,11 @@ export default class LiveMonitoringBarComponent extends Component {
     const syncBands = () => {
       const mask = analyzeSettingsService.monitorBandSoloMask;
       const bypass = monitorBandSoloBypassActive(mask);
-      for (let i = 0; i < MONITOR_BAND_COUNT; i++) {
+      for (let i = 0; i < monitorBandCount; i++) {
         const btn = root.querySelector(
           `.js-lm-band[data-band="${i}"]`,
         ) as HTMLButtonElement | null;
-        if (!btn) continue;
+        if (!btn) {continue;}
         const lit = !bypass && ((mask >> i) & 1) !== 0;
         btn.classList.toggle("liveMonitoringBar__btn--active", lit);
       }
@@ -97,7 +97,7 @@ export default class LiveMonitoringBarComponent extends Component {
       analyzeSettingsService.resetMonitorBandSolo();
     });
 
-    for (let i = 0; i < MONITOR_BAND_COUNT; i++) {
+    for (let i = 0; i < monitorBandCount; i++) {
       const btn = root.querySelector(
         `.js-lm-band[data-band="${i}"]`,
       ) as HTMLButtonElement;

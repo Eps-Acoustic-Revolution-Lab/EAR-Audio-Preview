@@ -9,10 +9,10 @@ import AnalyzeSettingsService, {
 } from "../../services/analyzeSettingsService";
 import {
   formatReleaseDbPerSecLabel,
-  LIVE_RELEASE_DBPS_MAX,
-  LIVE_RELEASE_DBPS_MIN,
-  LIVE_SPECTRUM_PEAK_HOLD_SEC_MAX,
-  LIVE_SPECTRUM_PEAK_HOLD_SEC_MIN,
+  liveReleaseDbpsMax,
+  liveReleaseDbpsMin,
+  liveSpectrumPeakHoldSecMax,
+  liveSpectrumPeakHoldSecMin,
 } from "../../utils/liveBallistics";
 
 export default class AnalyzeSettingsComponent extends Component {
@@ -148,22 +148,22 @@ export default class AnalyzeSettingsComponent extends Component {
       </div>
       <div>
           Sound field release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-livePolarFieldReleaseDbPerSec" type="range" min="${LIVE_RELEASE_DBPS_MIN}" max="${LIVE_RELEASE_DBPS_MAX}" step="0.5">
+          <input class="analyzeSetting__input js-analyzeSetting-livePolarFieldReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
           <span class="js-analyzeSetting-livePolarFieldReleaseDbPerSecLabel"></span>
       </div>
       <div>
           Spectrum release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumReleaseDbPerSec" type="range" min="${LIVE_RELEASE_DBPS_MIN}" max="${LIVE_RELEASE_DBPS_MAX}" step="0.5">
+          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
           <span class="js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel"></span>
       </div>
       <div>
           Spectrum peak hold (s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumPeakHoldSec" type="range" min="${LIVE_SPECTRUM_PEAK_HOLD_SEC_MIN}" max="${LIVE_SPECTRUM_PEAK_HOLD_SEC_MAX}" step="0.05">
+          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumPeakHoldSec" type="range" min="${liveSpectrumPeakHoldSecMin}" max="${liveSpectrumPeakHoldSecMax}" step="0.05">
           <span class="js-analyzeSetting-liveSpectrumPeakHoldSecLabel"></span>
       </div>
       <div>
           Level meter release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveLevelMeterReleaseDbPerSec" type="range" min="${LIVE_RELEASE_DBPS_MIN}" max="${LIVE_RELEASE_DBPS_MAX}" step="0.5">
+          <input class="analyzeSetting__input js-analyzeSetting-liveLevelMeterReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
           <span class="js-analyzeSetting-liveLevelMeterReleaseDbPerSecLabel"></span>
       </div>
       <div>

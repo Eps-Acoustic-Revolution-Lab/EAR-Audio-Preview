@@ -6,11 +6,11 @@ import { quinticBSplineSmooth } from "../../utils/quinticBSpline";
 import { akimaResample } from "../../utils/modifiedAkima";
 import { emaDecayFromReleaseDbPerSec } from "../../utils/liveBallistics";
 import {
-  LOG_FREQS,
-  LOG_POINTS,
-  FREQ_MIN,
-  FREQ_MAX,
-  PHASE_CORR_FREQ_TICKS,
+  logFreqs,
+  logPoints,
+  freqMin,
+  freqMax,
+  phaseCorrFreqTicks,
   freqToCanvasX,
   hzFromCanvasX,
   logIndexFromHz,
@@ -25,30 +25,30 @@ import {
 } from "../../utils/liveStereoFrame";
 import { FrequencyPhaseCorrelationEngine } from "../../utils/frequencyPhaseCorrelation";
 
-const CORR_MIN = -1;
-const CORR_MAX = 1;
-const CORR_TICKS = [1, 0.5, 0, -0.5, -1];
-const MAX_CANVAS_PX = 4096;
-const METER_BAR_W = 10;
+const corrMin = -1;
+const corrMax = 1;
+const corrTicks = [1, 0.5, 0, -0.5, -1];
+const maxCanvasPx = 4096;
+const meterBarW = 10;
 
 /** Matches --gonioMeter-beam-inphase / live spectrum cyan. */
-const IN_PHASE_STROKE = "rgba(120, 230, 255, 0.95)";
-const IN_PHASE_FILL_TOP = "rgba(0, 180, 216, 0.45)";
-const IN_PHASE_FILL_MID = "rgba(0, 140, 190, 0.25)";
+const inPhaseStroke = "rgba(120, 230, 255, 0.95)";
+const inPhaseFillTop = "rgba(0, 180, 216, 0.45)";
+const inPhaseFillMid = "rgba(0, 140, 190, 0.25)";
 /** Matches --gonioMeter-beam-oophase anti-phase orange. */
-const ANTI_PHASE_STROKE = "rgba(255, 152, 0, 0.85)";
-const ANTI_PHASE_FILL_DEEP = "rgba(255, 152, 0, 0.42)";
-const ANTI_PHASE_FILL_MID = "rgba(255, 152, 0, 0.22)";
+const antiPhaseStroke = "rgba(255, 152, 0, 0.85)";
+const antiPhaseFillDeep = "rgba(255, 152, 0, 0.42)";
+const antiPhaseFillMid = "rgba(255, 152, 0, 0.22)";
 
 function corrFromCanvasY(y: number, padT: number, drawH: number): number {
   const t = (y - padT) / drawH;
   const tl = Math.max(0, Math.min(1, t));
-  return CORR_MAX - tl * (CORR_MAX - CORR_MIN);
+  return corrMax - tl * (corrMax - corrMin);
 }
 
 function clampCorr(v: number): number {
   if (!Number.isFinite(v)) {return 0;}
-  return Math.max(CORR_MIN, Math.min(CORR_MAX, v));
+  return Math.max(corrMin, Math.min(corrMax, v));
 }
 
 export default class PhaseCorrelationSpectrumComponent extends Component {
@@ -60,7 +60,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   private _rafId = 0;
   private _frameBuffers: StereoFrameBuffers = ensureStereoFrameBuffers(2048);
   private _engine = new FrequencyPhaseCorrelationEngine();
-  private _emaRho = new Float32Array(LOG_POINTS);
+  private _emaRho = new Float32Array(logPoints);
   private _broadbandRho = 0;
   private _hoverCx = 0;
   private _hoverCy = 0;
@@ -157,8 +157,8 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.max(1, Math.floor(this._container.clientWidth));
     const cssH = Math.max(1, Math.floor(this._container.clientHeight));
-    const w = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssW * dpr)));
-    const h = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssH * dpr)));
+    const w = Math.min(maxCanvasPx, Math.max(1, Math.round(cssW * dpr)));
+    const h = Math.min(maxCanvasPx, Math.max(1, Math.round(cssH * dpr)));
     if (this._canvas.width !== w || this._canvas.height !== h) {
       this._canvas.width = w;
       this._canvas.height = h;
@@ -169,7 +169,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     const padL = 28 * dpr;
     const padB = 16 * dpr;
     const padT = 6 * dpr;
-    const padR = (METER_BAR_W + 22) * dpr;
+    const padR = (meterBarW + 22) * dpr;
     const drawW = w - padL - padR;
     const drawH = h - padB - padT;
 
@@ -180,7 +180,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     if (drawW <= 0 || drawH <= 0) {return;}
 
     const corrToY = (c: number) =>
-      padT + ((CORR_MAX - c) / (CORR_MAX - CORR_MIN)) * drawH;
+      padT + ((corrMax - c) / (corrMax - corrMin)) * drawH;
     const zeroY = corrToY(0);
 
     const frame = fetchMonitoringStereoFrame(
@@ -197,13 +197,13 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
       );
 
       if (srcXs.length >= 2) {
-        const resampled = akimaResample(srcXs, srcYs, LOG_FREQS);
+        const resampled = akimaResample(srcXs, srcYs, logFreqs);
         const inst = quinticBSplineSmooth(resampled);
         const decay = emaDecayFromReleaseDbPerSec(
           this._analyzeSettingsService.liveSpectrumReleaseDbPerSec,
         );
 
-        for (let i = 0; i < LOG_POINTS; i++) {
+        for (let i = 0; i < logPoints; i++) {
           const v = clampCorr(inst[i]);
           this._emaRho[i] = decay * this._emaRho[i] + (1 - decay) * v;
         }
@@ -219,15 +219,15 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     ctx.strokeStyle = "rgba(255,255,255,0.1)";
     ctx.lineWidth = 1;
     ctx.setLineDash([2, 4]);
-    for (const c of CORR_TICKS) {
+    for (const c of corrTicks) {
       const y = corrToY(c);
       ctx.beginPath();
       ctx.moveTo(padL, y);
       ctx.lineTo(padL + drawW, y);
       ctx.stroke();
     }
-    for (const f of PHASE_CORR_FREQ_TICKS) {
-      if (f < FREQ_MIN || f > FREQ_MAX) {continue;}
+    for (const f of phaseCorrFreqTicks) {
+      if (f < freqMin || f > freqMax) {continue;}
       const x = freqToCanvasX(f, padL, drawW);
       ctx.beginPath();
       ctx.moveTo(x, padT);
@@ -247,14 +247,14 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     ctx.font = `${8 * dpr}px monospace`;
 
     ctx.textAlign = "left";
-    for (const c of CORR_TICKS) {
+    for (const c of corrTicks) {
       const label = c === 1 || c === -1 ? String(c) : String(c);
       ctx.fillText(label, padL + drawW + 4 * dpr, corrToY(c) + 3 * dpr);
     }
 
     ctx.textAlign = "center";
-    for (const f of PHASE_CORR_FREQ_TICKS) {
-      if (f < FREQ_MIN || f > FREQ_MAX) {continue;}
+    for (const f of phaseCorrFreqTicks) {
+      if (f < freqMin || f > freqMax) {continue;}
       ctx.fillText(
         formatFreqTickLabel(f),
         freqToCanvasX(f, padL, drawW),
@@ -263,40 +263,40 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     }
 
     const drawCurves = () => {
-      const xAt = (i: number) => freqToCanvasX(LOG_FREQS[i], padL, drawW);
+      const xAt = (i: number) => freqToCanvasX(logFreqs[i], padL, drawW);
       const yAt = (i: number) => corrToY(clampCorr(this._emaRho[i]));
 
       const inPhaseFill = ctx.createLinearGradient(0, padT, 0, zeroY);
-      inPhaseFill.addColorStop(0, IN_PHASE_FILL_TOP);
-      inPhaseFill.addColorStop(1, IN_PHASE_FILL_MID);
+      inPhaseFill.addColorStop(0, inPhaseFillTop);
+      inPhaseFill.addColorStop(1, inPhaseFillMid);
       ctx.fillStyle = inPhaseFill;
       ctx.beginPath();
       ctx.moveTo(xAt(0), zeroY);
-      for (let i = 0; i < LOG_POINTS; i++) {
+      for (let i = 0; i < logPoints; i++) {
         const rho = clampCorr(this._emaRho[i]);
         ctx.lineTo(xAt(i), corrToY(Math.max(0, rho)));
       }
-      ctx.lineTo(xAt(LOG_POINTS - 1), zeroY);
+      ctx.lineTo(xAt(logPoints - 1), zeroY);
       ctx.closePath();
       ctx.fill();
 
       const antiPhaseFill = ctx.createLinearGradient(0, zeroY, 0, padT + drawH);
-      antiPhaseFill.addColorStop(0, ANTI_PHASE_FILL_MID);
-      antiPhaseFill.addColorStop(1, ANTI_PHASE_FILL_DEEP);
+      antiPhaseFill.addColorStop(0, antiPhaseFillMid);
+      antiPhaseFill.addColorStop(1, antiPhaseFillDeep);
       ctx.fillStyle = antiPhaseFill;
       ctx.beginPath();
       ctx.moveTo(xAt(0), zeroY);
-      for (let i = 0; i < LOG_POINTS; i++) {
+      for (let i = 0; i < logPoints; i++) {
         const rho = clampCorr(this._emaRho[i]);
         ctx.lineTo(xAt(i), corrToY(Math.min(0, rho)));
       }
-      ctx.lineTo(xAt(LOG_POINTS - 1), zeroY);
+      ctx.lineTo(xAt(logPoints - 1), zeroY);
       ctx.closePath();
       ctx.fill();
 
       ctx.lineWidth = 1.25 * dpr;
       ctx.lineJoin = "round";
-      for (let i = 1; i < LOG_POINTS; i++) {
+      for (let i = 1; i < logPoints; i++) {
         const r0 = clampCorr(this._emaRho[i - 1]);
         const r1 = clampCorr(this._emaRho[i]);
         const x0 = xAt(i - 1);
@@ -311,7 +311,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
           ey: number,
           positive: boolean,
         ) => {
-          ctx.strokeStyle = positive ? IN_PHASE_STROKE : ANTI_PHASE_STROKE;
+          ctx.strokeStyle = positive ? inPhaseStroke : antiPhaseStroke;
           ctx.beginPath();
           ctx.moveTo(sx, sy);
           ctx.lineTo(ex, ey);
@@ -343,7 +343,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     const fillTop = bb >= 0 ? corrToY(bb) : zeroY;
     const fillBottom = bb >= 0 ? zeroY : corrToY(bb);
     ctx.fillStyle =
-      bb >= 0 ? "rgba(0, 180, 216, 0.75)" : ANTI_PHASE_STROKE;
+      bb >= 0 ? "rgba(0, 180, 216, 0.75)" : antiPhaseStroke;
     ctx.fillRect(barX, fillTop, barW, fillBottom - fillTop);
 
     if (this._hoverActive && drawW > 0 && drawH > 0) {

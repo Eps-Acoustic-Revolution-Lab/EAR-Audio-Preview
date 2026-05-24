@@ -5,16 +5,16 @@
  * Rises snap to logical; falls chase logical at ≥ {@link peakFallDbPerFrame} dB/frame.
  */
 
-export const SPECTRAL_PEAK_DISPLAY_CHASE_K = 2.5;
+export const spectralPeakDisplayChaseK = 2.5;
 
 export function stepSpectralPeakDisplay(
   peakLogical: number,
   peakDisplayPrev: number,
   peakFallDbPerFrame: number,
-  chaseK: number = SPECTRAL_PEAK_DISPLAY_CHASE_K,
+  chaseK: number = spectralPeakDisplayChaseK,
 ): number {
-  if (!Number.isFinite(peakLogical)) return peakDisplayPrev;
-  if (!Number.isFinite(peakDisplayPrev)) return peakLogical;
+  if (!Number.isFinite(peakLogical)) {return peakDisplayPrev;}
+  if (!Number.isFinite(peakDisplayPrev)) {return peakLogical;}
   if (peakLogical >= peakDisplayPrev) {
     return peakLogical;
   }
@@ -23,7 +23,7 @@ export function stepSpectralPeakDisplay(
 }
 
 /** Linear magnitude floor for Polar Level display stepping (matches spectrum dB chase in log domain). */
-const POLAR_PEAK_LIN_EPS = 1e-18;
+const polarPeakLinEps = 1e-18;
 
 /**
  * Polar Level outer outline: convert linear magnitudes to dBFS, apply
@@ -35,12 +35,12 @@ export function stepPolarPeakDisplayLinear(
   peakFallDbPerFrame: number,
   chaseK?: number,
 ): number {
-  if (!Number.isFinite(peakLogicalLin)) return peakDisplayPrevLin;
-  if (!Number.isFinite(peakDisplayPrevLin)) return peakLogicalLin;
+  if (!Number.isFinite(peakLogicalLin)) {return peakDisplayPrevLin;}
+  if (!Number.isFinite(peakDisplayPrevLin)) {return peakLogicalLin;}
   const logicalDb =
-    20 * Math.log10(Math.max(peakLogicalLin, POLAR_PEAK_LIN_EPS));
+    20 * Math.log10(Math.max(peakLogicalLin, polarPeakLinEps));
   const prevDb =
-    20 * Math.log10(Math.max(peakDisplayPrevLin, POLAR_PEAK_LIN_EPS));
+    20 * Math.log10(Math.max(peakDisplayPrevLin, polarPeakLinEps));
   const nextDb = stepSpectralPeakDisplay(
     logicalDb,
     prevDb,
@@ -62,7 +62,7 @@ export function smoothPeakDisplayAlongBinsInto(
   const wEdge = 0.12;
   const wCtr = 1 - 2 * wEdge;
   if (n < 2) {
-    if (n === 1) dst[0] = src[0];
+    if (n === 1) {dst[0] = src[0];}
     return;
   }
   dst[0] = (1 - wEdge) * src[0] + wEdge * src[1];
@@ -85,7 +85,7 @@ export function smoothPeakDisplayCircularBinsInto(
   const wEdge = 0.12;
   const wCtr = 1 - 2 * wEdge;
   if (n < 2) {
-    if (n === 1) dst[0] = src[0];
+    if (n === 1) {dst[0] = src[0];}
     return;
   }
   for (let i = 0; i < n; i++) {

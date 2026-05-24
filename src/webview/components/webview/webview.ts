@@ -33,10 +33,10 @@ type CreateAudioContext = (sampleRate: number) => AudioContext;
 type CreateDecoder = (fileData: Uint8Array, ext: string) => Promise<IAudioDecoder>;
 
 /** Ring geometry matches viewBox / circle `r` in webview template (px). */
-const FAB_LOAD_RING_RADIUS_PX = 23;
-const FAB_LOAD_RING_CIRCUMFERENCE = 2 * Math.PI * FAB_LOAD_RING_RADIUS_PX;
+const fabLoadRingRadiusPx = 23;
+const fabLoadRingCircumference = 2 * Math.PI * fabLoadRingRadiusPx;
 /** Portion of the ring reserved for file transfer into the webview (rest = decode + UI). */
-const LOAD_PROGRESS_RECEIVE_SHARE = 0.38;
+const loadProgressReceiveShare = 0.38;
 
 export default class WebView extends Component {
   private _fileData: Uint8Array;
@@ -213,7 +213,7 @@ export default class WebView extends Component {
               class="settingsDock__fabRingTrack"
               cx="26"
               cy="26"
-              r="${FAB_LOAD_RING_RADIUS_PX}"
+              r="${fabLoadRingRadiusPx}"
               fill="none"
               stroke-width="2"
             />
@@ -221,7 +221,7 @@ export default class WebView extends Component {
               class="settingsDock__fabRingBar"
               cx="26"
               cy="26"
-              r="${FAB_LOAD_RING_RADIUS_PX}"
+              r="${fabLoadRingRadiusPx}"
               fill="none"
               stroke-width="2.75"
               stroke-linecap="round"
@@ -280,7 +280,7 @@ export default class WebView extends Component {
     if (!this._loadRingBar) {
       return;
     }
-    this._loadRingBar.style.strokeDasharray = `${FAB_LOAD_RING_CIRCUMFERENCE}`;
+    this._loadRingBar.style.strokeDasharray = `${fabLoadRingCircumference}`;
     this._paintLoadRingProgress(0);
   }
 
@@ -289,7 +289,7 @@ export default class WebView extends Component {
       return;
     }
     const u = Math.max(0, Math.min(1, unit));
-    this._loadRingBar.style.strokeDashoffset = `${FAB_LOAD_RING_CIRCUMFERENCE * (1 - u)}`;
+    this._loadRingBar.style.strokeDashoffset = `${fabLoadRingCircumference * (1 - u)}`;
     if (
       this._settingsFab?.classList.contains("settingsDock__fab--loading") &&
       this._fabPercentEl
@@ -312,7 +312,7 @@ export default class WebView extends Component {
       return;
     }
     const ratio = Math.min(1, end / whole);
-    this._visualLoadProgress = LOAD_PROGRESS_RECEIVE_SHARE * ratio;
+    this._visualLoadProgress = loadProgressReceiveShare * ratio;
     this._paintLoadRingProgress(this._visualLoadProgress);
     this._showLoadRing();
   }
@@ -328,7 +328,7 @@ export default class WebView extends Component {
     this._cancelDecodeProgressRaf();
     this._visualLoadProgress = Math.max(
       this._visualLoadProgress,
-      LOAD_PROGRESS_RECEIVE_SHARE,
+      loadProgressReceiveShare,
     );
     this._paintLoadRingProgress(this._visualLoadProgress);
     if (this._reduceMotion) {
@@ -337,9 +337,9 @@ export default class WebView extends Component {
     this._decodeProgressStartedAt = performance.now();
     const tick = () => {
       const elapsed = performance.now() - this._decodeProgressStartedAt;
-      const headroom = 1 - LOAD_PROGRESS_RECEIVE_SHARE - 0.03;
+      const headroom = 1 - loadProgressReceiveShare - 0.03;
       const asymptote =
-        LOAD_PROGRESS_RECEIVE_SHARE +
+        loadProgressReceiveShare +
         headroom * (1 - Math.exp(-elapsed / 3200));
       const target = Math.min(asymptote, 0.97);
       this._visualLoadProgress += (target - this._visualLoadProgress) * 0.06;

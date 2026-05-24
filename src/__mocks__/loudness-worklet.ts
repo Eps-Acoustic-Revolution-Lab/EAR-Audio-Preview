@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 export interface LoudnessMeasurements {
   momentaryLoudness: number;
   shortTermLoudness: number;

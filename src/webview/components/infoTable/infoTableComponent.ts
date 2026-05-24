@@ -24,7 +24,7 @@ export default class InfoTableComponent extends Component {
       numChannels === 1 ? "mono" : numChannels === 2 ? "stereo" : "unsupported";
 
     const bitDepthStr =
-      bitDepth != null && Number.isFinite(bitDepth)
+      bitDepth !== null && bitDepth !== undefined && Number.isFinite(bitDepth)
         ? `${bitDepth} bit`
         : "—";
 

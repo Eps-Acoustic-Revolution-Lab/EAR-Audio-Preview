@@ -91,6 +91,7 @@ void main() {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 const quadAttributes = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   a_position: {
     numComponents: 2,
     data: [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1],
@@ -196,7 +197,7 @@ export class SpectrogramRenderer {
   }
 }
 
-export const SPECTROGRAM_LOG_BOUNDS_MAX = MAX_LOG_BOUNDS;
+export const spectrogramLogBoundsMax = MAX_LOG_BOUNDS;
 
 export function padLogBounds(bounds: number[]): {
   count: number;

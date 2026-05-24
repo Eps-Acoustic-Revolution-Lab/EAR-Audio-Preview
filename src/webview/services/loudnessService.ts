@@ -27,10 +27,10 @@ export interface TruePeakWindowResult {
   max: number;
 }
 
-const SILENCE_LUFS = -70;
+const silenceLufs = -70;
 
 function sanitizeLufs(v: number): number {
-  if (!Number.isFinite(v) || v <= SILENCE_LUFS) {
+  if (!Number.isFinite(v) || v <= silenceLufs) {
     return NaN;
   }
   return v;
@@ -59,7 +59,7 @@ export function mergeSnapshots(snapshots: LoudnessSnapshot[]): LoudnessProfile {
 
   for (const snap of snapshots) {
     const m = primaryMeasurement(snap);
-    if (!m) continue;
+    if (!m) {continue;}
     times.push(snap.currentTime);
     momentary.push(sanitizeLufs(m.momentaryLoudness));
     shortTerm.push(sanitizeLufs(m.shortTermLoudness));
@@ -248,23 +248,23 @@ export default class LoudnessService {
 }
 
 export function formatLufs(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) {return "—";}
   return `${value.toFixed(digits)} LUFS`;
 }
 
 export function formatLu(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) {return "—";}
   return `${value.toFixed(digits)} LU`;
 }
 
 export function formatDbTp(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) {return "—";}
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(digits)} dBTP`;
 }
 
 export function formatDbFs(value: number, digits = 1): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) {return "—";}
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(digits)} dBFS`;
 }

@@ -1,7 +1,7 @@
 import Ooura from "ooura";
-import { FREQ_MIN, FREQ_MAX } from "./liveLogSpectrumAxis";
+import { freqMin, freqMax } from "./liveLogSpectrumAxis";
 
-const ENERGY_FLOOR = 1e-12;
+const energyFloor = 1e-12;
 
 export interface RhoPerBinResult {
   /** Center frequency (Hz) per FFT bin, length = binCount. */
@@ -34,7 +34,7 @@ export function normalizedCrossSpectrumReal(
 ): number {
   const crossRe = lRe * rRe + lIm * rIm;
   const magProd = Math.hypot(lRe, lIm) * Math.hypot(rRe, rIm);
-  if (magProd < ENERGY_FLOOR) {return 0;}
+  if (magProd < energyFloor) {return 0;}
   return Math.max(-1, Math.min(1, crossRe / magProd));
 }
 
@@ -92,7 +92,7 @@ export class FrequencyPhaseCorrelationEngine {
 
     for (let k = 0; k < binCount; k++) {
       const f = (k + 0.5) * binHz;
-      if (f < FREQ_MIN || f > Math.min(FREQ_MAX, sampleRate / 2)) {
+      if (f < freqMin || f > Math.min(freqMax, sampleRate / 2)) {
         continue;
       }
       const rho = normalizedCrossSpectrumReal(
@@ -106,14 +106,14 @@ export class FrequencyPhaseCorrelationEngine {
       this._srcXs[outCount] = f;
       this._srcYs[outCount] = rho;
       outCount++;
-      if (w > ENERGY_FLOOR) {
+      if (w > energyFloor) {
         rhoWeighted += rho * w;
         weightSum += w;
       }
     }
 
     const broadbandRho =
-      weightSum > ENERGY_FLOOR ? rhoWeighted / weightSum : 0;
+      weightSum > energyFloor ? rhoWeighted / weightSum : 0;
 
     return {
       srcXs: this._srcXs.subarray(0, outCount),

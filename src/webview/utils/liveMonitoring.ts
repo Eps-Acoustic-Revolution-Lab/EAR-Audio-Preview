@@ -4,7 +4,7 @@ export type LiveMonitoringMode = "lr" | "swap" | "l" | "r" | "m" | "s";
 /** Five octave-ish bands configurable via edges (see AnalyzeSettingsService). */
 export type MonitorBandId = "sub" | "low" | "lowMid" | "highMid" | "high";
 
-export const MONITOR_BAND_IDS: readonly MonitorBandId[] = [
+export const monitorBandIds: readonly MonitorBandId[] = [
   "sub",
   "low",
   "lowMid",
@@ -12,10 +12,10 @@ export const MONITOR_BAND_IDS: readonly MonitorBandId[] = [
   "high",
 ] as const;
 
-export const MONITOR_BAND_COUNT = MONITOR_BAND_IDS.length;
+export const monitorBandCount = monitorBandIds.length;
 
 /** All five bits set (“every band”) or empty mask ⇒ no filtering (listen full bandwidth). */
-export const MONITOR_BAND_MASK_ALL = (1 << MONITOR_BAND_COUNT) - 1;
+export const monitorBandMaskAll = (1 << monitorBandCount) - 1;
 
 export function populationCountBits(mask: number): number {
   let m = mask >>> 0;
@@ -28,9 +28,9 @@ export function populationCountBits(mask: number): number {
 }
 
 export function monitorBandSoloBypassActive(mask: number): boolean {
-  const m = (mask ?? 0) & MONITOR_BAND_MASK_ALL;
+  const m = (mask ?? 0) & monitorBandMaskAll;
   const c = populationCountBits(m);
-  return c === 0 || c === MONITOR_BAND_COUNT;
+  return c === 0 || c === monitorBandCount;
 }
 
 /**
@@ -113,10 +113,10 @@ export function applyMonitoringToTimeDomain(
   const { ll, lr, rl, rr } = monitoringGainsForMode(mode);
   const n = lBuf.length;
   for (let i = 0; i < n; i++) {
-    const L = lBuf[i];
-    const R = rBuf[i];
-    outL[i] = ll * L + rl * R;
-    outR[i] = lr * L + rr * R;
+    const left = lBuf[i];
+    const right = rBuf[i];
+    outL[i] = ll * left + rl * right;
+    outR[i] = lr * left + rr * right;
   }
 }
 
@@ -129,7 +129,7 @@ export function spectrumTiltDb(
   slopeDbPerOct: number,
   fRefHz: number = 1000,
 ): number {
-  if (slopeDbPerOct === 0 || !Number.isFinite(fHz) || fHz <= 0) return 0;
+  if (slopeDbPerOct === 0 || !Number.isFinite(fHz) || fHz <= 0) {return 0;}
   return slopeDbPerOct * (Math.log(fHz / fRefHz) / Math.LN2);
 }
 
@@ -150,7 +150,7 @@ export function spectrumTiltDbAboveFloor(
   fRefHz: number = 1000,
 ): number {
   const t = spectrumTiltDb(fHz, slopeDbPerOct, fRefHz);
-  if (t === 0) return 0;
+  if (t === 0) {return 0;}
   const w = Math.max(0, Math.min(1, (rawDb - floorDb) / Math.max(1e-6, blendDb)));
   return t * w;
 }
@@ -164,9 +164,9 @@ export function encodeMidSideTimeDomain(
 ): void {
   const n = lBuf.length;
   for (let i = 0; i < n; i++) {
-    const L = lBuf[i];
-    const R = rBuf[i];
-    outM[i] = 0.5 * (L + R);
-    outS[i] = 0.5 * (L - R);
+    const left = lBuf[i];
+    const right = rBuf[i];
+    outM[i] = 0.5 * (left + right);
+    outS[i] = 0.5 * (left - right);
   }
 }

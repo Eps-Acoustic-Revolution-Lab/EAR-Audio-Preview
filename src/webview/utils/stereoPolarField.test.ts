@@ -119,24 +119,20 @@ describe("stereoPolarField", () => {
   });
 
   test("polarLevelDrawNorm is zero until smoothed scale is established", () => {
-    const rms = new Float32Array([0.5]);
-    const peak = new Float32Array([0.5]);
-    expect(polarLevelDrawNorm(0, rms, peak)).toBe(0);
-    expect(polarLevelDrawLength(0.5, polarLevelDrawNorm(0, rms, peak))).toBe(0);
+    expect(polarLevelDrawNorm(0)).toBe(0);
+    expect(polarLevelDrawLength(0.5, polarLevelDrawNorm(0))).toBe(0);
   });
 
   test("polarLevelDrawNorm uses smoothed scale only (no instant max coupling)", () => {
-    const rms = new Float32Array([0.9]);
-    const peak = new Float32Array([1]);
-    const norm = polarLevelDrawNorm(0.3, rms, peak);
+    const norm = polarLevelDrawNorm(0.3);
     expect(polarLevelDrawLength(0.3, norm)).toBeCloseTo(1 / Math.SQRT2, 3);
     expect(polarLevelDrawLength(1, norm)).toBe(1);
   });
 
   test("polarLevelDisplayScaleDecay is slower EMA than ballistics at same release", () => {
-    const R = 8;
-    const dBall = emaDecayFromReleaseDbPerSec(R);
-    const dScale = polarLevelDisplayScaleDecay(R);
+    const right = 8;
+    const dBall = emaDecayFromReleaseDbPerSec(right);
+    const dScale = polarLevelDisplayScaleDecay(right);
     expect(dScale).toBeGreaterThan(dBall);
   });
 

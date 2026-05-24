@@ -18,15 +18,15 @@ describe("spectrumTiltDb", () => {
 
 describe("encodeMidSideTimeDomain", () => {
   test("M/S diagonal on stereo impulse", () => {
-    const L = new Float32Array([1, 0, 1]);
-    const R = new Float32Array([1, 0, -1]);
-    const M = new Float32Array(3);
-    const S = new Float32Array(3);
-    encodeMidSideTimeDomain(L, R, M, S);
-    expect(M[0]).toBeCloseTo(1);
-    expect(S[0]).toBeCloseTo(0);
-    expect(M[2]).toBeCloseTo(0);
-    expect(S[2]).toBeCloseTo(1);
+    const left = new Float32Array([1, 0, 1]);
+    const right = new Float32Array([1, 0, -1]);
+    const mid = new Float32Array(3);
+    const side = new Float32Array(3);
+    encodeMidSideTimeDomain(left, right, mid, side);
+    expect(mid[0]).toBeCloseTo(1);
+    expect(side[0]).toBeCloseTo(0);
+    expect(mid[2]).toBeCloseTo(0);
+    expect(side[2]).toBeCloseTo(1);
   });
 });
 
@@ -82,11 +82,11 @@ describe("monitoringGainsForMode", () => {
 
 describe("applyMonitoringToTimeDomain", () => {
   test('"swap" mode swaps L/R taps like the headphone matrix', () => {
-    const L = new Float32Array([1, -0.25]);
-    const R = new Float32Array([-1, 4]);
+    const left = new Float32Array([1, -0.25]);
+    const right = new Float32Array([-1, 4]);
     const oL = new Float32Array(2);
     const oR = new Float32Array(2);
-    applyMonitoringToTimeDomain("swap", L, R, oL, oR);
+    applyMonitoringToTimeDomain("swap", left, right, oL, oR);
     expect(oL[0]).toBeCloseTo(-1);
     expect(oR[0]).toBeCloseTo(1);
     expect(oL[1]).toBeCloseTo(4);

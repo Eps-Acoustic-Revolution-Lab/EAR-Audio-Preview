@@ -51,8 +51,8 @@ export function resolveEbur128Api(mod: unknown): Ebur128Api | null {
     if (!isRecord(candidate)) {
       continue;
     }
-    const mono = candidate.ebur128_true_peak_mono;
-    const stereo = candidate.ebur128_true_peak_stereo;
+    const mono = candidate["ebur128_true_peak_mono"];
+    const stereo = candidate["ebur128_true_peak_stereo"];
     if (typeof mono === "function" && typeof stereo === "function") {
       return {
         truePeakMono: mono as TruePeakMonoFn,

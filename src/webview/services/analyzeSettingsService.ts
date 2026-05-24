@@ -4,17 +4,17 @@ import { getRangeValues, getValueInEnum, getValueInRange } from "../../util";
 import Service from "../service";
 import type { LiveMonitoringMode } from "../utils/liveMonitoring";
 import {
-  MONITOR_BAND_COUNT,
-  MONITOR_BAND_MASK_ALL,
+  monitorBandCount,
+  monitorBandMaskAll,
   monitorBandSoloBypassActive,
   sanitizeMonitorBandEdges,
 } from "../utils/liveMonitoring";
 import {
   clampLiveSpectrumPeakHoldSec,
   clampReleaseDbPerSec,
-  LIVE_RELEASE_DBPS_DEFAULT,
-  LIVE_RELEASE_DBPS_MAX,
-  LIVE_RELEASE_DBPS_MIN,
+  liveReleaseDbpsDefault,
+  liveReleaseDbpsMax,
+  liveReleaseDbpsMin,
   migrateSmoothingPctToReleaseDbPerSec,
   resolveReleaseDbPerSec,
 } from "../utils/liveBallistics";
@@ -35,7 +35,7 @@ export enum WindowSizeIndex {
 }
 
 /** Allowed STFT window lengths (samples), ascending. */
-export const FFT_WINDOW_SAMPLES = [
+export const fftWindowSamples = [
   256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
 ] as const;
 
@@ -44,9 +44,9 @@ export const FFT_WINDOW_SAMPLES = [
  */
 export function snapFftWindowSamples(ideal: number): number {
   const clamped = Math.max(256, Math.min(32768, ideal));
-  let best: number = FFT_WINDOW_SAMPLES[0];
+  let best: number = fftWindowSamples[0];
   let bestScore = Infinity;
-  for (const n of FFT_WINDOW_SAMPLES) {
+  for (const n of fftWindowSamples) {
     const score = Math.abs(n - clamped);
     if (score < bestScore) {
       bestScore = score;
@@ -79,31 +79,31 @@ export function inferFftWindowSamplesForTimeRange(
   sampleRate: number,
   spectrogramCanvasWidth: number,
 ): number {
-  const T = Math.max(1e-6, timeRangeSec);
+  const tVal = Math.max(1e-6, timeRangeSec);
   const fs = Math.max(8000, sampleRate);
-  const W = Math.max(512, spectrogramCanvasWidth);
+  const wVal = Math.max(512, spectrogramCanvasWidth);
 
   const tauLo = 0.009;
   const tauHi = 0.051;
   const tauS = 138;
   const tauStat =
-    tauLo + (tauHi - tauLo) * (1 - Math.exp(-T / tauS));
+    tauLo + (tauHi - tauLo) * (1 - Math.exp(-tVal / tauS));
   const nStationary = tauStat * fs;
 
   const kFloor = 410;
   const kScreen = Math.max(
     kFloor,
     735 +
-      1520 * Math.exp(-T / 7.1) +
-      785 * Math.exp(-T / 98) +
-      1.1 * T,
+      1520 * Math.exp(-tVal / 7.1) +
+      785 * Math.exp(-tVal / 98) +
+      1.1 * tVal,
   );
-  const nCanvas = (W * 1024) / (2 * kScreen);
+  const nCanvas = (wVal * 1024) / (2 * kScreen);
 
   let nIdeal = Math.min(nStationary, nCanvas);
   const longViewSec = 275;
   const longViewWindowMs = 39.2;
-  if (T > longViewSec) {
+  if (tVal > longViewSec) {
     nIdeal = Math.max(
       nIdeal,
       Math.min(nStationary, (longViewWindowMs / 1000) * fs),
@@ -234,9 +234,9 @@ export default class AnalyzeSettingsService extends Service {
 
   /** Inferred FFT length for the current time range (for UI label when auto). */
   public get inferredAutoWindowSamples(): number {
-    const T = Math.max(1e-9, this._maxTime - this._minTime);
+    const tVal = Math.max(1e-9, this._maxTime - this._minTime);
     return inferFftWindowSamplesForTimeRange(
-      T,
+      tVal,
       this._sampleRate,
       AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
     );
@@ -625,13 +625,13 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private static readonly LIVE_FFT_SIZES = [512, 1024, 2048, 4096] as const;
+  private static readonly liveFftSizes = [512, 1024, 2048, 4096] as const;
   private _liveAnalysisFftSize: 512 | 1024 | 2048 | 4096 = 2048;
   public get liveAnalysisFftSize(): 512 | 1024 | 2048 | 4096 {
     return this._liveAnalysisFftSize;
   }
   public set liveAnalysisFftSize(value: number) {
-    const valid = AnalyzeSettingsService.LIVE_FFT_SIZES.includes(
+    const valid = AnalyzeSettingsService.liveFftSizes.includes(
       value as 512 | 1024 | 2048 | 4096,
     );
     this._liveAnalysisFftSize = valid
@@ -644,16 +644,16 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private static readonly LIVE_TILT_VALUES = [0, 1.5, 3, 4.5, 6] as const;
+  private static readonly liveTiltValues = [0, 1.5, 3, 4.5, 6] as const;
 
   private static _releaseToLegacyPct(releaseDbPerSec: number): number {
     const t =
-      Math.log(releaseDbPerSec / LIVE_RELEASE_DBPS_MAX) /
-      Math.log(LIVE_RELEASE_DBPS_MIN / LIVE_RELEASE_DBPS_MAX);
+      Math.log(releaseDbPerSec / liveReleaseDbpsMax) /
+      Math.log(liveReleaseDbpsMin / liveReleaseDbpsMax);
     return Math.round(Math.max(0, Math.min(100, 100 * t)));
   }
 
-  private _liveSpectrumReleaseDbPerSec: number = LIVE_RELEASE_DBPS_DEFAULT;
+  private _liveSpectrumReleaseDbPerSec: number = liveReleaseDbpsDefault;
   public get liveSpectrumReleaseDbPerSec(): number {
     return this._liveSpectrumReleaseDbPerSec;
   }
@@ -679,7 +679,7 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private _livePolarFieldReleaseDbPerSec: number = LIVE_RELEASE_DBPS_DEFAULT;
+  private _livePolarFieldReleaseDbPerSec: number = liveReleaseDbpsDefault;
   public get livePolarFieldReleaseDbPerSec(): number {
     return this._livePolarFieldReleaseDbPerSec;
   }
@@ -692,7 +692,7 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private _liveLevelMeterReleaseDbPerSec: number = LIVE_RELEASE_DBPS_DEFAULT;
+  private _liveLevelMeterReleaseDbPerSec: number = liveReleaseDbpsDefault;
   public get liveLevelMeterReleaseDbPerSec(): number {
     return this._liveLevelMeterReleaseDbPerSec;
   }
@@ -824,7 +824,7 @@ export default class AnalyzeSettingsService extends Service {
   }
   public set liveSpectrumTiltDbPerOct(value: number) {
     const v = Number(value);
-    const ok = (AnalyzeSettingsService.LIVE_TILT_VALUES as readonly number[]).includes(
+    const ok = (AnalyzeSettingsService.liveTiltValues as readonly number[]).includes(
       v,
     );
     this._liveSpectrumTiltDbPerOct = ok
@@ -881,11 +881,11 @@ export default class AnalyzeSettingsService extends Service {
   }
 
   public get monitorBandSoloMask(): number {
-    return this._monitorBandSoloMask & MONITOR_BAND_MASK_ALL;
+    return this._monitorBandSoloMask & monitorBandMaskAll;
   }
 
   public set monitorBandSoloMask(value: number) {
-    const next = Math.max(0, Math.min(MONITOR_BAND_MASK_ALL, Math.trunc(value)));
+    const next = Math.max(0, Math.min(monitorBandMaskAll, Math.trunc(value)));
     if (next === this._monitorBandSoloMask) {
       return;
     }
@@ -898,7 +898,7 @@ export default class AnalyzeSettingsService extends Service {
   }
 
   public toggleMonitorBandSolo(bandIndex: number): void {
-    if (bandIndex < 0 || bandIndex >= MONITOR_BAND_COUNT) {
+    if (bandIndex < 0 || bandIndex >= monitorBandCount) {
       return;
     }
     this.monitorBandSoloMask = this._monitorBandSoloMask ^ (1 << bandIndex);
@@ -920,7 +920,7 @@ export default class AnalyzeSettingsService extends Service {
     if (soloMask !== undefined && Number.isFinite(soloMask)) {
       this._monitorBandSoloMask = Math.max(
         0,
-        Math.min(MONITOR_BAND_MASK_ALL, Math.trunc(Number(soloMask))),
+        Math.min(monitorBandMaskAll, Math.trunc(Number(soloMask))),
       );
     }
   }
@@ -1196,9 +1196,9 @@ export default class AnalyzeSettingsService extends Service {
     if (!this._fftWindowAuto) {
       return;
     }
-    const T = Math.max(1e-9, this._maxTime - this._minTime);
+    const tVal = Math.max(1e-9, this._maxTime - this._minTime);
     this._windowSize = inferFftWindowSamplesForTimeRange(
-      T,
+      tVal,
       this._sampleRate,
       AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
     );
@@ -1209,9 +1209,9 @@ export default class AnalyzeSettingsService extends Service {
 
   private get effectiveBaseWindowIndex(): number {
     if (this._fftWindowAuto) {
-      const T = Math.max(1e-9, this._maxTime - this._minTime);
+      const tVal = Math.max(1e-9, this._maxTime - this._minTime);
       const n = inferFftWindowSamplesForTimeRange(
-        T,
+        tVal,
         this._sampleRate,
         AnalyzeSettingsService.spectrogramRenderWidth(this._highResolutionSpectrogram),
       );

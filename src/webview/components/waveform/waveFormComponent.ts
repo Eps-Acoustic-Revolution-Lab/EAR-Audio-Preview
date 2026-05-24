@@ -1,6 +1,5 @@
 import "../../styles/figure.css";
 import AnalyzeService from "../../services/analyzeService";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import { AnalyzeSettingsProps } from "../../services/analyzeSettingsService";
 
 export default class WaveFormComponent {

@@ -591,7 +591,7 @@ export default class AnalyzeService extends Service {
     const take = Math.min(windowSamples, n);
     const half = Math.floor(take / 2);
     let start = Math.min(Math.max(0, centerSample - half), n - take);
-    let end = Math.min(n, start + take);
+    const end = Math.min(n, start + take);
     start = Math.max(0, end - take);
     return { start, end };
   }

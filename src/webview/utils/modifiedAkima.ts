@@ -46,7 +46,7 @@ export function buildModifiedAkima(
   //  Standard Akima extension: reflect differences across the boundary.
   const mExt = new Float64Array(n + 3); // indices [0..n+2], interior [2..n]
   mExt[2] = m[0];
-  for (let i = 1; i < n - 1; i++) mExt[i + 2] = m[i];
+  for (let i = 1; i < n - 1; i++) {mExt[i + 2] = m[i];}
   mExt[n] = m[n - 2];
 
   // Phantom points: each extra slope is mirrored once more.
@@ -112,8 +112,8 @@ export function buildModifiedAkima(
 
   return {
     evaluate(x: number): number {
-      if (x <= xs[0]) return ys[0];
-      if (x >= xs[n - 1]) return ys[n - 1];
+      if (x <= xs[0]) {return ys[0];}
+      if (x >= xs[n - 1]) {return ys[n - 1];}
 
       // Binary search for the knot interval.
       let lo = 0;

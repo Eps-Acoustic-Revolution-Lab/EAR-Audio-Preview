@@ -5,15 +5,13 @@ import {
   resolveEbur128Api,
 } from "./ebur128Loader";
 
-const mono = jest.fn((_sampleRate: number, _samples: Float32Array) => -1);
-const stereo = jest.fn(
-  (_sampleRate: number, _left: Float32Array, _right: Float32Array) => -0.5,
-);
+const mono = jest.fn(() => -1);
+const stereo = jest.fn(() => -0.5);
 
 function apiShape() {
   return {
-    ebur128_true_peak_mono: mono,
-    ebur128_true_peak_stereo: stereo,
+    ["ebur128_true_peak_mono"]: mono,
+    ["ebur128_true_peak_stereo"]: stereo,
   };
 }
 

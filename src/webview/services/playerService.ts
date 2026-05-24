@@ -3,7 +3,7 @@ import Service from "../service";
 import PlayerSettingsService from "./playerSettingsService";
 import AnalyzeSettingsService from "./analyzeSettingsService";
 import {
-  MONITOR_BAND_MASK_ALL,
+  monitorBandMaskAll,
   monitoringGainsForMode,
   sanitizeMonitorBandEdges,
 } from "../utils/liveMonitoring";
@@ -170,8 +170,8 @@ export default class PlayerService extends Service {
       EventType.AS_UPDATE_LIVE_ANALYSIS_FFT_SIZE,
       () => {
         const fftSize = this._analyzeSettingsService.liveAnalysisFftSize;
-        if (this._analyserL) this._analyserL.fftSize = fftSize;
-        if (this._analyserR) this._analyserR.fftSize = fftSize;
+        if (this._analyserL) {this._analyserL.fftSize = fftSize;}
+        if (this._analyserR) {this._analyserR.fftSize = fftSize;}
       },
     );
 
@@ -246,7 +246,7 @@ export default class PlayerService extends Service {
   }
 
   private _applyMonitoringGains(): void {
-    if (!this._gLL || !this._gLR || !this._gRL || !this._gRR) return;
+    if (!this._gLL || !this._gLR || !this._gRL || !this._gRR) {return;}
     const g = monitoringGainsForMode(this._analyzeSettingsService.liveMonitoringMode);
     this._gLL.gain.value = g.ll;
     this._gLR.gain.value = g.lr;
@@ -331,7 +331,7 @@ export default class PlayerService extends Service {
       this.sampleRate,
     );
     const mask =
-      this._analyzeSettingsService.monitorBandSoloMask & MONITOR_BAND_MASK_ALL;
+      this._analyzeSettingsService.monitorBandSoloMask & monitorBandMaskAll;
 
     const splitIn = ctx.createChannelSplitter(2);
     const mergeStereo = ctx.createChannelMerger(2);
@@ -470,7 +470,7 @@ export default class PlayerService extends Service {
         });
         node.port.onmessage = (e: MessageEvent<{ currentMeasurements: LoudnessMeasurements[] }>) => {
           const m = e.data.currentMeasurements?.[0];
-          if (!m) return;
+          if (!m) {return;}
           this._latestLoudness = m;
           if (
             Number.isFinite(m.maximumTruePeakLevel) &&

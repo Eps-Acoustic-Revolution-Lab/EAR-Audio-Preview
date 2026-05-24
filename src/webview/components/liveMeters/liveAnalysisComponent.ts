@@ -5,11 +5,11 @@ import GoniometerComponent from "./goniometerComponent";
 import SpectralAnalyzerComponent from "./spectralAnalyzerComponent";
 import PhaseCorrelationSpectrumComponent from "./phaseCorrelationSpectrumComponent";
 
-const MIN_PANE_HEIGHT = 120;
-const MIN_PANE_WIDTH = 100;
-const GONIO_INFO_BAR_PX = 20;
+const minPaneHeight = 120;
+const minPaneWidth = 100;
+const gonioInfoBarPx = 20;
 
-const GONIO_ROW_HTML = `
+const gonioRowHtml = `
   <div class="liveAnalysis__gonioRow">
     <div class="goniometerPane" data-gonio-polar-mount></div>
     <div class="liveAnalysis__gonioColHandle" data-gonio-col-handle aria-hidden="true"></div>
@@ -23,7 +23,7 @@ interface LiveAnalysisSplits {
   col: number;
 }
 
-const DEFAULT_SPLITS: LiveAnalysisSplits = { row: 0.5, col: 0.38 };
+const defaultSplits: LiveAnalysisSplits = { row: 0.5, col: 0.38 };
 
 export default class LiveAnalysisComponent extends Component {
   private _inner: HTMLElement;
@@ -45,8 +45,8 @@ export default class LiveAnalysisComponent extends Component {
   private _overlayPhaseCorrelation: PhaseCorrelationSpectrumComponent;
   private _overlaySpectrum: SpectralAnalyzerComponent;
 
-  private _inlineSplits: LiveAnalysisSplits = { ...DEFAULT_SPLITS };
-  private _overlaySplits: LiveAnalysisSplits = { ...DEFAULT_SPLITS };
+  private _inlineSplits: LiveAnalysisSplits = { ...defaultSplits };
+  private _overlaySplits: LiveAnalysisSplits = { ...defaultSplits };
   private _draggingRow = false;
   private _draggingCol = false;
 
@@ -59,13 +59,13 @@ export default class LiveAnalysisComponent extends Component {
 
     containerEl.innerHTML = `
       <div class="liveAnalysisComponent" id="liveAnalysisInner">
-        <div class="liveAnalysis__goniometer" id="gonioWrap">${GONIO_ROW_HTML}</div>
+        <div class="liveAnalysis__goniometer" id="gonioWrap">${gonioRowHtml}</div>
         <div class="liveAnalysis__resizeHandle" id="liveResizeHandle" aria-hidden="true"></div>
         <div class="liveAnalysis__spectrum" id="spectrumWrap"></div>
       </div>
       <div class="liveAnalysis__overlay hidden" id="liveOverlay">
         <div class="liveAnalysisComponent liveAnalysisComponent--overlay" id="liveOverlayInner">
-          <div class="liveAnalysis__goniometer" id="overlayGonioWrap">${GONIO_ROW_HTML}</div>
+          <div class="liveAnalysis__goniometer" id="overlayGonioWrap">${gonioRowHtml}</div>
           <div class="liveAnalysis__resizeHandle" id="overlayHandle" aria-hidden="true"></div>
           <div class="liveAnalysis__spectrum" id="overlaySpectrumWrap"></div>
         </div>
@@ -189,9 +189,9 @@ export default class LiveAnalysisComponent extends Component {
       const handleH = this._rowHandle.offsetHeight;
       const available = total - handleH;
       const gonioH = Math.max(
-        MIN_PANE_HEIGHT,
+        minPaneHeight,
         Math.min(
-          available - MIN_PANE_HEIGHT,
+          available - minPaneHeight,
           splits.row * available,
         ),
       );
@@ -204,9 +204,9 @@ export default class LiveAnalysisComponent extends Component {
     const handleH = this._overlayRowHandle.offsetHeight;
     const available = total - handleH;
     const gonioH = Math.max(
-      MIN_PANE_HEIGHT,
+      minPaneHeight,
       Math.min(
-        available - MIN_PANE_HEIGHT,
+        available - minPaneHeight,
         splits.row * available,
       ),
     );
@@ -235,14 +235,14 @@ export default class LiveAnalysisComponent extends Component {
 
     const handleW = colHandle?.offsetWidth ?? 4;
     const available = Math.max(0, row.clientWidth - handleW);
-    if (available <= MIN_PANE_WIDTH * 2) {
+    if (available <= minPaneWidth * 2) {
       return;
     }
 
     const polarW = Math.max(
-      MIN_PANE_WIDTH,
+      minPaneWidth,
       Math.min(
-        available - MIN_PANE_WIDTH,
+        available - minPaneWidth,
         splits.col * available,
       ),
     );
@@ -251,8 +251,8 @@ export default class LiveAnalysisComponent extends Component {
 
     const rowH = row.clientHeight;
     const squareSide = Math.max(
-      MIN_PANE_WIDTH,
-      Math.min(polarW, Math.max(0, rowH - GONIO_INFO_BAR_PX)),
+      minPaneWidth,
+      Math.min(polarW, Math.max(0, rowH - gonioInfoBarPx)),
     );
     polar.style.setProperty("--gonio-square-px", `${squareSide}px`);
   }
@@ -277,12 +277,12 @@ export default class LiveAnalysisComponent extends Component {
         const y = mv.clientY - rect.top;
         const handleH = handle.offsetHeight;
         const available = rect.height - handleH;
-        if (available <= MIN_PANE_HEIGHT * 2) {
+        if (available <= minPaneHeight * 2) {
           return;
         }
         splits.row = Math.max(
-          MIN_PANE_HEIGHT / available,
-          Math.min(1 - MIN_PANE_HEIGHT / available, y / available),
+          minPaneHeight / available,
+          Math.min(1 - minPaneHeight / available, y / available),
         );
         this._applyRowSplit(mode);
         this._applyGonioColSplit(mode);
@@ -318,13 +318,13 @@ export default class LiveAnalysisComponent extends Component {
         const rect = row.getBoundingClientRect();
         const handleW = handle.offsetWidth;
         const available = rect.width - handleW;
-        if (available <= MIN_PANE_WIDTH * 2) {
+        if (available <= minPaneWidth * 2) {
           return;
         }
         const x = mv.clientX - rect.left;
         splits.col = Math.max(
-          MIN_PANE_WIDTH / available,
-          Math.min(1 - MIN_PANE_WIDTH / available, x / available),
+          minPaneWidth / available,
+          Math.min(1 - minPaneWidth / available, x / available),
         );
         this._applyGonioColSplit(mode);
       };

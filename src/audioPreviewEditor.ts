@@ -9,7 +9,7 @@ import {
   WebviewMessageType,
 } from "./message";
 
-const ANALYZE_UI_CACHE_KEY = "wavPreview.analyzeUiCache.v1";
+const analyzeUiCacheKey = "wavPreview.analyzeUiCache.v1";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
   static async create(
@@ -112,7 +112,7 @@ export class AudioPreviewEditorProvider
     let analyzeDefault = { ...workspaceAnalyze } as AnalyzeDefault;
     if (config.get("cacheAnalyzeUi") !== false) {
       const cached = this._context.globalState.get<Record<string, unknown>>(
-        ANALYZE_UI_CACHE_KEY,
+        analyzeUiCacheKey,
       );
       if (cached && typeof cached === "object") {
         analyzeDefault = { ...analyzeDefault, ...cached } as AnalyzeDefault;
@@ -215,7 +215,7 @@ export class AudioPreviewEditorProvider
           const cfg = vscode.workspace.getConfiguration("WavPreview");
           if (cfg.get("cacheAnalyzeUi") !== false) {
             await this._context.globalState.update(
-              ANALYZE_UI_CACHE_KEY,
+              analyzeUiCacheKey,
               msg.data,
             );
           }

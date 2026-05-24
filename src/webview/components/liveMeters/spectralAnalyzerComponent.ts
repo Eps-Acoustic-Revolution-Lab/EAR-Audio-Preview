@@ -17,9 +17,9 @@ import {
   stepSpectralPeakDisplay,
 } from "../../utils/spectralPeakDisplay";
 import {
-  LOG_FREQS,
-  LOG_POINTS,
-  SPECTRUM_FREQ_TICKS,
+  logFreqs,
+  logPoints,
+  spectrumFreqTicks,
   freqToCanvasX,
   hzFromCanvasX,
   logIndexFromHz,
@@ -28,15 +28,15 @@ import {
   formatFreqTickLabel,
 } from "../../utils/liveLogSpectrumAxis";
 
-const DB_FLOOR = -90;
-const DB_CEIL = 0;
-const DB_TICKS = [0, -12, -24, -36, -48, -60, -90];
-const MAX_CANVAS_PX = 4096;
+const dbFloor = -90;
+const dbCeil = 0;
+const dbTicks = [0, -12, -24, -36, -48, -60, -90];
+const maxCanvasPx = 4096;
 
 function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   const t = (y - padT) / drawH;
   const tl = Math.max(0, Math.min(1, t));
-  return DB_FLOOR + (1 - tl) * (DB_CEIL - DB_FLOOR);
+  return dbFloor + (1 - tl) * (dbCeil - dbFloor);
 }export default class SpectralAnalyzerComponent extends Component {
   private _container: HTMLElement;
   private _canvas: HTMLCanvasElement;
@@ -46,14 +46,14 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   private _rafId: number = 0;
   private _bufL: Float32Array = new Float32Array(1024);
   private _bufR: Float32Array = new Float32Array(1024);
-  private _emaPeakLogical: Float32Array = new Float32Array(LOG_POINTS);
+  private _emaPeakLogical: Float32Array = new Float32Array(logPoints);
   /** Smoothed toward {@link _emaPeakLogical} for stroked outline + readout (reduces spatial kinks across bins). */
-  private _emaPeakDisplay: Float32Array = new Float32Array(LOG_POINTS);
+  private _emaPeakDisplay: Float32Array = new Float32Array(logPoints);
   /** Temp for one pass of {@link smoothPeakDisplayAlongBinsInto}. */
-  private _peakSpatialScratch: Float32Array = new Float32Array(LOG_POINTS);
-  private _emaRms: Float32Array = new Float32Array(LOG_POINTS);
+  private _peakSpatialScratch: Float32Array = new Float32Array(logPoints);
+  private _emaRms: Float32Array = new Float32Array(logPoints);
   /** Wall-clock expiry (ms since `performance.now()` origin) after last peak crest; decay only after this time. */
-  private _peakHoldUntilMs: Float64Array = new Float64Array(LOG_POINTS);
+  private _peakHoldUntilMs: Float64Array = new Float64Array(logPoints);
   private _hoverCx = 0;
   private _hoverCy = 0;
   private _hoverClientX = 0;
@@ -92,14 +92,14 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       ".spectralAnalyzer__hoverReadout",
     ) as HTMLElement;
 
-    this._emaPeakLogical.fill(DB_FLOOR);
-    this._emaPeakDisplay.fill(DB_FLOOR);
-    this._emaRms.fill(DB_FLOOR);
+    this._emaPeakLogical.fill(dbFloor);
+    this._emaPeakDisplay.fill(dbFloor);
+    this._emaRms.fill(dbFloor);
     this._peakHoldUntilMs.fill(0);
 
     this._addEventlistener(containerEl, EventType.MOUSE_MOVE, (e: MouseEvent) => {
       const r = this._canvas.getBoundingClientRect();
-      if (r.width <= 0 || r.height <= 0) return;
+      if (r.width <= 0 || r.height <= 0) {return;}
       this._hoverActive = true;
       this._hoverClientX = e.clientX;
       this._hoverClientY = e.clientY;
@@ -124,7 +124,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   }
 
   private _startRaf() {
-    if (!this._shouldRunRaf() || this._rafId) return;
+    if (!this._shouldRunRaf() || this._rafId) {return;}
     const loop = () => {
       this._draw();
       if (this._shouldRunRaf()) {
@@ -150,14 +150,14 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.max(1, Math.floor(this._container.clientWidth));
     const cssH = Math.max(1, Math.floor(this._container.clientHeight));
-    const w = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssW * dpr)));
-    const h = Math.min(MAX_CANVAS_PX, Math.max(1, Math.round(cssH * dpr)));
+    const w = Math.min(maxCanvasPx, Math.max(1, Math.round(cssW * dpr)));
+    const h = Math.min(maxCanvasPx, Math.max(1, Math.round(cssH * dpr)));
     if (this._canvas.width !== w || this._canvas.height !== h) {
       this._canvas.width = w;
       this._canvas.height = h;
     }
     const ctx = this._canvas.getContext("2d");
-    if (!ctx || w <= 0 || h <= 0) return;
+    if (!ctx || w <= 0 || h <= 0) {return;}
 
     const padL = 28 * dpr;
     const padB = 16 * dpr;
@@ -171,16 +171,16 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     ctx.fillStyle = "#0f0f0f";
     ctx.fillRect(0, 0, w, h);
 
-    if (drawW <= 0 || drawH <= 0) return;
+    if (drawW <= 0 || drawH <= 0) {return;}
 
     const freqToX = (f: number) => freqToCanvasX(f, padL, drawW);
     const dbToY = (db: number) =>
-      padT + (1 - (db - DB_FLOOR) / (DB_CEIL - DB_FLOOR)) * drawH;
+      padT + (1 - (db - dbFloor) / (dbCeil - dbFloor)) * drawH;
 
     ctx.strokeStyle = "rgba(255,255,255,0.1)";
     ctx.lineWidth = 1;
     ctx.setLineDash([2, 4]);
-    for (const db of DB_TICKS) {
+    for (const db of dbTicks) {
       const y = dbToY(db);
       ctx.beginPath();
       ctx.moveTo(padL, y);
@@ -188,7 +188,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       ctx.stroke();
     }
 
-    for (const f of SPECTRUM_FREQ_TICKS) {
+    for (const f of spectrumFreqTicks) {
       const x = freqToX(f);
       ctx.beginPath();
       ctx.moveTo(x, padT);
@@ -201,19 +201,19 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
     ctx.font = `${8 * dpr}px monospace`;
 
     ctx.textAlign = "right";
-    for (const db of DB_TICKS) {
+    for (const db of dbTicks) {
       ctx.fillText(db === 0 ? "0" : String(db), padL - 3 * dpr, dbToY(db) + 3 * dpr);
     }
 
     ctx.textAlign = "center";
-    for (const f of SPECTRUM_FREQ_TICKS) {
+    for (const f of spectrumFreqTicks) {
       const label = formatFreqTickLabel(f);
       ctx.fillText(label, freqToX(f), padT + drawH + 11 * dpr);
     }
 
     const clampDb = (v: number): number => {
-      if (!Number.isFinite(v)) return DB_FLOOR;
-      return Math.min(DB_CEIL + 6, Math.max(DB_FLOOR, v));
+      if (!Number.isFinite(v)) {return dbFloor;}
+      return Math.min(dbCeil + 6, Math.max(dbFloor, v));
     };
 
     const drawSpectrumCurves = () => {
@@ -224,13 +224,13 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       rmsGradient.addColorStop(1, "rgba(0,100,160,0.12)");
       ctx.fillStyle = rmsGradient;
       ctx.beginPath();
-      ctx.moveTo(freqToX(LOG_FREQS[0]), bottomY);
-      for (let i = 0; i < LOG_POINTS; i++) {
-        const x = freqToX(LOG_FREQS[i]);
+      ctx.moveTo(freqToX(logFreqs[0]), bottomY);
+      for (let i = 0; i < logPoints; i++) {
+        const x = freqToX(logFreqs[i]);
         const y = dbToY(clampDb(this._emaRms[i]));
         ctx.lineTo(x, y);
       }
-      ctx.lineTo(freqToX(LOG_FREQS[LOG_POINTS - 1]), bottomY);
+      ctx.lineTo(freqToX(logFreqs[logPoints - 1]), bottomY);
       ctx.closePath();
       ctx.fill();
 
@@ -238,11 +238,11 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       ctx.lineWidth = 1.25 * dpr;
       ctx.lineJoin = "round";
       ctx.beginPath();
-      for (let i = 0; i < LOG_POINTS; i++) {
-        const x = freqToX(LOG_FREQS[i]);
+      for (let i = 0; i < logPoints; i++) {
+        const x = freqToX(logFreqs[i]);
         const y = dbToY(clampDb(this._emaPeakDisplay[i]));
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        if (i === 0) {ctx.moveTo(x, y);}
+        else {ctx.lineTo(x, y);}
       }
       ctx.stroke();
     };
@@ -252,14 +252,14 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       if (this._bufL.length !== fftSize / 2) {
         this._bufL = new Float32Array(fftSize / 2);
         this._bufR = new Float32Array(fftSize / 2);
-        this._emaPeakLogical = new Float32Array(LOG_POINTS);
-        this._emaPeakDisplay = new Float32Array(LOG_POINTS);
-        this._peakSpatialScratch = new Float32Array(LOG_POINTS);
-        this._emaRms = new Float32Array(LOG_POINTS);
-        this._peakHoldUntilMs = new Float64Array(LOG_POINTS);
-        this._emaPeakLogical.fill(DB_FLOOR);
-        this._emaPeakDisplay.fill(DB_FLOOR);
-        this._emaRms.fill(DB_FLOOR);
+        this._emaPeakLogical = new Float32Array(logPoints);
+        this._emaPeakDisplay = new Float32Array(logPoints);
+        this._peakSpatialScratch = new Float32Array(logPoints);
+        this._emaRms = new Float32Array(logPoints);
+        this._peakHoldUntilMs = new Float64Array(logPoints);
+        this._emaPeakLogical.fill(dbFloor);
+        this._emaPeakDisplay.fill(dbFloor);
+        this._emaRms.fill(dbFloor);
         this._peakHoldUntilMs.fill(0);
       }
 
@@ -281,23 +281,23 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
           const f = (k + 0.5) * binHz;
           srcXs[k] = f;
           const dBL = isFinite(this._bufL[k])
-            ? Math.max(this._bufL[k], DB_FLOOR)
-            : DB_FLOOR;
+            ? Math.max(this._bufL[k], dbFloor)
+            : dbFloor;
           const dBR = isFinite(this._bufR[k])
-            ? Math.max(this._bufR[k], DB_FLOOR)
-            : DB_FLOOR;
+            ? Math.max(this._bufR[k], dbFloor)
+            : dbFloor;
           const lLin = Math.pow(10, dBL / 20);
           const rLin = Math.pow(10, dBR / 20);
           const oL = g.ll * lLin + g.rl * rLin;
           const oR = g.lr * lLin + g.rr * rLin;
           const pLin = Math.sqrt(oL * oL + oR * oR) / Math.SQRT2 + 1e-15;
           let db = 20 * Math.log10(pLin);
-          db = Math.max(DB_FLOOR, Math.min(DB_CEIL + 12, db));
-          db += spectrumTiltDbAboveFloor(f, tilt, db, DB_FLOOR, 18);
-          srcYs[k] = Math.max(DB_FLOOR, Math.min(DB_CEIL + 12, db));
+          db = Math.max(dbFloor, Math.min(dbCeil + 12, db));
+          db += spectrumTiltDbAboveFloor(f, tilt, db, dbFloor, 18);
+          srcYs[k] = Math.max(dbFloor, Math.min(dbCeil + 12, db));
         }
 
-        const resampled = akimaResample(srcXs, srcYs, LOG_FREQS);
+        const resampled = akimaResample(srcXs, srcYs, logFreqs);
         const inst = quinticBSplineSmooth(resampled);
 
         const decay = emaDecayFromReleaseDbPerSec(
@@ -310,7 +310,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
           this._analyzeSettingsService.liveSpectrumPeakHoldSec * 1000;
         const nowMs = typeof performance !== "undefined" ? performance.now() : 0;
 
-        for (let i = 0; i < LOG_POINTS; i++) {
+        for (let i = 0; i < logPoints; i++) {
           const v = clampDb(inst[i]);
 
           const pk = this._emaPeakLogical[i];
@@ -328,7 +328,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
           this._emaRms[i] = decay * this._emaRms[i] + (1 - decay) * v;
         }
 
-        for (let i = 0; i < LOG_POINTS; i++) {
+        for (let i = 0; i < logPoints; i++) {
           this._emaPeakDisplay[i] = stepSpectralPeakDisplay(
             this._emaPeakLogical[i],
             this._emaPeakDisplay[i],
@@ -338,7 +338,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
         smoothPeakDisplayAlongBinsInto(
           this._emaPeakDisplay,
           this._peakSpatialScratch,
-          LOG_POINTS,
+          logPoints,
         );
         this._emaPeakDisplay.set(this._peakSpatialScratch);
       }
@@ -368,8 +368,8 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
       let rmStr = "—";
       if (analysers && this._emaPeakDisplay.length >= 2) {
         const li = logIndexFromHz(hz);
-        pkStr = lerpF32(this._emaPeakDisplay, li, DB_FLOOR).toFixed(1);
-        rmStr = lerpF32(this._emaRms, li, DB_FLOOR).toFixed(1);
+        pkStr = lerpF32(this._emaPeakDisplay, li, dbFloor).toFixed(1);
+        rmStr = lerpF32(this._emaRms, li, dbFloor).toFixed(1);
       }
       this._readoutEl.style.visibility = "visible";
       this._readoutEl.innerHTML = `${fmtHzLive(hz)}<br>Y ${dbY.toFixed(1)} dBFS<br>Peak ${pkStr} dBFS<br>RMS ${rmStr} dBFS`;

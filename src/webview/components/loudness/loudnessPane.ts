@@ -14,13 +14,13 @@ import LoudnessService, {
 } from "../../services/loudnessService";
 import { quinticBSplineSmooth } from "../../utils/quinticBSpline";
 
-const FALLBACK_LUFS_MIN = -60;
-const FALLBACK_LUFS_MAX = 0;
-const MIN_LUFS_SPAN = 12;
-const PLOT_PAD_LEFT_CSS_PX = 36;
-const PLOT_PAD_RIGHT_CSS_PX = 8;
-const PLOT_PAD_TOP_CSS_PX = 12;
-const PLOT_PAD_BOTTOM_CSS_PX = 22;
+const fallbackLufsMin = -60;
+const fallbackLufsMax = 0;
+const minLufsSpan = 12;
+const plotPadLeftCssPx = 36;
+const plotPadRightCssPx = 8;
+const plotPadTopCssPx = 12;
+const plotPadBottomCssPx = 22;
 
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
@@ -297,7 +297,7 @@ export default class LoudnessPane extends Component {
   ): { min: number; max: number; ticks: number[] } {
     const profile = this._profile;
     if (!profile) {
-      return { min: FALLBACK_LUFS_MIN, max: FALLBACK_LUFS_MAX, ticks: [] };
+      return { min: fallbackLufsMin, max: fallbackLufsMax, ticks: [] };
     }
 
     const values: number[] = [];
@@ -321,8 +321,8 @@ export default class LoudnessPane extends Component {
     const p98 = percentile(values, 0.98);
     if (!Number.isFinite(p02) || !Number.isFinite(p98)) {
       const mid = Number.isFinite(integrated) ? integrated : -23;
-      const min = Math.floor((mid - MIN_LUFS_SPAN / 2) / 3) * 3;
-      const max = min + MIN_LUFS_SPAN;
+      const min = Math.floor((mid - minLufsSpan / 2) / 3) * 3;
+      const max = min + minLufsSpan;
       const ticks: number[] = [];
       for (let t = min; t <= max; t += 3) {
         ticks.push(t);
@@ -335,10 +335,10 @@ export default class LoudnessPane extends Component {
     const pad = Math.max(2, (max - min) * 0.15);
     min = Math.floor((min - pad) / 3) * 3;
     max = Math.ceil((max + pad) / 3) * 3;
-    if (max - min < MIN_LUFS_SPAN) {
+    if (max - min < minLufsSpan) {
       const mid = (min + max) / 2;
-      min = Math.floor((mid - MIN_LUFS_SPAN / 2) / 3) * 3;
-      max = min + MIN_LUFS_SPAN;
+      min = Math.floor((mid - minLufsSpan / 2) / 3) * 3;
+      max = min + minLufsSpan;
     }
 
     const ticks: number[] = [];
@@ -389,8 +389,8 @@ export default class LoudnessPane extends Component {
 
   private _plotCssRect(): { left: number; right: number; width: number } {
     const rect = this._canvasWrap.getBoundingClientRect();
-    const left = PLOT_PAD_LEFT_CSS_PX;
-    const right = Math.max(left + 1, rect.width - PLOT_PAD_RIGHT_CSS_PX);
+    const left = plotPadLeftCssPx;
+    const right = Math.max(left + 1, rect.width - plotPadRightCssPx);
     return { left, right, width: right - left };
   }
 
@@ -519,10 +519,10 @@ export default class LoudnessPane extends Component {
     ctx.fillStyle = this._canvasBackgroundColor();
     ctx.fillRect(0, 0, w, h);
 
-    const padL = PLOT_PAD_LEFT_CSS_PX * dpr;
-    const padR = PLOT_PAD_RIGHT_CSS_PX * dpr;
-    const padT = PLOT_PAD_TOP_CSS_PX * dpr;
-    const padB = PLOT_PAD_BOTTOM_CSS_PX * dpr;
+    const padL = plotPadLeftCssPx * dpr;
+    const padR = plotPadRightCssPx * dpr;
+    const padT = plotPadTopCssPx * dpr;
+    const padB = plotPadBottomCssPx * dpr;
     const plotW = Math.max(1, w - padL - padR);
     const plotH = Math.max(1, h - padT - padB);
     const { minTime, maxTime } = this._visibleTimeRange();
