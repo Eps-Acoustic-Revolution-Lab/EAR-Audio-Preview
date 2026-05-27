@@ -1,6 +1,6 @@
 <div align="center">
 
-[![CI](https://github.com/DDDPG/vscode-audio-preview/actions/workflows/ci.yml/badge.svg)](https://github.com/DDDPG/vscode-audio-preview/actions/workflows/ci.yml)
+[![CI](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/actions/workflows/ci.yml/badge.svg)](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/api/extension-guides/custom-editors)
@@ -46,11 +46,21 @@ The upstream extension pioneered the VS Code Custom Editor model for audio, but 
 
 ---
 
-## Quick Start
+## Installation
+
+### For Users
+
+Install from VSIX file:
 
 ```sh
-git clone https://github.com/DDDPG/vscode-audio-preview.git
-cd vscode-audio-preview
+code --install-extension ear-audio-preview-*.vsix
+```
+
+### For Developers
+
+```sh
+git clone git@github.com:Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview.git
+cd EAR-Audio-Preview
 npm install
 npm run webpack
 ```
@@ -98,7 +108,71 @@ Four tabbed views, each mounted lazily on first access:
 | **Loudness** | Offline EBU R128 profile over the full file — integrated/short-term/momentary LUFS curves, true-peak markers, LRA, PLR. Drag to select a time region. |
 | **Edit & Export** | WAV export of selected region (EasyCut). |
 
-### Live Monitoring
+#### STFT Pane (Default)
+
+The STFT pane displays waveform and spectrogram side-by-side:
+
+- **Waveform** — Multi-channel amplitude display with RMS, peak, and true-peak readouts on hover. Drag the resize handle between waveform and spectrogram to adjust heights.
+- **Spectrogram** — GPU-accelerated frequency-time visualization. Supports linear, log, and mel frequency scales. Auto-FFT mode adapts window size to visible time range.
+- **Zoom** — Click and drag to zoom into a time/frequency region. Hold `Ctrl` to constrain to time axis, `Shift` for frequency/amplitude axis.
+- **Reset** — Right-click to reset view. `Ctrl+right-click` resets time only, `Shift+right-click` resets frequency/amplitude only.
+- **Cue position** — Click anywhere to set the playback cue (white vertical line).
+
+#### Live Spec Pane
+
+Real-time analysis during playback:
+
+- **Goniometer** — Three modes: Polar Sample (scatter), Polar Level (directional gate), Lissajous (X-Y). Shows stereo field and phase relationships.
+- **Phase Correlation Spectrum** — Per-frequency-bin correlation coefficient ρ ∈ [−1, 1]. Red = out-of-phase, green = in-phase.
+- **Live Spectrum Analyzer** — Log-spaced frequency bars with configurable release rate (dB/s), peak hold, and HF tilt (0–6 dB/oct).
+- **Fullscreen** — Click **↗** to expand. Press `Esc` or right-click to exit.
+
+#### Loudness Pane
+
+Offline EBU R128 loudness profile:
+
+- **LUFS curves** — Integrated (I), short-term (S), and momentary (M) loudness over time. BSpline-smoothed for display.
+- **True peak markers** — Red markers indicate true-peak excursions above 0 dBTP.
+- **LRA & PLR** — Loudness Range and Peak-to-Loudness Ratio displayed in the info panel.
+- **Time selection** — Drag to select a region and re-analyze with new bounds.
+
+#### Edit & Export Pane
+
+Export selected audio regions:
+
+- **EasyCut** — Select a time range in any pane, then export as WAV from this tab.
+- **Format** — Exports preserve original sample rate and bit depth.
+
+### Common Operations
+
+#### Playback Control
+
+- **Play/Pause** — Click the play button in the player bar, or press `Space` (if enabled in settings)
+- **Seek** — Click anywhere on the seek bar, or click on the waveform/spectrogram to set cue position
+- **Volume** — Adjust the volume slider in the player bar. Switch between dB and linear scale in Player settings
+
+#### Zoom & Navigation
+
+- **Zoom in** — Click and drag on waveform or spectrogram to select a region
+- **Constrained zoom** — Hold `Ctrl` while dragging to zoom time axis only, `Shift` for frequency/amplitude axis only
+- **Reset zoom** — Right-click on the graph. `Ctrl+right-click` resets time only, `Shift+right-click` resets frequency/amplitude only
+- **Resize waveform** — Drag the horizontal handle between waveform and spectrogram to adjust heights
+
+#### Analysis & Inspection
+
+- **Hover readout** — Hover over waveform to see RMS, peak, and true-peak values at that time position
+- **Frequency readout** — Hover over spectrogram to see frequency and dB level
+- **Select region** — Drag to select a time range, then switch to Edit & Export pane to export as WAV
+- **Re-analyze** — Change settings in the Options tab, then click **Save** to redraw spectrogram
+
+#### Live Monitoring
+
+- **Enable live analysis** — Check "Show live analysis" in Options tab to activate real-time meters
+- **Solo channels** — Use the monitoring bar below the info table to solo L, R, M (mid), or S (side)
+- **5-band monitor** — Configure crossover edges in the monitoring matrix for frequency-specific solo
+- **Fullscreen live spec** — Click **↗** in Live Spec pane to expand. Press `Esc` or right-click to exit
+
+### Live Monitoring Details
 
 Enable **Show live analysis** in the FAB settings sheet. A dedicated analyser node taps the playback graph without affecting the main output:
 
@@ -179,6 +253,25 @@ Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms →
 
 ## Usage
 
+### Getting Started
+
+1. **Open an audio file** — Click any supported audio file (`.wav`, `.mp3`, `.flac`, `.ogg`, `.opus`, `.aac`, `.m4a`) in VS Code. The EAR Audio Preview editor opens automatically.
+
+2. **Set as default editor** (optional) — Add to your `settings.json`:
+   ```jsonc
+   "workbench.editorAssociations": {
+     "*.wav":  "wavPreview.audioPreview",
+     "*.mp3":  "wavPreview.audioPreview",
+     "*.flac": "wavPreview.audioPreview",
+     "*.ogg":  "wavPreview.audioPreview",
+     "*.opus": "wavPreview.audioPreview",
+     "*.aac":  "wavPreview.audioPreview",
+     "*.m4a":  "wavPreview.audioPreview"
+   }
+   ```
+
+3. **Navigate the interface** — The editor loads with the **STFT** pane active, showing waveform and spectrogram. Switch between workspace panes using the tabs below the player bar.
+
 ### UI Layout
 
 | Element | Location | Role |
@@ -193,11 +286,56 @@ Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms →
 
 Click the FAB (bottom-left) to open the settings sheet. Three tabs:
 
-- **Options** — waveform/spectrogram toggles, FFT size, frequency scale, dB range, window type, FFT backend, auto-FFT, high-res mode, live analysis toggles
-- **Player** — HPF/LPF filters, frequency cutoffs, volume scale, seek behavior
-- **EasyCut** — WAV export of selected region
+#### Options Tab
 
-Settings persist to VS Code `globalState` (debounced, 500 ms). Full configuration reference: [doc/configuration.md](./doc/configuration.md).
+**Common Settings:**
+- **Time range** — Set min/max time bounds for analysis (seconds)
+
+**Waveform Settings:**
+- **Visible** — Toggle waveform display on/off
+- **Amplitude range** — Set min/max amplitude bounds for display
+
+**Spectrogram Settings:**
+- **Visible** — Toggle spectrogram display on/off
+- **High-resolution mode** — Doubles canvas pixel dimensions for sharper rendering on high-DPI displays
+- **Window size** — FFT window size (256–32768 samples, or Auto)
+  - **Auto mode** — Adapts window size to visible time range for optimal frequency resolution
+- **Window type** — Hann, Hamming, Blackman-Harris, or Triangular
+- **FFT backend** — Ooura (fast, pure JS) or Essentia.js (multi-window support, offline LUFS)
+- **Frequency scale** — Linear, log piecewise, or mel
+- **Frequency range** — Set min/max frequency bounds (Hz)
+- **dB range** — Set min/max dB bounds for spectrogram color mapping
+
+**Live Analysis Settings:**
+- **Show live analysis** — Enable real-time meters during playback (goniometer, spectrum, level meter)
+- **Goniometer mode** — Polar Sample, Polar Level, or Lissajous
+- **Spectrum release rate** — Decay speed in dB/s (1–60 dB/s)
+- **Spectrum peak hold** — Peak hold duration in seconds (0–5 s)
+- **HF tilt** — High-frequency tilt compensation (0–6 dB/oct)
+
+#### Player Tab
+
+**Playback Controls:**
+- **Volume scale** — dB or linear scale
+- **Initial volume** — Default volume on load (dB or linear, depending on scale)
+- **Enable space key play** — Toggle playback with spacebar
+- **Enable seek to play** — Auto-play when seeking to a new position
+
+**Filters:**
+- **Enable HPF** — High-pass filter on playback
+- **HPF frequency** — Cutoff frequency in Hz (10 Hz – Nyquist)
+- **Enable LPF** — Low-pass filter on playback
+- **LPF frequency** — Cutoff frequency in Hz (10 Hz – Nyquist)
+- **Match filter frequency to spectrogram** — Auto-sync filter cutoffs with spectrogram frequency range
+
+#### EasyCut Tab
+
+**Export Settings:**
+- **Time range** — Select start/end time for export (inherited from selection in other panes)
+- **Export** — Click to export selected region as WAV file
+
+**Save Button:**
+- Click **Save** at the bottom of the settings sheet to redraw the spectrogram with current analysis settings. Settings persist automatically to VS Code `globalState` (debounced, 500 ms).
 
 ---
 
@@ -261,7 +399,6 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
 - [ ] Edit tab wire-up to EasyCut
 
-See [open issues](https://github.com/DDDPG/vscode-audio-preview/issues).
 
 ---
 
@@ -269,10 +406,10 @@ See [open issues](https://github.com/DDDPG/vscode-audio-preview/issues).
 
 Bug reports, documentation, and pull requests are welcome.
 
-1. Fork the repo
+1. Fork the repo at [Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview)
 2. `git checkout -b feature/amazing-feature`
 3. Commit and push
-4. Open a Pull Request
+4. Open a Pull Request to the `lab-version` remote
 
 Run `npm test && npm run lint-check` before submitting.
 
