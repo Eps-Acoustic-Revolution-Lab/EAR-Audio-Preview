@@ -1,84 +1,54 @@
+@import "../../styles/panelSurface.css";
+
 .settingTab {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 4px;
   overflow: hidden;
-  background: var(--vscode-editor-background);
+}
+
+.settingTab__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .settingTab__footer {
   flex-shrink: 0;
   display: flex;
   justify-content: flex-end;
-  padding: 0.5rem 0.65rem;
+  padding: 0.75rem 0 0;
+  margin-top: 0.5rem;
   border-top: 1px solid var(--vscode-panel-border);
-  background: var(--vscode-sideBar-background);
+}
+
+.settingTab__footer[hidden] {
+  display: none !important;
 }
 
 .settingTab__saveSpectrogram {
   padding: 0.35rem 0.75rem;
   font-size: 0.85rem;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid var(--vscode-button-border, var(--vscode-panel-border));
   background: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
 }
 
-.settingTab__body {
-  display: flex;
-  flex-direction: row;
-  flex: 1 1 auto;
-  min-height: 0;
+.settingTab__saveSpectrogram:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
-.settingTab__menu {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35em;
-  padding: 0.45em;
-  flex-shrink: 0;
-  width: 6.5rem;
-  box-sizing: border-box;
-  border-right: 1px solid var(--vscode-panel-border);
-  background: var(--vscode-sideBar-background);
-}
-
-.settingTab__button {
-  width: 100%;
-  text-align: left;
-  padding: 0.35em 0.45em;
-  font-size: 0.85em;
-  background: transparent;
-  color: var(--vscode-foreground);
-  border: 1px solid transparent;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.settingTab__button:hover {
-  background: var(--vscode-list-hoverBackground);
-}
-
-.settingTab__button:focus-visible {
+.settingTab__saveSpectrogram:focus-visible {
   outline: 1px solid var(--vscode-focusBorder);
-  outline-offset: -1px;
+  outline-offset: 1px;
 }
 
-.settingTab__button--active {
-  background: var(--vscode-list-activeSelectionBackground);
-  color: var(--vscode-list-activeSelectionForeground);
-  border-color: var(--vscode-panel-border);
-}
-
-.settingTab__content {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0.5em;
+.settingTab__playbackSection {
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--vscode-panel-border);
 }

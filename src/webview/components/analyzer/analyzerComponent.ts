@@ -175,7 +175,6 @@ export default class AnalyzerComponent extends Component {
           entry.analyzeService,
           this._analyzeSettingsService,
           entry.audioBuffer,
-          settings,
           entry.ch,
           this._loudnessService,
         );

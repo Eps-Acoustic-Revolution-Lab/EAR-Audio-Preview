@@ -1,0 +1,114 @@
+/* Centered settings overlay — aligned with keyboard shortcuts overlay */
+
+.settingsOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.settingsOverlay[hidden] {
+  display: none !important;
+}
+
+.settingsOverlay__backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--vscode-editor-background) 60%, transparent);
+  pointer-events: auto;
+}
+
+.settingsOverlay__dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(92vw, 680px);
+  max-height: 80vh;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  pointer-events: auto;
+  overflow: hidden;
+}
+
+.settingsOverlay--animating .settingsOverlay__dialog {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.settingsOverlay--animating.settingsOverlay--open .settingsOverlay__dialog {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.settingsOverlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 1.25rem 1.5rem 0;
+}
+
+.settingsOverlay__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.settingsOverlay__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.settingsOverlay__close:hover {
+  background: var(--vscode-toolbar-hoverBackground, var(--vscode-list-hoverBackground));
+}
+
+.settingsOverlay__close:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.settingsOverlay__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1.5rem 1.25rem;
+}
+
+#settingTab {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settingsOverlay--animating .settingsOverlay__dialog {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -25,28 +25,66 @@ export default class PlayerSettingsComponent extends Component {
 
     this._componentRoot.innerHTML = `
     <div class="playerSetting">
-      <h3>Filters</h3>
-      <div>
-          <input class="playerSetting__input js-playerSetting-enableHpf" type="checkbox">high-pass:  
-          <input class="playerSetting__input js-playerSetting-hpfFrequency" type="number" min="10" max="100000" step="10"> Hz
-      </div>
-      <div>
-          <input class="playerSetting__input js-playerSetting-enableLpf" type="checkbox">low-pass:  
-          <input class="playerSetting__input js-playerSetting-lpfFrequency" type="number" min="10" max="100000" step="10"> Hz
-      </div>      
-      <div>
-          <input class="playerSetting__input js-playerSetting-matchFilterFrequencyToSpectrogram" type="checkbox">match to spectrogram frequency range
-      </div>
-      <h3>Monitor band edges (solo)</h3>
-      <p class="playerSetting__muted">Six ascending crossover frequencies (Hz). Band&nbsp;i listens to [edge<sub>i</sub>, edge<sub>i+1</sub>].
-        Applies to live playback monitoring path only.</p>
-      <div class="playerSetting__monitorEdges">
-        <label>Edge 1 <input class="playerSetting__input js-monitorBand-edge-0" type="number" min="10" step="1" /> Hz</label>
-        <label>Edge 2 <input class="playerSetting__input js-monitorBand-edge-1" type="number" min="10" step="1" /> Hz</label>
-        <label>Edge 3 <input class="playerSetting__input js-monitorBand-edge-2" type="number" min="10" step="1" /> Hz</label>
-        <label>Edge 4 <input class="playerSetting__input js-monitorBand-edge-3" type="number" min="10" step="1" /> Hz</label>
-        <label>Edge 5 <input class="playerSetting__input js-monitorBand-edge-4" type="number" min="10" step="1" /> Hz</label>
-        <label>Upper <input class="playerSetting__input js-monitorBand-edge-5" type="number" min="10" step="1" /> Hz</label>
+      <div class="panelGroup">
+        <h3 class="panelGroup__title">Playback</h3>
+        <div class="panelGroup__items">
+          <div class="panelGroup panelGroup--nested">
+            <h4 class="panelGroup__title panelGroup__title--sub">Filters</h4>
+            <div class="panelGroup__items">
+              <div class="panelRow">
+                <span class="panelRow__label">High-pass</span>
+                <div class="panelRow__control">
+                  <input class="js-playerSetting-enableHpf" type="checkbox">
+                  <span class="panelRow__field"><input class="js-playerSetting-hpfFrequency" type="number" min="10" max="100000" step="10"><span class="panelRow__suffix">Hz</span></span>
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Low-pass</span>
+                <div class="panelRow__control">
+                  <input class="js-playerSetting-enableLpf" type="checkbox">
+                  <span class="panelRow__field"><input class="js-playerSetting-lpfFrequency" type="number" min="10" max="100000" step="10"><span class="panelRow__suffix">Hz</span></span>
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Match spectrogram range</span>
+                <div class="panelRow__control">
+                  <input class="js-playerSetting-matchFilterFrequencyToSpectrogram" type="checkbox">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panelGroup panelGroup--nested">
+            <h4 class="panelGroup__title panelGroup__title--sub">Monitor band edges</h4>
+            <p class="playerSetting__muted">Six ascending crossover frequencies (Hz). Band&nbsp;i listens to [edge<sub>i</sub>, edge<sub>i+1</sub>]. Applies to live playback monitoring only.</p>
+            <div class="panelGroup__items playerSetting__monitorEdges">
+              <div class="panelRow">
+                <span class="panelRow__label">Edge 1</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-0" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Edge 2</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-1" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Edge 3</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-2" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Edge 4</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-3" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Edge 5</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-4" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Upper</span>
+                <div class="panelRow__control"><span class="panelRow__field"><input class="js-monitorBand-edge-5" type="number" min="10" step="1"><span class="panelRow__suffix">Hz</span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     `;

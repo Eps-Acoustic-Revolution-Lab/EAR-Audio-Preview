@@ -3,6 +3,8 @@ export interface Config {
   playerDefault: PlayerDefault;
   analyzeDefault: AnalyzeDefault;
   fileExt?: string;
+  /** Basename of the opened audio file (for meta popover). */
+  fileName?: string;
   /** VS Code webview URI for `dist/loudness.worklet.js` (AudioWorklet module). */
   loudnessWorkletUri?: string;
 }

@@ -1,29 +1,29 @@
-.infoTable {
-  table-layout: fixed;
-  width: 100%;
-  padding: 0.5em;
-  border-collapse: collapse;
+@import "../../styles/panelSurface.css";
+
+.audioMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
-.infoTableData {
-  border: solid 1px var(--vscode-foreground);
-  padding: 0.5em;
-  box-sizing: border-box;
-  vertical-align: middle;
+.audioMeta__list {
+  margin: 0;
+  padding: 0;
 }
 
-/* Stable column widths: long labels / values clip instead of widening the table. */
-.infoTable tr > td:first-child {
-  width: 44%;
-  max-width: 44%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.audioMeta__row {
+  margin: 0;
 }
 
-.infoTable tr > td:last-child {
-  width: 56%;
-  max-width: 56%;
+.audioMeta__row dt,
+.audioMeta__row dd {
+  margin: 0;
+}
+
+.audioMeta__value {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

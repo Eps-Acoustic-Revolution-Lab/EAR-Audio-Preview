@@ -276,14 +276,14 @@ describe("analyzeSettingsService", () => {
     );
     expect(as.minFrequency).toBe(0);
   });
-  test("minFrequency should be default value if its in [0, sampleRate/2]", () => {
+  test("minFrequency is always 0 on file open regardless of cached default", () => {
     const minFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
     defaultSettings.minFrequency = minFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    expect(as.minFrequency).toBeCloseTo(minFrequency);
+    expect(as.minFrequency).toBe(0);
   });
   test("minFrequency should be 0 if default value is out of [0, sampleRate/2]", () => {
     const minFrequency = getRandomFloatOutOf(0, audioBuffer.sampleRate / 2);
@@ -317,14 +317,14 @@ describe("analyzeSettingsService", () => {
     );
     expect(as.maxFrequency).toBeCloseTo(audioBuffer.sampleRate / 2);
   });
-  test("maxFrequency should be default value if its in [0, sampleRate/2]", () => {
+  test("maxFrequency is always Nyquist on file open regardless of cached default", () => {
     const maxFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
     defaultSettings.maxFrequency = maxFrequency;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    expect(as.maxFrequency).toBeCloseTo(maxFrequency);
+    expect(as.maxFrequency).toBeCloseTo(audioBuffer.sampleRate / 2);
   });
   test("maxFrequency should be to sampleRate/2 if default value is out of [0, sampleRate/2]", () => {
     const maxFrequency = getRandomFloatOutOf(0, audioBuffer.sampleRate / 2);

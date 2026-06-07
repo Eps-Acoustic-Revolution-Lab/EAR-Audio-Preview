@@ -13,6 +13,7 @@ import {
   type LoudnessMeasurements,
 } from "loudness-worklet";
 import { loadLoudnessWorkletModule } from "../utils/loudnessWorkletLoader";
+import type { EditListenMode } from "./editExportSettingsService";
 
 export default class PlayerService extends Service {
   private _audioContext: AudioContext;
@@ -98,6 +99,16 @@ export default class PlayerService extends Service {
   private _seekbarValue: number = 0;
   private _animationFrameID: number = 0;
 
+  private _editListenActive = false;
+  private _editListenMode: EditListenMode = "dry";
+  private _editRegionStart = 0;
+  private _editRegionEnd = 0;
+  private _editProcessedBuffer: AudioBuffer | null = null;
+  /** Playback offset (seconds) passed to AudioBufferSourceNode.start for the current session. */
+  private _editPlayStartOffset = 0;
+  /** Bumps on each gain-routing reconnect to ignore stale async worklet callbacks. */
+  private _gainConnectGeneration = 0;
+
   constructor(
     audioContext: AudioContext,
     audioBuffer: AudioBuffer,
@@ -125,10 +136,14 @@ export default class PlayerService extends Service {
 
     // play again if filter related setting is changed
     const applyFilters = () => {
-      if (this._isPlaying) {
-        this.pause();
-        this.play();
+      if (!this._isPlaying) {
+        return;
       }
+      if (this._editListenActive && this._editListenMode === "processed") {
+        return;
+      }
+      this.pause();
+      this.play();
     };
     this._playerSettingsService.addEventListener(
       EventType.PS_UPDATE_ENABLE_HPF,
@@ -209,6 +224,69 @@ export default class PlayerService extends Service {
 
   public get sampleRate(): number {
     return this._audioBuffer.sampleRate;
+  }
+
+  public get editListenActive() {
+    return this._editListenActive;
+  }
+
+  public setEditListenState(opts: {
+    active: boolean;
+    mode?: EditListenMode;
+    regionStart?: number;
+    regionEnd?: number;
+    processedBuffer?: AudioBuffer | null;
+  }): void {
+    this._editListenActive = opts.active;
+    if (!opts.active) {
+      this._editProcessedBuffer = null;
+      return;
+    }
+    if (opts.mode !== undefined) {
+      this._editListenMode = opts.mode;
+    }
+    if (opts.regionStart !== undefined) {
+      this._editRegionStart = opts.regionStart;
+    }
+    if (opts.regionEnd !== undefined) {
+      this._editRegionEnd = opts.regionEnd;
+    }
+    if (opts.processedBuffer !== undefined) {
+      this._editProcessedBuffer = opts.processedBuffer;
+    }
+  }
+
+  private _clampToEditRegion(sec: number): number {
+    if (!this._editListenActive) {
+      return sec;
+    }
+    const lo = this._editRegionStart;
+    const hi = this._editRegionEnd;
+    if (hi <= lo) {
+      return lo;
+    }
+    return Math.max(lo, Math.min(sec, hi - 1e-6));
+  }
+
+  private _playbackSecAtAcTime(acTime: number): number {
+    const elapsed = acTime - this._lastStartAcTime;
+    if (!this._editListenActive) {
+      return this._currentSec + elapsed;
+    }
+    const regionLen = this._editRegionEnd - this._editRegionStart;
+    if (regionLen <= 0) {
+      return this._editRegionStart;
+    }
+    if (this._editListenMode === "processed" && this._editProcessedBuffer) {
+      const bufDur = Math.max(this._editProcessedBuffer.duration, 1e-6);
+      const offsetInRegion =
+        (this._editPlayStartOffset + elapsed) % bufDur;
+      return this._editRegionStart + offsetInRegion;
+    }
+    const offsetInRegion =
+      (this._editPlayStartOffset - this._editRegionStart + elapsed) %
+      regionLen;
+    return this._editRegionStart + offsetInRegion;
   }
 
   /** Latest loudness-worklet measurements (stereo program). */
@@ -310,8 +388,8 @@ export default class PlayerService extends Service {
       return;
     }
     if (this._isPlaying) {
-      this.pause();
-      this.play();
+      this._gainConnectGeneration++;
+      this._connectGainOutput();
     }
   }
 
@@ -544,6 +622,7 @@ export default class PlayerService extends Service {
     if (!this._splitter) {
       return;
     }
+    const generation = ++this._gainConnectGeneration;
     this._teardownMonitorBandChain();
     try {
       this._gainNode.disconnect();
@@ -566,7 +645,12 @@ export default class PlayerService extends Service {
     } else {
       upstream.connect(this._splitter);
       void this._ensureLoudnessWorklet().then((node) => {
-        if (!node || !this._liveGraphActive || !this._isPlaying) {
+        if (
+          generation !== this._gainConnectGeneration ||
+          !node ||
+          !this._liveGraphActive ||
+          !this._isPlaying
+        ) {
           return;
         }
         try {
@@ -584,6 +668,7 @@ export default class PlayerService extends Service {
    * Must be called each time play() rebuilds the source chain.
    */
   private _connectGainOutput(): void {
+    this._gainConnectGeneration++;
     // gainNode always disconnects before reconnecting to avoid double-connections
     try {
       this._gainNode.disconnect();
@@ -603,18 +688,33 @@ export default class PlayerService extends Service {
   // ─── Public playback API ───────────────────────────────────────────────────
 
   public play() {
+    const useProcessed =
+      this._editListenActive &&
+      this._editListenMode === "processed" &&
+      this._editProcessedBuffer !== null;
+    const useDryLoop =
+      this._editListenActive && this._editListenMode === "dry";
+
+    if (
+      this._editListenActive &&
+      this._editListenMode === "processed" &&
+      !this._editProcessedBuffer
+    ) {
+      return;
+    }
+
     // connect nodes: source → [hpf →] [lpf →] gain → [splitter → analysers → merger →] destination
     let lastNode: AudioNode = this._gainNode;
 
     this._lpfNode.disconnect();
-    if (this._playerSettingsService.enableLpf) {
+    if (!useProcessed && this._playerSettingsService.enableLpf) {
       this._lpfNode.frequency.value = this._playerSettingsService.lpfFrequency;
       this._lpfNode.connect(lastNode);
       lastNode = this._lpfNode;
     }
 
     this._hpfNode.disconnect();
-    if (this._playerSettingsService.enableHpf) {
+    if (!useProcessed && this._playerSettingsService.enableHpf) {
       this._hpfNode.frequency.value = this._playerSettingsService.hpfFrequency;
       this._hpfNode.connect(lastNode);
       lastNode = this._hpfNode;
@@ -626,14 +726,41 @@ export default class PlayerService extends Service {
     // because audioBufferSourceNode.start() can't be called more than once.
     // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode
     this._source = this._audioContext.createBufferSource();
-    this._source.buffer = this._audioBuffer;
+
+    let startOffset = this._playbackPosition;
+    if (useProcessed && this._editProcessedBuffer) {
+      this._source.buffer = this._editProcessedBuffer;
+      this._source.loop = true;
+      this._source.loopStart = 0;
+      this._source.loopEnd = this._editProcessedBuffer.duration;
+      const regionLen = this._editRegionEnd - this._editRegionStart;
+      let inRegion = this._playbackPosition - this._editRegionStart;
+      if (inRegion < 0 || inRegion >= regionLen) {
+        inRegion = 0;
+      }
+      startOffset = inRegion;
+      this._editPlayStartOffset = inRegion;
+      this._currentSec = this._editRegionStart + inRegion;
+    } else if (useDryLoop) {
+      this._source.buffer = this._audioBuffer;
+      this._source.loop = true;
+      this._source.loopStart = this._editRegionStart;
+      this._source.loopEnd = this._editRegionEnd;
+      startOffset = this._clampToEditRegion(this._playbackPosition);
+      this._editPlayStartOffset = startOffset;
+      this._currentSec = startOffset;
+    } else {
+      this._source.buffer = this._audioBuffer;
+      this._source.loop = false;
+      this._currentSec = this._playbackPosition;
+    }
+
     this._source.connect(lastNode);
 
     // Always start from the fixed cue (white line), not from where we last paused.
     this._isPlaying = true;
-    this._currentSec = this._playbackPosition;
     this._lastStartAcTime = this._audioContext.currentTime;
-    this._source.start(this._audioContext.currentTime, this._playbackPosition);
+    this._source.start(this._audioContext.currentTime, startOffset);
 
     // update playing status
     this.dispatchEvent(
@@ -652,11 +779,19 @@ export default class PlayerService extends Service {
     cancelAnimationFrame(this._animationFrameID);
 
     this._source.stop();
-    this._currentSec += this._audioContext.currentTime - this._lastStartAcTime;
+    const acTime =
+      typeof this._audioContext.getOutputTimestamp === "function"
+        ? this._audioContext.getOutputTimestamp()?.contextTime ??
+          this._audioContext.currentTime
+        : this._audioContext.currentTime;
     const stopped = Math.max(
       0,
-      Math.min(this._currentSec, this._audioBuffer.duration),
+      Math.min(
+        this._playbackSecAtAcTime(acTime),
+        this._audioBuffer.duration,
+      ),
     );
+    // Keep _playbackPosition (fixed cue / white line); only update playhead display.
     this._currentSec = stopped;
     this._seekbarValue =
       this._audioBuffer.duration > 0
@@ -694,7 +829,7 @@ export default class PlayerService extends Service {
         ? ts.contextTime
         : this._audioContext.currentTime;
 
-    const current = this._currentSec + acTime - this._lastStartAcTime;
+    const current = this._playbackSecAtAcTime(acTime);
     this._seekbarValue = (100 * current) / this._audioBuffer.duration;
 
     // update seek bar value
@@ -707,7 +842,7 @@ export default class PlayerService extends Service {
       }),
     );
 
-    if (current > this._audioBuffer.duration) {
+    if (!this._editListenActive && current > this._audioBuffer.duration) {
       cancelAnimationFrame(this._animationFrameID);
       this._source.stop();
       const dur = this._audioBuffer.duration;
@@ -744,7 +879,9 @@ export default class PlayerService extends Service {
    * seek value is 0~100.
    */
   public previewSeekFromPercent(value: number) {
-    const sec = (value * this._audioBuffer.duration) / 100;
+    const sec = this._clampToEditRegion(
+      (value * this._audioBuffer.duration) / 100,
+    );
     this.setPlaybackPosition(sec);
     this._currentSec = this._playbackPosition;
     this._seekbarValue = value;
@@ -766,7 +903,9 @@ export default class PlayerService extends Service {
       this.pause();
     }
 
-    const sec = (value * this._audioBuffer.duration) / 100;
+    const sec = this._clampToEditRegion(
+      (value * this._audioBuffer.duration) / 100,
+    );
     this.setPlaybackPosition(sec);
     this._currentSec = this._playbackPosition;
     this._seekbarValue = value;

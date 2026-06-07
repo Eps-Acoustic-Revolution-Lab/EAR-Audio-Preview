@@ -1064,10 +1064,6 @@ export default class AnalyzeSettingsService extends Service {
     // init mel filter num
     setting.melFilterNum = defaultSetting.melFilterNum;
 
-    // init default frequency
-    setting.minFrequency = defaultSetting.minFrequency;
-    setting.maxFrequency = defaultSetting.maxFrequency;
-
     // init default time range
     setting.minTime = 0;
     setting.maxTime = audioBuffer.duration;
@@ -1176,6 +1172,12 @@ export default class AnalyzeSettingsService extends Service {
       defaultSetting.monitorBandEdgesHz,
       defaultSetting.monitorBandSoloMask,
     );
+
+    const nyquist = audioBuffer.sampleRate / 2;
+    setting.minFrequency = 0;
+    setting.maxFrequency = nyquist;
+    defaultSetting.minFrequency = 0;
+    defaultSetting.maxFrequency = nyquist;
 
     return setting;
   }
@@ -1289,8 +1291,6 @@ export default class AnalyzeSettingsService extends Service {
       fftWindowAuto: this._fftWindowAuto,
       frequencyScale: this.frequencyScale,
       melFilterNum: this.melFilterNum,
-      minFrequency: this.minFrequency,
-      maxFrequency: this.maxFrequency,
       minAmplitude: this.minAmplitude,
       maxAmplitude: this.maxAmplitude,
       spectrogramAmplitudeRange: this.spectrogramAmplitudeRange,

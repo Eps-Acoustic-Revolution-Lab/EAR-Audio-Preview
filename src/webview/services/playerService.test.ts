@@ -1,5 +1,9 @@
 import { EventType } from "../events";
-import { createAudioContext, waitEventForAction } from "../../__mocks__/helper";
+import {
+  createAudioContext,
+  wait,
+  waitEventForAction,
+} from "../../__mocks__/helper";
 import PlayerService from "./playerService";
 import { AnalyzeDefault, PlayerDefault } from "../../config";
 import PlayerSettingsService from "./playerSettingsService";
@@ -66,5 +70,49 @@ describe("playerService", () => {
     );
 
     expect(detail.value).toBe(false);
+  });
+
+  test("pause does not move fixed playback cue; play restarts from cue", async () => {
+    const cueSec = 2.5;
+    playerService.setPlaybackPosition(cueSec);
+
+    const startOffsets: number[] = [];
+    const ctx = playerService.audioContext;
+    const origCreateBufferSource = ctx.createBufferSource.bind(ctx);
+    jest.spyOn(ctx, "createBufferSource").mockImplementation(() => {
+      const source = origCreateBufferSource();
+      const origStart = source.start.bind(source);
+      jest
+        .spyOn(source, "start")
+        .mockImplementation((when?: number, offset?: number) => {
+          startOffsets.push(offset ?? 0);
+          origStart(when, offset);
+        });
+      return source;
+    });
+
+    playerService.play();
+    await wait(30);
+    playerService.pause();
+
+    expect(playerService.playbackPosition).toBe(cueSec);
+
+    playerService.play();
+    expect(startOffsets.length).toBeGreaterThanOrEqual(2);
+    expect(startOffsets[startOffsets.length - 1]).toBeCloseTo(cueSec, 5);
+
+    jest.restoreAllMocks();
+  });
+
+  test("setEditListenState toggles edit listen mode", () => {
+    playerService.setEditListenState({
+      active: true,
+      mode: "dry",
+      regionStart: 1,
+      regionEnd: 5,
+    });
+    expect(playerService.editListenActive).toBe(true);
+    playerService.setEditListenState({ active: false });
+    expect(playerService.editListenActive).toBe(false);
   });
 });

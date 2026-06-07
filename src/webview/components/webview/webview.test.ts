@@ -51,19 +51,21 @@ describe("webview", () => {
     expect(msg.type).toBe(WebviewMessageType.CONFIG);
   });
 
-  test("root layout includes workspace strip, wave band, and settings dock", () => {
+  test("root layout includes workspace strip, wave band, settings overlay, and FAB", () => {
     expect(document.getElementById("stickyHeaderChrome")).not.toBeNull();
-    expect(document.getElementById("topChrome")).not.toBeNull();
+    expect(document.getElementById("transportChrome")).not.toBeNull();
+    expect(document.getElementById("infoTable")).toBeNull();
     expect(document.getElementById("workspaceStrip")).not.toBeNull();
     expect(document.getElementById("graphDeck")).not.toBeNull();
     expect(document.getElementById("waveBand")).not.toBeNull();
     expect(document.getElementById("settingsDock")).not.toBeNull();
-    expect(document.getElementById("settingTab")).not.toBeNull();
+    expect(document.getElementById("metaPopoverMount")).not.toBeNull();
+    expect(document.getElementById("settingsOverlayMount")).not.toBeNull();
     expect(document.getElementById("settingsFab")).not.toBeNull();
     expect(document.querySelector(".settingsDock__fabRingBar")).not.toBeNull();
     expect(document.querySelector(".js-settingsFabPercent")).not.toBeNull();
-    const sheet = document.getElementById("settingsSheet") as HTMLElement;
-    expect(sheet.hasAttribute("hidden")).toBe(true);
+    expect(document.querySelector(".js-openSettings")).not.toBeNull();
+    expect(document.getElementById("settingsSheet")).toBeNull();
   });
 
   test("request data after getting config", async () => {
@@ -125,7 +127,7 @@ describe("webview", () => {
     });
   });
 
-  test("init infoTable after finish receiving data", async () => {
+  test("init audio meta popover after finish receiving data", async () => {
     postMessageFromExt({
       type: ExtMessageType.DATA,
       data: {
@@ -136,10 +138,15 @@ describe("webview", () => {
       },
     });
     await wait(100);
-    expect(document.getElementById("infoTable")?.innerHTML).not.toBe("");
+    expect(document.getElementById("audioMeta")?.innerHTML).not.toBe("");
+    expect(
+      document.querySelector(".js-audioMeta-encoding .audioMeta__value")
+        ?.textContent,
+    ).toBe("pcm_s16le");
     const fab = document.getElementById("settingsFab") as HTMLButtonElement;
     expect(fab.disabled).toBe(false);
     expect(fab.getAttribute("aria-busy")).toBe("false");
+    expect(fab.getAttribute("title")).toBe("Audio file info");
   });
 
   test("init player after finish receiving data", async () => {
@@ -160,8 +167,8 @@ describe("webview", () => {
     expect(msg).toEqual({ type: WebviewMessageType.CONFIG });
   });
 
-  test("infoTable is empty after reload", async () => {
-    expect(document.getElementById("infoTable")?.innerHTML).toBe("");
+  test("audio meta is empty after reload", async () => {
+    expect(document.getElementById("audioMeta")?.innerHTML).toBe("");
   });
 
   test("player is empty after reload", async () => {

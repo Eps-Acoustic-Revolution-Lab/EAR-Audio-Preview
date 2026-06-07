@@ -82,6 +82,18 @@ export class EventType {
   /** `detail: { pane: WorkspacePaneId }` — active workspace column for FAB / options. */
   public static readonly WORKSPACE_ACTIVE_PANE = "workspace-active-pane";
   public static readonly UPDATE_PLAYBACK_POSITION = "update-playback-position";
+  // editExport
+  public static readonly EE_UPDATE_REGION_START = "ee-update-region-start";
+  public static readonly EE_UPDATE_REGION_END = "ee-update-region-end";
+  public static readonly EE_UPDATE_CHANNEL_MODE = "ee-update-channel-mode";
+  public static readonly EE_UPDATE_ENABLE_HPF = "ee-update-enable-hpf";
+  public static readonly EE_UPDATE_HPF_HZ = "ee-update-hpf-hz";
+  public static readonly EE_UPDATE_ENABLE_LPF = "ee-update-enable-lpf";
+  public static readonly EE_UPDATE_LPF_HZ = "ee-update-lpf-hz";
+  public static readonly EE_UPDATE_SYNC_FILTERS = "ee-update-sync-filters";
+  public static readonly EE_UPDATE_DESTINATION = "ee-update-destination";
+  public static readonly EE_UPDATE_LISTEN_MODE = "ee-update-listen-mode";
+  public static readonly EL_UPDATE_ACTIVE = "el-update-active";
   // other
   public static readonly CLICK = "click";
   public static readonly CHANGE = "change";

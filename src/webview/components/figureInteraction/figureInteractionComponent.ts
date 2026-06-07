@@ -3,7 +3,6 @@ import { CursorReadoutPayload, EventType } from "../../events";
 import PlayerService from "../../services/playerService";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService, {
-  AnalyzeSettingsProps,
   FrequencyScale,
 } from "../../services/analyzeSettingsService";
 import {
@@ -15,14 +14,16 @@ import Component from "../../component";
 import LoudnessService, { formatDbTp } from "../../services/loudnessService";
 
 export default class FigureInteractionComponent extends Component {
-  private selectionDiv: HTMLDivElement | null = null;
+  private selectionOverlay: HTMLDivElement | null = null;
+  private selectionBand: HTMLDivElement | null = null;
   private isDragging: boolean = false;
-  private isTimeAxisOnly: boolean = false;
+  private isTimeAxisOnly: boolean = true;
   private isValueAxisOnly: boolean = false;
   private mouseDownX: number = 0;
   private mouseDownY: number = 0;
   private currentX: number = 0;
   private currentY: number = 0;
+  private readonly onWaveformCanvas: boolean;
 
   constructor(
     componentRootSelector: string,
@@ -31,11 +32,11 @@ export default class FigureInteractionComponent extends Component {
     analyzeService: AnalyzeService,
     analyseSettingsService: AnalyzeSettingsService,
     audioBuffer: AudioBuffer,
-    settings: AnalyzeSettingsProps,
     channelIndex: number,
     loudnessService?: LoudnessService,
   ) {
     super();
+    this.onWaveformCanvas = onWaveformCanvas;
     const componentRoot = document.querySelector(componentRootSelector);
 
     // register seekbar (playback progress) on figures
@@ -322,10 +323,7 @@ export default class FigureInteractionComponent extends Component {
         */
         if (this.isDragging) {
           this.isDragging = false;
-          if (this.selectionDiv) {
-            componentRoot.removeChild(this.selectionDiv);
-            this.selectionDiv = null;
-          }
+          this.removeSelectionOverlay(componentRoot);
           const rect = userInputDiv.getBoundingClientRect();
           this.applySelectedRange(
             this.mouseDownX,
@@ -334,7 +332,6 @@ export default class FigureInteractionComponent extends Component {
             event.clientY,
             rect,
             onWaveformCanvas,
-            settings,
             analyseSettingsService,
             analyzeService,
           );
@@ -347,13 +344,8 @@ export default class FigureInteractionComponent extends Component {
         // left click
         if (event.button === 0) {
           this.isDragging = true;
-          // create a new div for the selection
-          this.selectionDiv = document.createElement("div");
-          this.selectionDiv.style.position = "absolute";
-          this.selectionDiv.style.border = "1px solid red";
-          this.selectionDiv.style.backgroundColor = "rgba(255, 0, 0, 0)";
-          this.selectionDiv.style.pointerEvents = "none"; // to avoid interfering with the mouse events
-          componentRoot.appendChild(this.selectionDiv);
+          this.applyAxisModifierFlags(event);
+          this.createSelectionOverlay(componentRoot);
           return;
         }
 
@@ -390,12 +382,12 @@ export default class FigureInteractionComponent extends Component {
       userInputDiv,
       EventType.MOUSE_MOVE,
       (event: MouseEvent) => {
-        if (!this.isDragging || !this.selectionDiv) {
+        if (!this.isDragging || !this.selectionOverlay) {
           return;
         }
         this.currentX = event.clientX;
         this.currentY = event.clientY;
-        this.drawSelectionDiv(userInputDiv);
+        this.drawSelectionOverlay(userInputDiv);
       },
     );
 
@@ -403,16 +395,11 @@ export default class FigureInteractionComponent extends Component {
       userInputDiv,
       EventType.MOUSE_UP,
       (event: MouseEvent) => {
-        if (!this.isDragging || !this.selectionDiv) {
+        if (!this.isDragging || !this.selectionOverlay) {
           return;
         }
         this.isDragging = false;
-
-        // Remove the selection div
-        if (this.selectionDiv) {
-          componentRoot.removeChild(this.selectionDiv);
-          this.selectionDiv = null;
-        }
+        this.removeSelectionOverlay(componentRoot);
 
         // calculate the position of the mouse up event
         const mouseUpX = event.clientX;
@@ -446,7 +433,6 @@ export default class FigureInteractionComponent extends Component {
           this.mouseDownY,
           rect,
           onWaveformCanvas,
-          settings,
           analyseSettingsService,
           analyzeService,
         );
@@ -454,76 +440,114 @@ export default class FigureInteractionComponent extends Component {
     );
 
     // When the control key or shift key is pressed, even if the mouse is not moving,
-    // if the selectuionDiv already exists, update the selection range.
+    // if the selection overlay already exists, update the selection range.
     this._addEventlistener(
       window,
       EventType.KEY_DOWN,
       (event: KeyboardEvent) => {
-        if (!this.isDragging || !this.selectionDiv) {
+        if (!this.isDragging || !this.selectionOverlay) {
           return;
         }
-        // ignore if pressed keys are not ctrl or shift
-        if (!event.ctrlKey && !event.shiftKey) {
+        if (!event.ctrlKey && !event.metaKey && !event.shiftKey) {
           return;
         }
-        if (event.ctrlKey) {
-          this.isTimeAxisOnly = true;
-          this.isValueAxisOnly = false;
-        }
-        if (event.shiftKey) {
-          this.isTimeAxisOnly = false;
-          this.isValueAxisOnly = true;
-        }
-        this.drawSelectionDiv(userInputDiv);
+        this.applyAxisModifierFlags(event);
+        this.drawSelectionOverlay(userInputDiv);
       },
     );
 
     // When the control key or shift key is released, update flags about selection range.
     this._addEventlistener(window, EventType.KEY_UP, (event: KeyboardEvent) => {
-      // ignore if released keys are not ctrl or shift
-      if (event.key !== "Shift" && event.key !== "Control") {
+      if (event.key !== "Shift" && event.key !== "Control" && event.key !== "Meta") {
         return;
       }
-      this.isTimeAxisOnly = false;
-      this.isValueAxisOnly = false;
 
-      if (this.isDragging && this.selectionDiv) {
-        this.drawSelectionDiv(userInputDiv);
+      this.applyDefaultAxisMode();
+
+      if (this.isDragging && this.selectionOverlay) {
+        this.drawSelectionOverlay(userInputDiv);
       }
     });
   }
 
-  private drawSelectionDiv(userInputDiv: HTMLDivElement) {
+  /** Waveform defaults to time-only; STFT defaults to dual-axis (time + frequency). */
+  private applyDefaultAxisMode(): void {
+    if (this.onWaveformCanvas) {
+      this.isTimeAxisOnly = true;
+      this.isValueAxisOnly = false;
+    } else {
+      this.isTimeAxisOnly = false;
+      this.isValueAxisOnly = false;
+    }
+  }
+
+  private applyAxisModifierFlags(event: {
+    ctrlKey: boolean;
+    metaKey: boolean;
+    shiftKey: boolean;
+  }): void {
+    if (event.ctrlKey || event.metaKey) {
+      this.isTimeAxisOnly = true;
+      this.isValueAxisOnly = false;
+    } else if (event.shiftKey) {
+      this.isTimeAxisOnly = false;
+      this.isValueAxisOnly = true;
+    } else {
+      this.applyDefaultAxisMode();
+    }
+  }
+
+  private createSelectionOverlay(componentRoot: Element): void {
+    const overlay = document.createElement("div");
+    overlay.className = "figureSelectionOverlay";
+
+    this.selectionBand = document.createElement("div");
+    this.selectionBand.className = "figureSelection__band";
+
+    overlay.appendChild(this.selectionBand);
+    componentRoot.appendChild(overlay);
+    this.selectionOverlay = overlay;
+  }
+
+  private removeSelectionOverlay(componentRoot: Element): void {
+    if (this.selectionOverlay) {
+      componentRoot.removeChild(this.selectionOverlay);
+      this.selectionOverlay = null;
+      this.selectionBand = null;
+    }
+  }
+
+  private drawSelectionOverlay(userInputDiv: HTMLDivElement) {
     const rect = userInputDiv.getBoundingClientRect();
 
-    // draw selection range
-    // note: direction of y-axis is top to bottom
+    const bandLeft = Math.min(this.mouseDownX, this.currentX) - rect.left;
+    const bandRight = Math.max(this.mouseDownX, this.currentX) - rect.left;
+    const bandTop = Math.min(this.mouseDownY, this.currentY) - rect.top;
+    const bandBottom = Math.max(this.mouseDownY, this.currentY) - rect.top;
+
+    if (!this.selectionBand) {
+      return;
+    }
+
     if (this.isTimeAxisOnly) {
-      // select time axis only
-      this.selectionDiv.style.left =
-        Math.min(this.mouseDownX, this.currentX) - rect.left + "px";
-      this.selectionDiv.style.top = "0%";
-      this.selectionDiv.style.width =
-        Math.abs(this.mouseDownX - this.currentX) + "px";
-      this.selectionDiv.style.height = "100%";
+      const bw = Math.max(0, bandRight - bandLeft);
+      this.selectionBand.style.left = `${bandLeft}px`;
+      this.selectionBand.style.top = "0";
+      this.selectionBand.style.width = `${bw}px`;
+      this.selectionBand.style.height = "100%";
     } else if (this.isValueAxisOnly) {
-      // select value axis only
-      this.selectionDiv.style.left = "0%";
-      this.selectionDiv.style.top =
-        Math.min(this.mouseDownY, this.currentY) - rect.top + "px";
-      this.selectionDiv.style.width = "100%";
-      this.selectionDiv.style.height =
-        Math.abs(this.mouseDownY - this.currentY) + "px";
+      const bh = Math.max(0, bandBottom - bandTop);
+      this.selectionBand.style.left = "0";
+      this.selectionBand.style.top = `${bandTop}px`;
+      this.selectionBand.style.width = "100%";
+      this.selectionBand.style.height = `${bh}px`;
     } else {
-      // select both axes
-      this.selectionDiv.style.left =
-        Math.min(this.mouseDownX, this.currentX) - rect.left + "px";
-      this.selectionDiv.style.top =
-        Math.min(this.mouseDownY, this.currentY) - rect.top + "px";
-      this.selectionDiv.style.width =
-        Math.abs(this.mouseDownX - this.currentX) + "px";
-      this.selectionDiv.style.height =
-        Math.abs(this.mouseDownY - this.currentY) + "px";
+      const bw = Math.max(0, bandRight - bandLeft);
+      const bh = Math.max(0, bandBottom - bandTop);
+      this.selectionBand.style.left = `${bandLeft}px`;
+      this.selectionBand.style.top = `${bandTop}px`;
+      this.selectionBand.style.width = `${bw}px`;
+      this.selectionBand.style.height = `${bh}px`;
     }
   }
 
@@ -534,10 +558,10 @@ export default class FigureInteractionComponent extends Component {
     mouseDownY: number,
     rect: DOMRect,
     onWaveformCanvas: boolean,
-    settings: AnalyzeSettingsProps,
     analyseSettingsService: AnalyzeSettingsService,
     analyzeService: AnalyzeService,
   ) {
+    const settings = analyseSettingsService.toProps();
     const minX = Math.min(mouseUpX, mouseDownX) - rect.left;
     const maxX = Math.max(mouseUpX, mouseDownX) - rect.left;
     const minY = Math.min(mouseUpY, mouseDownY) - rect.top;
@@ -604,7 +628,6 @@ export default class FigureInteractionComponent extends Component {
       }
     }
 
-    // analyze
     analyzeService.analyze();
   }
 }

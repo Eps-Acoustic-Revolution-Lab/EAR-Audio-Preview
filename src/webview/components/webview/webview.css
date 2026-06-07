@@ -36,15 +36,17 @@ body > #root {
   gap: 0;
 }
 
-.topChrome {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5em;
-  align-items: start;
+.transportChrome {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+  min-height: 0;
+  min-width: 0;
 }
 
-#infoTable,
 #player {
+  flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
 }
@@ -64,7 +66,7 @@ body > #root {
   overflow: hidden;
 }
 
-/* Fixed overlay: FAB + sheet; does not consume grid rows */
+/* Fixed overlay: FAB load indicator; does not consume grid rows */
 .settingsDock {
   position: fixed;
   inset: 0;
@@ -72,16 +74,8 @@ body > #root {
   pointer-events: none;
 }
 
-.settingsDock__fab,
-.settingsDock__backdrop,
-.settingsDock__sheet {
+.settingsDock__fab {
   pointer-events: auto;
-}
-
-/* Author `display:flex` on the sheet must not defeat the HTML `hidden` attribute. */
-.settingsDock__backdrop[hidden],
-.settingsDock__sheet[hidden] {
-  display: none !important;
 }
 
 .settingsDock__fab {
@@ -100,7 +94,7 @@ body > #root {
   color: var(--vscode-foreground);
   box-shadow: 0 2px 8px
     color-mix(in srgb, var(--vscode-widget-shadow) 40%, transparent);
-  cursor: pointer;
+  cursor: default;
   z-index: 2;
   overflow: visible;
 }
@@ -188,75 +182,4 @@ body > #root {
 .settingsDock__fab:focus-visible {
   outline: 1px solid var(--vscode-focusBorder);
   outline-offset: 2px;
-}
-
-.settingsDock__backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background: color-mix(
-    in srgb,
-    var(--vscode-editor-background) 55%,
-    transparent
-  );
-}
-
-.settingsDock__sheet {
-  position: fixed;
-  left: calc(env(safe-area-inset-left, 0px) + 12px);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 10px);
-  width: min(92vw, 420px);
-  max-height: min(70vh, 560px);
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0.65rem 0.75rem;
-  box-sizing: border-box;
-  overflow: hidden;
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 6px;
-  background: var(--vscode-editorWidget-background);
-  color: var(--vscode-foreground);
-  box-shadow: 0 4px 16px
-    color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
-}
-
-.settingsDock__sheet.settingsDock__sheet--animating {
-  transform-origin: left bottom;
-  opacity: 0;
-  transform: translateY(6px) scale(0.99);
-  transition:
-    opacity 200ms ease,
-    transform 200ms ease;
-}
-
-.settingsDock__sheet.settingsDock__sheet--animating.settingsDock__sheet--open {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .settingsDock__sheet.settingsDock__sheet--animating {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.settingsDock__sheetTitle {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--vscode-descriptionForeground);
-  flex-shrink: 0;
-}
-
-#settingTab {
-  min-height: 0;
-  flex: 1 1 auto;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }

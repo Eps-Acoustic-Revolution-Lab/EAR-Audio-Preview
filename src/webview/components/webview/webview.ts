@@ -17,6 +17,7 @@ import AnalyzeSettingsService, {
   FftBackend,
 } from "../../services/analyzeSettingsService";
 import InfoTableComponent from "../infoTable/infoTableComponent";
+import MetaFabComponent from "../metaFab/metaFabComponent";
 import PlayerComponent from "../player/playerComponent";
 import SettingTab from "../settingTab/settingTabComponent";
 import AnalyzerComponent from "../analyzer/analyzerComponent";
@@ -28,6 +29,11 @@ import LoudnessComponent from "../loudness/loudnessComponent";
 import LoudnessService from "../../services/loudnessService";
 import { setLoudnessWorkletModuleUrl } from "../../utils/loudnessWorkletLoader";
 import { setActiveWorkspacePane } from "../../workspacePane";
+import EditExportComponent from "../editExport/editExportComponent";
+import EditExportSettingsService from "../../services/editExportSettingsService";
+import EditListenService from "../../services/editListenService";
+import SettingsOverlayComponent from "../settingsOverlay/settingsOverlayComponent";
+import KeyboardShortcutsOverlayComponent from "../keyboardShortcuts/keyboardShortcutsOverlayComponent";
 
 type CreateAudioContext = (sampleRate: number) => AudioContext;
 type CreateDecoder = (
@@ -51,6 +57,7 @@ export default class WebView extends Component {
 
   private _config: Config;
 
+  private _metaFab: MetaFabComponent | null = null;
   private _settingsFab: HTMLButtonElement | null = null;
   private _fabPercentEl: HTMLSpanElement | null = null;
   private _loadRingSvg: SVGSVGElement | null = null;
@@ -88,8 +95,7 @@ export default class WebView extends Component {
     const root = document.getElementById("root");
     root.innerHTML = `
       <div id="stickyHeaderChrome" class="stickyHeaderChrome">
-        <div id="topChrome" class="topChrome">
-          <div id="infoTable"></div>
+        <div id="transportChrome" class="transportChrome">
           <div id="player"></div>
         </div>
         <div id="liveMonitoringBar"></div>
@@ -133,6 +139,20 @@ export default class WebView extends Component {
               id="tabLoudness"
             >Loudness</button>
           </div>
+          <button
+            type="button"
+            class="workspaceChrome__settingsBtn js-openSettings"
+            aria-label="Pane settings"
+            aria-haspopup="dialog"
+            aria-expanded="false"
+            aria-controls="settingsOverlay"
+            title="Settings (⌘/)"
+          >
+            <svg class="workspaceChrome__settingsIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
         </div>
       </div>
       <div id="mainVisualizer" class="mainVisualizer">
@@ -171,8 +191,8 @@ export default class WebView extends Component {
               aria-labelledby="tabEdit"
               hidden
             >
-              <div class="graphDeck__body graphDeck__body--placeholder">
-                <p class="workspacePane__placeholder">Cut and spectrum export — coming soon.</p>
+              <div class="graphDeck__body">
+                <div id="editGraphMount" class="graphDeck__graph workspacePane__graph" hidden></div>
               </div>
             </div>
             <div
@@ -191,15 +211,15 @@ export default class WebView extends Component {
         <div id="meterColumnResizeHandle" class="meterColumnResizeHandle" title="Drag to resize level meter width" aria-hidden="true"></div>
         <div id="liveMetersRight"></div>
       </div>
+      <div id="settingsOverlayMount"></div>
+      <div id="keyboardShortcutsOverlay"></div>
       <div id="settingsDock" class="settingsDock">
+        <div id="metaPopoverMount"></div>
         <button
           type="button"
           class="settingsDock__fab js-settingsFab"
           id="settingsFab"
-          aria-expanded="false"
-          aria-controls="settingsSheet"
-          aria-haspopup="dialog"
-          aria-label="More options"
+          aria-label="Audio info"
           aria-busy="false"
           disabled
           title="Loading audio…"
@@ -236,25 +256,13 @@ export default class WebView extends Component {
             aria-hidden="true"
           >0%</span>
           <span class="settingsDock__fabIcon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="6" cy="12" r="1.75"/>
-              <circle cx="12" cy="12" r="1.75"/>
-              <circle cx="18" cy="12" r="1.75"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+              <line x1="4" y1="7" x2="20" y2="7"/>
+              <line x1="4" y1="12" x2="16" y2="12"/>
+              <line x1="4" y1="17" x2="12" y2="17"/>
             </svg>
           </span>
         </button>
-        <div class="settingsDock__backdrop js-settingsBackdrop" id="settingsBackdrop" hidden></div>
-        <div
-          class="settingsDock__sheet js-settingsSheet"
-          id="settingsSheet"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="settingsSheetTitle"
-          hidden
-        >
-          <div id="settingsSheetTitle" class="settingsDock__sheetTitle">Settings</div>
-          <div id="settingTab"></div>
-        </div>
       </div>
     `;
 
@@ -276,6 +284,8 @@ export default class WebView extends Component {
       ".settingsDock__fabRingBar",
     ) as SVGCircleElement | null;
     this._primeLoadRingGeometry();
+    this._metaFab = new MetaFabComponent("#metaPopoverMount", "#settingsFab");
+    this._disposables.push(this._metaFab);
     document.documentElement.dataset.workspacePane = "stft";
   }
 
@@ -303,6 +313,7 @@ export default class WebView extends Component {
   }
 
   private _showLoadRing() {
+    this._metaFab?.setLoading(true);
     this._settingsFab?.classList.add("settingsDock__fab--loading");
     this._loadRingSvg?.classList.remove("settingsDock__fabRingSvg--hidden");
     this._settingsFab?.setAttribute("aria-busy", "true");
@@ -358,10 +369,11 @@ export default class WebView extends Component {
       return;
     }
     this._settingsFab.setAttribute("aria-busy", "false");
+    this._metaFab?.setLoading(false);
     if (success) {
       this._settingsFab.disabled = false;
-      this._settingsFab.setAttribute("title", "Options");
-      this._settingsFab.setAttribute("aria-label", "More options");
+      this._settingsFab.setAttribute("title", "Audio file info");
+      this._settingsFab.setAttribute("aria-label", "Audio file info");
     } else {
       this._settingsFab.disabled = true;
       this._settingsFab.setAttribute("title", "Could not load audio");
@@ -458,7 +470,9 @@ export default class WebView extends Component {
     // Phase 1: show header info immediately (fast path)
     console.log("read header info");
     decoder.readAudioInfo();
-    const infoTableComponent = new InfoTableComponent("#infoTable");
+    const infoTableComponent = new InfoTableComponent(
+      this._metaFab?.audioMetaSelector ?? "#audioMeta",
+    );
     infoTableComponent.showInfo(
       decoder.numChannels,
       decoder.sampleRate,
@@ -543,18 +557,22 @@ export default class WebView extends Component {
       },
     });
 
+    const settingsOverlay = new SettingsOverlayComponent("#settingsOverlayMount");
     const settingTabComponent = new SettingTab(
       "#settingTab",
       playerSettingsService,
       analyzeService,
       analyzeSettingsService,
-      audioBuffer,
-      this._postMessage,
+    );
+    const keyboardShortcutsOverlay = new KeyboardShortcutsOverlayComponent(
+      "#keyboardShortcutsOverlay",
     );
     this._disposables.push(
       analyzeService,
       analyzeSettingsService,
+      settingsOverlay,
       settingTabComponent,
+      keyboardShortcutsOverlay,
     );
 
     // Wire level meter, monitoring bar, workspace panes (lazy STFT / Live).
@@ -690,6 +708,36 @@ export default class WebView extends Component {
       this._disposables.push(loudnessComponent);
     };
 
+    const editExportSettingsService =
+      EditExportSettingsService.create(audioBuffer);
+    const editListenService = new EditListenService(
+      audioBuffer,
+      editExportSettingsService,
+      playerSettingsService,
+      analyzeSettingsService,
+      playerService,
+    );
+    this._disposables.push(editListenService);
+    let editExportComponent: EditExportComponent | undefined;
+    const editGraphMount = document.getElementById("editGraphMount") as HTMLElement | null;
+    const ensureEditMounted = () => {
+      if (editExportComponent || !editGraphMount) {
+        return;
+      }
+      editGraphMount.removeAttribute("hidden");
+      editExportComponent = new EditExportComponent(
+        "#editGraphMount",
+        audioBuffer,
+        editExportSettingsService,
+        editListenService,
+        playerSettingsService,
+        analyzeSettingsService,
+        playerService,
+        this._postMessage,
+      );
+      this._disposables.push(editExportComponent);
+    };
+
     const wirePaneSelect = (
       sel: string,
       pane: "stft" | "liveSpec" | "edit" | "loudness",
@@ -708,7 +756,7 @@ export default class WebView extends Component {
     };
     wirePaneSelect(".js-paneSelect-stft", "stft", ensureStftMounted);
     wirePaneSelect(".js-paneSelect-liveSpec", "liveSpec", ensureLiveMounted);
-    wirePaneSelect(".js-paneSelect-edit", "edit");
+    wirePaneSelect(".js-paneSelect-edit", "edit", ensureEditMounted);
     wirePaneSelect(
       ".js-paneSelect-loudness",
       "loudness",
@@ -793,6 +841,12 @@ export default class WebView extends Component {
         document
           .getElementById("tabLoudness")
           ?.setAttribute("aria-selected", tri[3]);
+      }
+      if (p === "edit") {
+        void ensureEditMounted();
+        editListenService.enter();
+      } else {
+        editListenService.leave();
       }
     }) as EventListener);
 

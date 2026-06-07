@@ -1,0 +1,140 @@
+/* Keyboard Shortcuts Overlay */
+
+.keyboardShortcutsOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.keyboardShortcutsOverlay[hidden] {
+  display: none !important;
+}
+
+.keyboardShortcutsOverlay__backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--vscode-editor-background) 60%, transparent);
+  pointer-events: auto;
+}
+
+.keyboardShortcutsOverlay__dialog {
+  position: relative;
+  width: min(90vw, 600px);
+  max-height: 80vh;
+  padding: 2rem;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  pointer-events: auto;
+  overflow-y: auto;
+}
+
+.keyboardShortcutsOverlay--animating {
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.keyboardShortcutsOverlay--open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.keyboardShortcutsOverlay__title {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.keyboardShortcutsOverlay__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.keyboardShortcutsGroup__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--vscode-descriptionForeground);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.keyboardShortcutsGroup__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.keyboardShortcutsItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: color-mix(in srgb, var(--vscode-input-background) 30%, transparent);
+  border-radius: 4px;
+}
+
+.keyboardShortcutsItem__keys {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.keyboardShortcutsKey {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-size: 0.85em;
+  font-family: var(--vscode-editor-font-family), monospace;
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  white-space: nowrap;
+  color: var(--vscode-foreground);
+}
+
+.keyboardShortcutsItem__description {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--vscode-foreground);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .keyboardShortcutsOverlay__dialog {
+    padding: 1.5rem;
+  }
+
+  .keyboardShortcutsOverlay__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .keyboardShortcutsItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .keyboardShortcutsItem__keys {
+    min-width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keyboardShortcutsOverlay--animating {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

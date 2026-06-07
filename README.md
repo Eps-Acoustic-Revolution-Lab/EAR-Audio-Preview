@@ -398,6 +398,8 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [ ] Onset detection / structure markers
 - [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
 - [ ] Edit tab wire-up to EasyCut
+- [ ] monitoring curve for flat frequency response
+- [ ] merge LUFS/F0/STFT pannel to "overlap" layout
 
 
 ---

@@ -180,7 +180,6 @@ export default class WaveBandComponent extends Component {
         this._analyzeService,
         this._analyzeSettingsService,
         entry.audioBuffer,
-        settings,
         entry.ch,
         this._loudnessService,
       );

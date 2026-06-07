@@ -1,0 +1,193 @@
+/* Shared panel surface primitives — aligned with keyboard shortcuts overlay */
+
+.panelSurface__title {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.panelGroup {
+  margin-bottom: 1.25rem;
+}
+
+.panelGroup:last-child {
+  margin-bottom: 0;
+}
+
+.panelGroup__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--vscode-descriptionForeground);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.panelGroup__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.panelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: color-mix(in srgb, var(--vscode-input-background) 30%, transparent);
+  border-radius: 4px;
+}
+
+.panelRow--stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.panelRow__label {
+  flex: 0 0 38%;
+  min-width: 7rem;
+  font-size: 0.875rem;
+  color: var(--vscode-foreground);
+  line-height: 1.4;
+}
+
+.panelRow--stacked .panelRow__label {
+  flex: none;
+  min-width: auto;
+}
+
+.panelRow__control {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+}
+
+.panelRow__control--range {
+  gap: 0.5rem;
+}
+
+.panelRow__control--range input[type="range"] {
+  flex: 1 1 6rem;
+  min-width: 4rem;
+}
+
+.panelRow__value {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--vscode-descriptionForeground);
+  font-variant-numeric: tabular-nums;
+  min-width: 3.5rem;
+  text-align: right;
+}
+
+.panelRow__control--dual {
+  gap: 0.35rem 0.5rem;
+}
+
+.panelRow__field {
+  display: inline-flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.panelRow__field input[type="number"],
+.panelRow__field input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 3.5rem;
+  width: 100%;
+  max-width: none;
+}
+
+.panelRow__suffix,
+.panelRow__sep {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: var(--vscode-descriptionForeground);
+}
+
+.panelRow__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--vscode-descriptionForeground);
+  line-height: 1.4;
+}
+
+.panelRow input[type="number"],
+.panelRow input[type="text"],
+.panelRow select {
+  padding: 0.25em 0.5em;
+  font-size: 0.875rem;
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  color: var(--vscode-foreground);
+  box-sizing: border-box;
+}
+
+.panelRow input[type="number"],
+.panelRow input[type="text"] {
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.panelRow input[type="number"]::-webkit-inner-spin-button,
+.panelRow input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.panelRow__control > input[type="number"],
+.panelRow__control > input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 4rem;
+  max-width: none;
+}
+
+.panelRow__control > input[type="checkbox"] {
+  flex-shrink: 0;
+}
+
+.panelRow input[type="checkbox"] {
+  margin: 0;
+}
+
+.panelAction {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--vscode-button-border, var(--vscode-panel-border));
+  background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+}
+
+.panelAction:hover {
+  background: var(--vscode-button-secondaryHoverBackground);
+}
+
+.panelAction:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+@media (max-width: 420px) {
+  .panelRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .panelRow__label {
+    flex: none;
+    min-width: auto;
+  }
+}

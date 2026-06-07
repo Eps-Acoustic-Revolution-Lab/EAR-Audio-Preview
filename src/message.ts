@@ -99,9 +99,12 @@ export class WebviewWriteWavMessage {
   data: WebviewWriteWavMessageData;
 }
 
+export type WriteWavDestination = "source_dir" | "workspace_root";
+
 export interface WebviewWriteWavMessageData {
   filename: string;
   samples: ArrayBufferLike;
+  destination?: WriteWavDestination;
 }
 
 export class WebviewErrorMessage {

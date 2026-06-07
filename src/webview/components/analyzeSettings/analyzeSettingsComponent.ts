@@ -33,153 +33,256 @@ export default class AnalyzeSettingsComponent extends Component {
     this._componentRoot.innerHTML = `
     <div class="analyzeSetting">
       <div class="workspacePaneSection workspacePaneSection--stft">
-      <h3>Common Settings</h3>
-      <div>
-          time range:
-          <input class="analyzeSetting__input js-analyzeSetting-minTime" type="number" step="0.1">s ~
-          <input class="analyzeSetting__input js-analyzeSetting-maxTime" type="number" step="0.1">s
-      </div>
-
-      <h3>WaveForm Settings</h3>
-      <div>
-          <input class="js-analyzeSetting-waveformVisible" type="checkbox">visible
-      </div>
-      <div>
-          waveform amplitude range:
-          <input class="analyzeSetting__input js-analyzeSetting-minAmplitude" type="number" step="0.1"> ~
-          <input class="analyzeSetting__input js-analyzeSetting-maxAmplitude" type="number" step="0.1">
-      </div>
-
-      <h3>Spectrogram Settings</h3>
-      <div>
-          <input class="js-analyzeSetting-spectrogramVisible" type="checkbox">visible
-      </div>
-      <div>
-          <input class="js-analyzeSetting-highResolutionSpectrogram" type="checkbox">high-resolution spectrogram (larger canvas, sharper)
-      </div>
-      <div>
-          window size:
-          <select class="analyzeSetting__select js-analyzeSetting-windowSize">
-              <option value="auto" class="js-analyzeSetting-windowSize-autoOpt">Auto</option>
-              <option value="0">256</option>
-              <option value="1">512</option>
-              <option value="2">1024</option>
-              <option value="3">2048</option>
-              <option value="4">4096</option>
-              <option value="5">8192</option>
-              <option value="6">16384</option>
-              <option value="7">32768</option>
-          </select>
-          window type:
-          <select class="analyzeSetting__select js-analyzeSetting-windowType">
-              <option value="0">Hann</option>
-              <option value="1">Hamming</option>
-              <option value="2">Blackman-Harris</option>
-              <option value="3">Triangular</option>
-          </select>
-          FFT backend:
-          <select class="analyzeSetting__select js-analyzeSetting-fftBackend">
-              <option value="0">Ooura (faster)</option>
-              <option value="1">Essentia WASM (multi-window)</option>
-          </select>
-      </div>
-      <div>
-          frequency scale:
-          <select class="analyzeSetting__select js-analyzeSetting-frequencyScale">
-              <option value="0">Linear</option>
-              <option value="1">Log</option>
-              <option value="2">Mel</option>
-          </select>
-          mel filter num:
-          <input class="analyzeSetting__input js-analyzeSetting-melFilterNum" type="number" step="10">
-      </div>
-      <div>
-          frequency range:
-          <input class="analyzeSetting__input js-analyzeSetting-minFrequency" type="number" step="1000">Hz ~
-          <input class="analyzeSetting__input js-analyzeSetting-maxFrequency" type="number" step="1000">Hz
-      </div>
-      <div>
-      <div>
-          spectrogram amplitude range:
-              <input class="analyzeSetting__input js-analyzeSetting-spectrogramAmplitudeLow" type="number" step="10">dB ~
-              <input class="analyzeSetting__input js-analyzeSetting-spectrogramAmplitudeHigh" type="number" step="10">dB
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Time Range</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">Visible range</span>
+              <div class="panelRow__control panelRow__control--dual">
+                <span class="panelRow__field"><input class="js-analyzeSetting-minTime" type="number" step="0.1"><span class="panelRow__suffix">s</span></span>
+                <span class="panelRow__sep">–</span>
+                <span class="panelRow__field"><input class="js-analyzeSetting-maxTime" type="number" step="0.1"><span class="panelRow__suffix">s</span></span>
+              </div>
+            </div>
           </div>
-          <div>
-              color:
-              <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColorAxis" width="800px" height="40px"></canvas>
-              <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColor" width="100px" height="5px"></canvas>
+        </div>
+
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Waveform</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">Visible</span>
+              <div class="panelRow__control">
+                <input class="js-analyzeSetting-waveformVisible" type="checkbox">
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Amplitude range</span>
+              <div class="panelRow__control panelRow__control--dual">
+                <span class="panelRow__field"><input class="js-analyzeSetting-minAmplitude" type="number" step="0.1"></span>
+                <span class="panelRow__sep">–</span>
+                <span class="panelRow__field"><input class="js-analyzeSetting-maxAmplitude" type="number" step="0.1"></span>
+              </div>
+            </div>
           </div>
-      </div>
+        </div>
+
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Spectrogram</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">Visible</span>
+              <div class="panelRow__control">
+                <input class="js-analyzeSetting-spectrogramVisible" type="checkbox">
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">High resolution</span>
+              <div class="panelRow__control">
+                <input class="js-analyzeSetting-highResolutionSpectrogram" type="checkbox">
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Window size</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-windowSize">
+                  <option value="auto" class="js-analyzeSetting-windowSize-autoOpt">Auto</option>
+                  <option value="0">256</option>
+                  <option value="1">512</option>
+                  <option value="2">1024</option>
+                  <option value="3">2048</option>
+                  <option value="4">4096</option>
+                  <option value="5">8192</option>
+                  <option value="6">16384</option>
+                  <option value="7">32768</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Window type</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-windowType">
+                  <option value="0">Hann</option>
+                  <option value="1">Hamming</option>
+                  <option value="2">Blackman-Harris</option>
+                  <option value="3">Triangular</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">FFT backend</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-fftBackend">
+                  <option value="0">Ooura (faster)</option>
+                  <option value="1">Essentia WASM (multi-window)</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Frequency scale</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-frequencyScale">
+                  <option value="0">Linear</option>
+                  <option value="1">Log</option>
+                  <option value="2">Mel</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Mel filter count</span>
+              <div class="panelRow__control">
+                <input class="js-analyzeSetting-melFilterNum" type="number" step="10">
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Frequency range</span>
+              <div class="panelRow__control panelRow__control--dual">
+                <span class="panelRow__field"><input class="js-analyzeSetting-minFrequency" type="number" step="1000"><span class="panelRow__suffix">Hz</span></span>
+                <span class="panelRow__sep">–</span>
+                <span class="panelRow__field"><input class="js-analyzeSetting-maxFrequency" type="number" step="1000"><span class="panelRow__suffix">Hz</span></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Amplitude range</span>
+              <div class="panelRow__control panelRow__control--dual">
+                <span class="panelRow__field"><input class="js-analyzeSetting-spectrogramAmplitudeLow" type="number" step="10"><span class="panelRow__suffix">dB</span></span>
+                <span class="panelRow__sep">–</span>
+                <span class="panelRow__field"><input class="js-analyzeSetting-spectrogramAmplitudeHigh" type="number" step="10"><span class="panelRow__suffix">dB</span></span>
+              </div>
+            </div>
+            <div class="panelRow panelRow--stacked">
+              <span class="panelRow__label">Color map</span>
+              <div class="panelRow__control">
+                <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColorAxis" width="800" height="40"></canvas>
+                <canvas class="analyzeSetting__canvas js-analyzeSetting-spectrogramColor" width="100" height="5"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="workspacePaneSection workspacePaneSection--live">
-      <h3>Live spectrum</h3>
-      <div>
-          Live FFT Size:
-          <select class="analyzeSetting__select js-analyzeSetting-liveAnalysisFftSize">
-              <option value="512">512</option>
-              <option value="1024">1024</option>
-              <option value="2048">2048</option>
-              <option value="4096">4096</option>
-          </select>
-      </div>
-      <div>
-          Sound field mode:
-          <select class="analyzeSetting__select js-analyzeSetting-liveSoundFieldMode">
-              <option value="polarSample">Polar Sample</option>
-              <option value="polarLevel">Polar Level</option>
-              <option value="lissajous">Lissajous</option>
-          </select>
-      </div>
-      <div>
-          Polar Level gate (% of peak, 0 = off):
-          <input class="analyzeSetting__input js-analyzeSetting-livePolarLevelGatePct" type="range" min="0" max="100" step="1">
-          <span class="js-analyzeSetting-livePolarLevelGatePctLabel"></span>
-      </div>
-      <div>
-          Polar Sample radius gamma:
-          <input class="analyzeSetting__input js-analyzeSetting-livePolarSampleRadiusGamma" type="range" min="0.5" max="2" step="0.05">
-          <span class="js-analyzeSetting-livePolarSampleRadiusGammaLabel"></span>
-      </div>
-      <div>
-          Polar Sample fill brightness (%):
-          <input class="analyzeSetting__input js-analyzeSetting-livePolarSampleFillBrightnessPct" type="range" min="0" max="50" step="1">
-          <span class="js-analyzeSetting-livePolarSampleFillBrightnessPctLabel"></span>
-      </div>
-      <div>
-          Sound field release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-livePolarFieldReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
-          <span class="js-analyzeSetting-livePolarFieldReleaseDbPerSecLabel"></span>
-      </div>
-      <div>
-          Spectrum release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
-          <span class="js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel"></span>
-      </div>
-      <div>
-          Spectrum peak hold (s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveSpectrumPeakHoldSec" type="range" min="${liveSpectrumPeakHoldSecMin}" max="${liveSpectrumPeakHoldSecMax}" step="0.05">
-          <span class="js-analyzeSetting-liveSpectrumPeakHoldSecLabel"></span>
-      </div>
-      <div>
-          Level meter release (dB/s):
-          <input class="analyzeSetting__input js-analyzeSetting-liveLevelMeterReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
-          <span class="js-analyzeSetting-liveLevelMeterReleaseDbPerSecLabel"></span>
-      </div>
-      <div>
-          Live spectrum tilt (dB/oct @ 1 kHz, roll-off toward HF):
-          <select class="analyzeSetting__select js-analyzeSetting-liveSpectrumTilt">
-              <option value="0">Off</option>
-              <option value="1.5">Roll 1.5</option>
-              <option value="3">Roll 3</option>
-              <option value="4.5">Roll 4.5</option>
-              <option value="6">Roll 6</option>
-          </select>
-      </div>
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Analysis</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">FFT size</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-liveAnalysisFftSize">
+                  <option value="512">512</option>
+                  <option value="1024">1024</option>
+                  <option value="2048">2048</option>
+                  <option value="4096">4096</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Spectrum tilt</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-liveSpectrumTilt">
+                  <option value="0">Off</option>
+                  <option value="1.5">Roll 1.5 dB/oct</option>
+                  <option value="3">Roll 3 dB/oct</option>
+                  <option value="4.5">Roll 4.5 dB/oct</option>
+                  <option value="6">Roll 6 dB/oct</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Sound Field</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">Mode</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-liveSoundFieldMode">
+                  <option value="polarSample">Polar Sample</option>
+                  <option value="polarLevel">Polar Level</option>
+                  <option value="lissajous">Lissajous</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Polar level gate</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-livePolarLevelGatePct" type="range" min="0" max="100" step="1">
+                <span class="panelRow__value js-analyzeSetting-livePolarLevelGatePctLabel"></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Sample radius γ</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-livePolarSampleRadiusGamma" type="range" min="0.5" max="2" step="0.05">
+                <span class="panelRow__value js-analyzeSetting-livePolarSampleRadiusGammaLabel"></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Fill brightness</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-livePolarSampleFillBrightnessPct" type="range" min="0" max="50" step="1">
+                <span class="panelRow__value js-analyzeSetting-livePolarSampleFillBrightnessPctLabel"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Dynamics</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow">
+              <span class="panelRow__label">Sound field release</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-livePolarFieldReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
+                <span class="panelRow__value js-analyzeSetting-livePolarFieldReleaseDbPerSecLabel"></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Spectrum release</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-liveSpectrumReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
+                <span class="panelRow__value js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel"></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Peak hold</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-liveSpectrumPeakHoldSec" type="range" min="${liveSpectrumPeakHoldSecMin}" max="${liveSpectrumPeakHoldSecMax}" step="0.05">
+                <span class="panelRow__value js-analyzeSetting-liveSpectrumPeakHoldSecLabel"></span>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">Level meter release</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-liveLevelMeterReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
+                <span class="panelRow__value js-analyzeSetting-liveLevelMeterReleaseDbPerSecLabel"></span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="workspacePaneSection workspacePaneSection--edit">
-      <p class="workspacePaneSection__editHint">Edit &amp; export options will appear here.</p>
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Edit &amp; Export</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow panelRow--stacked">
+              <p class="panelRow__hint workspacePaneSection__editHint">Region selection, channel conversion, filters, and WAV export are available in the <strong>Edit &amp; Export</strong> workspace tab.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workspacePaneSection workspacePaneSection--loudness">
+        <div class="panelGroup">
+          <h3 class="panelGroup__title">Loudness</h3>
+          <div class="panelGroup__items">
+            <div class="panelRow panelRow--stacked">
+              <p class="panelRow__hint">Loudness analysis uses ITU-R BS.1770 metering. No additional settings.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     `;

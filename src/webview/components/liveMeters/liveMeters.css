@@ -58,9 +58,12 @@
   flex-shrink: 0;
   width: 100%;
   min-width: 0;
-  padding: 4px 6px;
+  box-sizing: border-box;
+  gap: 4px;
+  padding: 4px 8px 4px 6px;
   border-bottom: 1px solid var(--vscode-panel-border, #444);
   background: var(--vscode-sideBar-background, #252526);
+  overflow: hidden;
 }
 
 .workspacePane__tab {
@@ -92,6 +95,39 @@
   gap: 4px;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.workspaceChrome__settingsBtn {
+  /* Override vscode.css `button { width: 100% }` */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  margin-left: auto;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  cursor: pointer;
+  text-align: center;
+}
+
+.workspaceChrome__settingsIcon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.workspaceChrome__settingsBtn:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.workspaceChrome__settingsBtn:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
 }
 
 #graphDeck {

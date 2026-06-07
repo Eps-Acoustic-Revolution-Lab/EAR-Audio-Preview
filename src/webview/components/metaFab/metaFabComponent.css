@@ -1,0 +1,96 @@
+.metaPopover {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  pointer-events: none;
+}
+
+.metaPopover[hidden] {
+  display: none !important;
+}
+
+.metaPopover__backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.metaPopover__panel {
+  position: fixed;
+  left: calc(env(safe-area-inset-left, 0px) + 12px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 8px);
+  width: min(92vw, 280px);
+  max-height: min(60vh, 420px);
+  display: flex;
+  flex-direction: column;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px
+    color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
+  pointer-events: auto;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.metaPopover--open .metaPopover__panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.metaPopover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  flex-shrink: 0;
+}
+
+.metaPopover__title {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--vscode-foreground);
+}
+
+.metaPopover__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.metaPopover__close:hover {
+  background: var(--vscode-toolbar-hoverBackground);
+}
+
+.metaPopover__close:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.metaPopover__body {
+  padding: 0.75rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metaPopover__panel {
+    transition: none;
+  }
+}

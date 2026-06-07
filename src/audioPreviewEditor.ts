@@ -1,3 +1,4 @@
+import * as path from "path";
 import * as vscode from "vscode";
 import { Disposable, disposeAll } from "./dispose";
 import { getNonce } from "./util";
@@ -103,6 +104,7 @@ export class AudioPreviewEditorProvider
     playerDefault: PlayerDefault;
     analyzeDefault: AnalyzeDefault;
     fileExt: string;
+    fileName: string;
   } {
     const config = vscode.workspace.getConfiguration("WavPreview");
     const fileExt = document.uri.fsPath.split(".").pop()?.toLowerCase() ?? "";
@@ -128,6 +130,7 @@ export class AudioPreviewEditorProvider
       playerDefault: (config.get("playerDefault") ?? {}) as PlayerDefault,
       analyzeDefault,
       fileExt,
+      fileName: path.basename(document.uri.fsPath),
     };
   }
 
@@ -251,9 +254,24 @@ export class AudioPreviewEditorProvider
 
       case WebviewMessageType.WRITE_WAV:
         if (WebviewMessageType.isWriteWav(msg)) {
-          const dir = vscode.workspace.getWorkspaceFolder(document.uri);
-          const wavUri = vscode.Uri.joinPath(dir.uri, msg.data.filename);
           const content = new Uint8Array(msg.data.samples);
+          const destination = msg.data.destination ?? "workspace_root";
+          let wavUri: vscode.Uri;
+          if (destination === "source_dir") {
+            wavUri = vscode.Uri.joinPath(
+              vscode.Uri.file(path.dirname(document.uri.fsPath)),
+              msg.data.filename,
+            );
+          } else {
+            const dir = vscode.workspace.getWorkspaceFolder(document.uri);
+            if (!dir) {
+              vscode.window.showErrorMessage(
+                "No workspace folder available for export.",
+              );
+              break;
+            }
+            wavUri = vscode.Uri.joinPath(dir.uri, msg.data.filename);
+          }
           await vscode.workspace.fs.writeFile(wavUri, content);
           vscode.window.showInformationMessage(
             `Success! Wav file written to: ${wavUri.fsPath}`,
