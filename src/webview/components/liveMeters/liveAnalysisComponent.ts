@@ -23,7 +23,8 @@ interface LiveAnalysisSplits {
   col: number;
 }
 
-const defaultSplits: LiveAnalysisSplits = { row: 0.5, col: 0.38 };
+/** Top row ~42% — leaves room for spectrum while keeping polar square-friendly. */
+const defaultSplits: LiveAnalysisSplits = { row: 0.42, col: 0.34 };
 
 export default class LiveAnalysisComponent extends Component {
   private _inner: HTMLElement;
@@ -191,13 +192,10 @@ export default class LiveAnalysisComponent extends Component {
   private _applyRowSplit(mode: LiveAnalysisLayoutMode) {
     const splits = this._splitsFor(mode);
     if (mode === "inline") {
-      const total = this._inner?.clientHeight ?? 300;
-      const handleH = this._rowHandle.offsetHeight;
-      const available = total - handleH;
-      const gonioH = Math.max(
-        minPaneHeight,
-        Math.min(available - minPaneHeight, splits.row * available),
-      );
+      const gonioH = this._inlineGonioHeight(splits);
+      if (gonioH === null) {
+        return;
+      }
       this._gonioWrap.style.height = `${gonioH}px`;
       this._gonioWrap.style.flex = "0 0 auto";
       return;
@@ -212,6 +210,42 @@ export default class LiveAnalysisComponent extends Component {
     );
     this._overlayGonioWrap.style.height = `${gonioH}px`;
     this._overlayGonioWrap.style.flex = "0 0 auto";
+  }
+
+  /** Inline top-row height sized so polar plot can be square (no letterboxing). */
+  private _inlineGonioHeight(splits: LiveAnalysisSplits): number | null {
+    const total = this._inner?.clientHeight ?? 300;
+    const totalW = this._inner?.clientWidth ?? 400;
+    const handleH = this._rowHandle.offsetHeight;
+    const availableH = total - handleH;
+    if (availableH <= minPaneHeight * 2) {
+      return null;
+    }
+
+    const handleW = this._colHandle?.offsetWidth ?? 4;
+    const availableW = Math.max(0, totalW - handleW);
+    const targetPolarW = Math.max(
+      minPaneWidth,
+      splits.col * availableW,
+    );
+    const rowBudget = splits.row * availableH - gonioInfoBarPx;
+    let squareSide = Math.max(
+      minPaneWidth,
+      Math.min(targetPolarW, rowBudget),
+    );
+    let gonioH = Math.max(
+      minPaneHeight,
+      Math.min(availableH - minPaneHeight, squareSide + gonioInfoBarPx),
+    );
+    squareSide = Math.max(
+      minPaneWidth,
+      Math.min(targetPolarW, gonioH - gonioInfoBarPx),
+    );
+    gonioH = Math.max(
+      minPaneHeight,
+      Math.min(availableH - minPaneHeight, squareSide + gonioInfoBarPx),
+    );
+    return gonioH;
   }
 
   private _applyGonioColSplit(mode: LiveAnalysisLayoutMode) {
@@ -239,18 +273,17 @@ export default class LiveAnalysisComponent extends Component {
       return;
     }
 
-    const polarW = Math.max(
+    const targetPolarW = Math.max(
       minPaneWidth,
       Math.min(available - minPaneWidth, splits.col * available),
     );
-    polar.style.flex = `0 0 ${polarW}px`;
-    phase.style.flex = "1 1 0";
-
     const rowH = row.clientHeight;
     const squareSide = Math.max(
       minPaneWidth,
-      Math.min(polarW, Math.max(0, rowH - gonioInfoBarPx)),
+      Math.min(targetPolarW, Math.max(0, rowH - gonioInfoBarPx)),
     );
+    polar.style.flex = `0 0 ${squareSide}px`;
+    phase.style.flex = "1 1 0";
     polar.style.setProperty("--gonio-square-px", `${squareSide}px`);
   }
 

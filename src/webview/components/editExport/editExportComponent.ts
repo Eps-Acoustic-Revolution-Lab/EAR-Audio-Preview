@@ -18,6 +18,7 @@ import {
   renderExportWav,
   resolveExportSettings,
 } from "../../services/audioExportService";
+import EarEqSegmentedControl from "../../utils/earEqSegmentedControl";
 
 function formatTime(sec: number): string {
   if (!Number.isFinite(sec)) {
@@ -83,6 +84,9 @@ export default class EditExportComponent extends Component {
   private _lpfHzInput: HTMLInputElement;
   private _selectionOverlay: HTMLDivElement | null = null;
   private _selectionBand: HTMLDivElement | null = null;
+  private _channelSegment: EarEqSegmentedControl;
+  private _listenSegment: EarEqSegmentedControl;
+  private _destinationSegment: EarEqSegmentedControl;
   private _busy = false;
 
   constructor(
@@ -107,48 +111,99 @@ export default class EditExportComponent extends Component {
     const root = document.querySelector(componentRootSelector) as HTMLElement;
     root.innerHTML = `
       <div class="editExport">
-        <p class="editExport__intro">
-          Select a region, use the player bar to loop-listen (Dry vs Processed), then export as WAV.
-        </p>
         <div class="editExport__waveMount js-editExport-waveMount"></div>
-        <div class="editExport__controls">
-          <p class="editExport__sectionTitle">Region</p>
-          <div class="editExport__row">
-            <label>Start <input class="editExport__timeInput js-editExport-regionStart" type="text" inputmode="decimal"></label>
-            <label>End <input class="editExport__timeInput js-editExport-regionEnd" type="text" inputmode="decimal"></label>
-            <span class="editExport__durationHint js-editExport-durationHint"></span>
+        <div class="editExport__panels">
+          <div class="panelGroup">
+            <h3 class="panelGroup__title">Region</h3>
+            <div class="panelGroup__items">
+              <div class="panelRow">
+                <span class="panelRow__label">Start</span>
+                <div class="panelRow__control">
+                  <span class="panelRow__field"><input class="js-editExport-regionStart" type="text" inputmode="decimal"><span class="panelRow__suffix">s</span></span>
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">End</span>
+                <div class="panelRow__control">
+                  <span class="panelRow__field"><input class="js-editExport-regionEnd" type="text" inputmode="decimal"><span class="panelRow__suffix">s</span></span>
+                  <span class="panelRow__value js-editExport-durationHint"></span>
+                </div>
+              </div>
+              <div class="panelRow panelRow--stacked">
+                <div class="editExport__pillRow">
+                  <button type="button" class="earEqPill js-editExport-setPlayhead">Set to playhead</button>
+                  <button type="button" class="earEqPill js-editExport-selectAll">Select all</button>
+                  <button type="button" class="earEqPill js-editExport-importAnalyzer">From analyzer</button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="editExport__row editExport__actions">
-            <button type="button" class="editExport__button js-editExport-setPlayhead">Set to playhead</button>
-            <button type="button" class="editExport__button js-editExport-selectAll">Select all</button>
-            <button type="button" class="editExport__button js-editExport-importAnalyzer">Import from analyzer</button>
+
+          <div class="panelGroup">
+            <h3 class="panelGroup__title">Channels</h3>
+            <div class="panelGroup__items">
+              <div class="panelRow panelRow--stacked">
+                <div class="editExport__segmentSlot js-editExport-channelModes"></div>
+              </div>
+            </div>
           </div>
-          <p class="editExport__sectionTitle">Channels</p>
-          <div class="editExport__row js-editExport-channelModes"></div>
-          <p class="editExport__sectionTitle">Filters</p>
-          <div class="editExport__row">
-            <label><input class="js-editExport-enableHpf" type="checkbox"> HPF</label>
-            <input class="editExport__timeInput js-editExport-hpfHz" type="number" min="10" step="10"> Hz
-            <label><input class="js-editExport-enableLpf" type="checkbox"> LPF</label>
-            <input class="editExport__timeInput js-editExport-lpfHz" type="number" min="10" step="10"> Hz
+
+          <div class="panelGroup">
+            <h3 class="panelGroup__title">Filters</h3>
+            <div class="panelGroup__items">
+              <div class="panelRow">
+                <span class="panelRow__label">High-pass</span>
+                <div class="panelRow__control">
+                  <input class="js-editExport-enableHpf" type="checkbox">
+                  <span class="panelRow__field"><input class="js-editExport-hpfHz" type="number" min="10" step="10"><span class="panelRow__suffix">Hz</span></span>
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Low-pass</span>
+                <div class="panelRow__control">
+                  <input class="js-editExport-enableLpf" type="checkbox">
+                  <span class="panelRow__field"><input class="js-editExport-lpfHz" type="number" min="10" step="10"><span class="panelRow__suffix">Hz</span></span>
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Sync playback</span>
+                <div class="panelRow__control">
+                  <input class="js-editExport-syncFilters" type="checkbox">
+                </div>
+              </div>
+              <p class="panelRow__hint js-editExport-syncFilterHint" hidden>Using playback filter settings</p>
+            </div>
           </div>
-          <div class="editExport__row">
-            <label><input class="js-editExport-syncFilters" type="checkbox"> Sync from playback filters</label>
+
+          <div class="panelGroup">
+            <h3 class="panelGroup__title">Listen</h3>
+            <div class="panelGroup__items">
+              <div class="panelRow panelRow--stacked">
+                <div class="editExport__segmentSlot js-editExport-listenModes"></div>
+                <p class="panelRow__hint">Dry loops the original selection; Processed loops the export chain. Use Transport FAB play/pause.</p>
+              </div>
+            </div>
           </div>
-          <p class="editExport__syncFilterHint js-editExport-syncFilterHint" hidden>Using playback filter settings</p>
-          <p class="editExport__sectionTitle">Listen</p>
-          <div class="editExport__row js-editExport-listenModes"></div>
-          <p class="editExport__listenHint">Use the player play/pause control. Dry loops the original selection; Processed loops the export processing chain.</p>
-          <p class="editExport__sectionTitle">Export</p>
-          <div class="editExport__row">
-            <label>Filename <input class="js-editExport-filename" type="text"></label>.wav
+
+          <div class="panelGroup">
+            <h3 class="panelGroup__title">Export</h3>
+            <div class="panelGroup__items">
+              <div class="panelRow">
+                <span class="panelRow__label">Filename</span>
+                <div class="panelRow__control">
+                  <span class="panelRow__field"><input class="js-editExport-filename" type="text"><span class="panelRow__suffix">.wav</span></span>
+                </div>
+              </div>
+              <div class="panelRow panelRow--stacked">
+                <div class="editExport__segmentSlot js-editExport-destinations"></div>
+                <p class="panelRow__hint">16-bit PCM WAV export. Decoders are import-only.</p>
+              </div>
+              <div class="panelRow panelRow--stacked">
+                <button type="button" class="panelAction editExport__exportBtn js-editExport-export">Export WAV</button>
+                <div class="editExport__status js-editExport-status" aria-live="polite"></div>
+              </div>
+            </div>
           </div>
-          <div class="editExport__row js-editExport-destinations"></div>
-          <p class="editExport__formatNote">Export is WAV only (16-bit PCM). Decoders are import-only.</p>
-          <div class="editExport__row editExport__actions">
-            <button type="button" class="editExport__button js-editExport-export">Export WAV</button>
-          </div>
-          <div class="editExport__status js-editExport-status" aria-live="polite"></div>
         </div>
       </div>
     `;
@@ -188,9 +243,45 @@ export default class EditExportComponent extends Component {
     ) as HTMLInputElement;
 
     this._filenameInput.value = defaultExportFilename();
-    this._buildChannelModeRadios(root);
-    this._buildListenModeRadios(root);
-    this._buildDestinationRadios(root);
+    const s = this._editExportSettings;
+    this._channelSegment = this._mountSegment(
+      root.querySelector(".js-editExport-channelModes") as HTMLElement,
+      [
+        { value: "as_is", label: "As-is" },
+        { value: "mono_mix", label: "Mono mix" },
+        { value: "mono_left", label: "L only" },
+        { value: "mono_right", label: "R only" },
+        { value: "fake_stereo", label: "Fake stereo" },
+      ],
+      s.channelMode,
+      (value) => {
+        this._editExportSettings.channelMode = value as ExportChannelMode;
+      },
+    );
+    this._listenSegment = this._mountSegment(
+      root.querySelector(".js-editExport-listenModes") as HTMLElement,
+      [
+        { value: "dry", label: "Dry" },
+        { value: "processed", label: "Processed" },
+      ],
+      s.listenMode,
+      (value) => {
+        this._editExportSettings.listenMode = value as EditListenMode;
+        void this._editListenService.onListenModeChanged();
+      },
+    );
+    this._destinationSegment = this._mountSegment(
+      root.querySelector(".js-editExport-destinations") as HTMLElement,
+      [
+        { value: "source_dir", label: "Next to source" },
+        { value: "workspace_root", label: "Workspace root" },
+      ],
+      s.destination,
+      (value) => {
+        this._editExportSettings.destination =
+          value === "workspace_root" ? "workspace_root" : "source_dir";
+      },
+    );
     this._buildWaveform();
     this._wireRegionDrag();
     this._wireControls(root);
@@ -229,47 +320,18 @@ export default class EditExportComponent extends Component {
     );
   }
 
-  private _buildChannelModeRadios(root: HTMLElement) {
-    const host = root.querySelector(".js-editExport-channelModes") as HTMLElement;
-    const modes: { id: ExportChannelMode; label: string }[] = [
-      { id: "as_is", label: "As-is" },
-      { id: "mono_mix", label: "Mono mix" },
-      { id: "mono_left", label: "L only" },
-      { id: "mono_right", label: "R only" },
-      { id: "fake_stereo", label: "Fake stereo" },
-    ];
-    for (const mode of modes) {
-      const id = `editExport-ch-${mode.id}`;
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="radio" name="editExportChannel" id="${id}" value="${mode.id}"> ${mode.label}`;
-      host.appendChild(label);
-    }
-  }
-
-  private _buildListenModeRadios(root: HTMLElement) {
-    const host = root.querySelector(".js-editExport-listenModes") as HTMLElement;
-    for (const mode of [
-      { id: "dry", label: "Dry" },
-      { id: "processed", label: "Processed" },
-    ] as const) {
-      const id = `editExport-listen-${mode.id}`;
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="radio" name="editExportListen" id="${id}" value="${mode.id}"> ${mode.label}`;
-      host.appendChild(label);
-    }
-  }
-
-  private _buildDestinationRadios(root: HTMLElement) {
-    const host = root.querySelector(".js-editExport-destinations") as HTMLElement;
-    for (const dest of [
-      { id: "source_dir", label: "Next to source file" },
-      { id: "workspace_root", label: "Workspace root" },
-    ] as const) {
-      const id = `editExport-dest-${dest.id}`;
-      const label = document.createElement("label");
-      label.innerHTML = `<input type="radio" name="editExportDest" id="${id}" value="${dest.id}"> ${dest.label}`;
-      host.appendChild(label);
-    }
+  private _mountSegment(
+    host: HTMLElement,
+    options: { value: string; label: string }[],
+    initialValue: string,
+    onChange: (value: string) => void,
+  ): EarEqSegmentedControl {
+    const segment = new EarEqSegmentedControl(options, initialValue, {
+      onChange,
+    });
+    host.appendChild(segment.root);
+    this._register({ dispose: () => segment.dispose() });
+    return segment;
   }
 
   private _wireRegionDrag() {
@@ -440,38 +502,6 @@ export default class EditExportComponent extends Component {
       });
     }
 
-    for (const input of root.querySelectorAll<HTMLInputElement>(
-      'input[name="editExportListen"]',
-    )) {
-      this._addEventlistener(input, EventType.CHANGE, () => {
-        if (input.checked) {
-          this._editExportSettings.listenMode = input.value as EditListenMode;
-          void this._editListenService.onListenModeChanged();
-        }
-      });
-    }
-
-    for (const input of root.querySelectorAll<HTMLInputElement>(
-      'input[name="editExportChannel"]',
-    )) {
-      this._addEventlistener(input, EventType.CHANGE, () => {
-        if (input.checked) {
-          this._editExportSettings.channelMode = input.value as ExportChannelMode;
-        }
-      });
-    }
-
-    for (const input of root.querySelectorAll<HTMLInputElement>(
-      'input[name="editExportDest"]',
-    )) {
-      this._addEventlistener(input, EventType.CHANGE, () => {
-        if (input.checked) {
-          this._editExportSettings.destination =
-            input.value === "workspace_root" ? "workspace_root" : "source_dir";
-        }
-      });
-    }
-
     this._addEventlistener(this._exportButton, EventType.CLICK, () => {
       void this._export();
     });
@@ -496,6 +526,27 @@ export default class EditExportComponent extends Component {
       this._editExportSettings,
       EventType.EE_UPDATE_REGION_END,
       onRegion,
+    );
+    this._addEventlistener(
+      this._editExportSettings,
+      EventType.EE_UPDATE_CHANNEL_MODE,
+      (e: CustomEventInit<{ value: ExportChannelMode }>) => {
+        this._channelSegment.setValue(e.detail.value, true);
+      },
+    );
+    this._addEventlistener(
+      this._editExportSettings,
+      EventType.EE_UPDATE_LISTEN_MODE,
+      (e: CustomEventInit<{ value: EditListenMode }>) => {
+        this._listenSegment.setValue(e.detail.value, true);
+      },
+    );
+    this._addEventlistener(
+      this._editExportSettings,
+      EventType.EE_UPDATE_DESTINATION,
+      (e: CustomEventInit<{ value: string }>) => {
+        this._destinationSegment.setValue(e.detail.value, true);
+      },
     );
   }
 
@@ -529,12 +580,9 @@ export default class EditExportComponent extends Component {
     this._regionEndInput.value = formatTime(s.regionEndSec);
     this._updateDurationHint();
 
-    const ch = document.querySelector(
-      `input[name="editExportChannel"][value="${s.channelMode}"]`,
-    ) as HTMLInputElement | null;
-    if (ch) {
-      ch.checked = true;
-    }
+    this._channelSegment.setValue(s.channelMode, true);
+    this._listenSegment.setValue(s.listenMode, true);
+    this._destinationSegment.setValue(s.destination, true);
 
     const syncFilters = document.querySelector(
       ".js-editExport-syncFilters",
@@ -542,26 +590,13 @@ export default class EditExportComponent extends Component {
     syncFilters.checked = s.syncFiltersFromPlayer;
     this._updateFilterControlsState();
 
-    const listen = document.querySelector(
-      `input[name="editExportListen"][value="${s.listenMode}"]`,
-    ) as HTMLInputElement | null;
-    if (listen) {
-      listen.checked = true;
-    }
-
-    const dest = document.querySelector(
-      `input[name="editExportDest"][value="${s.destination}"]`,
-    ) as HTMLInputElement | null;
-    if (dest) {
-      dest.checked = true;
-    }
   }
 
   private _updateDurationHint() {
     const len =
       this._editExportSettings.regionEndSec -
       this._editExportSettings.regionStartSec;
-    this._durationHint.textContent = `(${formatTime(len)} s selected)`;
+    this._durationHint.textContent = `${formatTime(len)} s`;
   }
 
   private _resolvedSettings() {

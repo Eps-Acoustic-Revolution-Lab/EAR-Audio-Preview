@@ -706,6 +706,42 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
+  public static readonly HEARING_PROTECTION_PEAK_DBFS_DEFAULT = 6;
+  public static readonly HEARING_PROTECTION_PEAK_DBFS_MIN = -12;
+  public static readonly HEARING_PROTECTION_PEAK_DBFS_MAX = 12;
+
+  private _hearingProtectionEnabled: boolean = false;
+  public get hearingProtectionEnabled(): boolean {
+    return this._hearingProtectionEnabled;
+  }
+  public set hearingProtectionEnabled(value: boolean) {
+    this._hearingProtectionEnabled = value === true;
+    this.dispatchEvent(
+      new CustomEvent(EventType.AS_UPDATE_HEARING_PROTECTION_ENABLED, {
+        detail: { value: this._hearingProtectionEnabled },
+      }),
+    );
+  }
+
+  private _hearingProtectionPeakDbFs: number =
+    AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_DEFAULT;
+  public get hearingProtectionPeakDbFs(): number {
+    return this._hearingProtectionPeakDbFs;
+  }
+  public set hearingProtectionPeakDbFs(value: number) {
+    this._hearingProtectionPeakDbFs = getValueInRange(
+      value,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MIN,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MAX,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_DEFAULT,
+    );
+    this.dispatchEvent(
+      new CustomEvent(EventType.AS_UPDATE_HEARING_PROTECTION_PEAK_DBFS, {
+        detail: { value: this._hearingProtectionPeakDbFs },
+      }),
+    );
+  }
+
   private _livePolarLevelGatePct: number = 28;
   public get livePolarLevelGatePct(): number {
     return this._livePolarLevelGatePct;
@@ -1137,6 +1173,15 @@ export default class AnalyzeSettingsService extends Service {
       defaultSetting.liveLevelMeterReleaseDbPerSec,
       defaultSetting.liveLevelMeterSmoothingPct ?? legacySmooth,
     );
+    setting.hearingProtectionEnabled =
+      defaultSetting.hearingProtectionEnabled === true;
+    setting.hearingProtectionPeakDbFs = getValueInRange(
+      defaultSetting.hearingProtectionPeakDbFs ??
+        AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_DEFAULT,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MIN,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MAX,
+      AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_DEFAULT,
+    );
     setting.livePolarLevelGatePct = getValueInRange(
       Math.round(Number(defaultSetting.livePolarLevelGatePct ?? 28)),
       0,
@@ -1307,6 +1352,8 @@ export default class AnalyzeSettingsService extends Service {
       liveSpectrumPeakHoldSec: this.liveSpectrumPeakHoldSec,
       livePolarFieldReleaseDbPerSec: this.livePolarFieldReleaseDbPerSec,
       liveLevelMeterReleaseDbPerSec: this.liveLevelMeterReleaseDbPerSec,
+      hearingProtectionEnabled: this.hearingProtectionEnabled,
+      hearingProtectionPeakDbFs: this.hearingProtectionPeakDbFs,
       livePolarLevelGatePct: this.livePolarLevelGatePct,
       livePolarSampleRadiusGamma: this.livePolarSampleRadiusGamma,
       livePolarSampleFillBrightnessPct: this.livePolarSampleFillBrightnessPct,

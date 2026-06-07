@@ -13,12 +13,18 @@ import LoudnessService, {
   type LoudnessProfile,
 } from "../../services/loudnessService";
 import { quinticBSplineSmooth } from "../../utils/quinticBSpline";
+import {
+  TIMELINE_PLOT_PAD_LEFT,
+  TIMELINE_PLOT_PAD_RIGHT,
+  plotWidthPx,
+  timeSecToPlotX,
+} from "../../utils/timelinePlotLayout";
 
 const fallbackLufsMin = -60;
 const fallbackLufsMax = 0;
 const minLufsSpan = 12;
-const plotPadLeftCssPx = 36;
-const plotPadRightCssPx = 8;
+const plotPadLeftCssPx = TIMELINE_PLOT_PAD_LEFT;
+const plotPadRightCssPx = TIMELINE_PLOT_PAD_RIGHT;
 const plotPadTopCssPx = 12;
 const plotPadBottomCssPx = 22;
 
@@ -281,9 +287,17 @@ export default class LoudnessPane extends Component {
       this._playhead.style.display = "none";
       return;
     }
-    const pct = clamp01((this._playbackSec - minTime) / span);
+    const wrapW = this._canvasWrap.getBoundingClientRect().width;
+    const x = timeSecToPlotX(
+      this._playbackSec,
+      minTime,
+      maxTime,
+      wrapW,
+      plotPadLeftCssPx,
+      plotPadRightCssPx,
+    );
     this._playhead.style.display = "block";
-    this._playhead.style.left = `${pct * 100}%`;
+    this._playhead.style.left = `${x}px`;
   }
 
   private _visibleTimeRange(): { minTime: number; maxTime: number } {
@@ -397,8 +411,9 @@ export default class LoudnessPane extends Component {
   private _plotCssRect(): { left: number; right: number; width: number } {
     const rect = this._canvasWrap.getBoundingClientRect();
     const left = plotPadLeftCssPx;
-    const right = Math.max(left + 1, rect.width - plotPadRightCssPx);
-    return { left, right, width: right - left };
+    const width = plotWidthPx(rect.width, plotPadLeftCssPx, plotPadRightCssPx);
+    const right = left + width;
+    return { left, right, width };
   }
 
   private _secFromClientX(clientX: number): number {

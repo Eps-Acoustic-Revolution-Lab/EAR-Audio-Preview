@@ -141,12 +141,20 @@ class MockBiquadFilterNode extends MockAudioNode {
   }
 }
 
+class MockAnalyserNode extends MockAudioNode {
+  fftSize = 2048;
+
+  getFloatTimeDomainData(buf: Float32Array): void {
+    buf.fill(0);
+  }
+}
+
 class MockAudioBufferSourceNode extends MockAudioNode {
   buffer: MockAudioBuffer;
 
   start(): void {}
 
-  stop() {}
+  stop(): void {}
 }
 
 class MockDestinationNode extends MockAudioNode {}
@@ -180,6 +188,18 @@ class MockAudioContext extends MockAudioNode {
 
   createBiquadFilter() {
     return new MockBiquadFilterNode();
+  }
+
+  createChannelSplitter() {
+    return new MockAudioNode();
+  }
+
+  createChannelMerger() {
+    return new MockAudioNode();
+  }
+
+  createAnalyser() {
+    return new MockAnalyserNode();
   }
 }
 

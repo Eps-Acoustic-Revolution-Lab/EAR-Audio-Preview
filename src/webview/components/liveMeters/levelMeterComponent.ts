@@ -296,6 +296,25 @@ export default class LevelMeterComponent extends Component {
     this._draw(this._canvasL, this._wrapL, this._stateL);
     this._draw(this._canvasR, this._wrapR, this._stateR);
     this._layoutScaleTicks();
+    this._applyHearingProtection();
+  }
+
+  private _applyHearingProtection(): void {
+    const settings = this._analyzeSettingsService;
+    if (!settings.hearingProtectionEnabled) {
+      if (this._playerService.hearingProtectionActive) {
+        this._playerService.setHearingProtectionActive(false);
+      }
+      return;
+    }
+    const threshold = settings.hearingProtectionPeakDbFs;
+    const release = threshold - 3;
+    const maxPeak = Math.max(this._stateL.peakDb, this._stateR.peakDb);
+    if (maxPeak > threshold) {
+      this._playerService.setHearingProtectionActive(true);
+    } else if (maxPeak < release) {
+      this._playerService.setHearingProtectionActive(false);
+    }
   }
 
   private _updateChannel(

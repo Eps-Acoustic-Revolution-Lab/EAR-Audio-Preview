@@ -60,14 +60,17 @@
   min-width: 0;
   box-sizing: border-box;
   gap: 4px;
-  padding: 4px 8px 4px 6px;
+  padding: 2px 8px 2px 6px;
+  min-height: 28px;
   border-bottom: 1px solid var(--vscode-panel-border, #444);
   background: var(--vscode-sideBar-background, #252526);
   overflow: hidden;
 }
 
 .workspacePane__tab {
-  /* Override vscode.css `button { width: 100% }` so mode tabs stay one row */
+  /* ear-eq toggle style; override vscode.css `button { width: 100% }` */
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -75,19 +78,21 @@
   min-width: 0;
   flex: 0 0 auto;
   box-sizing: border-box;
+  padding: 5px 11px;
+  border: 1px solid transparent;
+  border-radius: var(--pill-radius, 10px);
+  background: transparent;
+  color: var(--ear-eq-toggle-inactive, #444444);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  background: transparent;
-  color: var(--vscode-foreground);
   cursor: pointer;
+  transition: color var(--ear-eq-motion-fast, 0.28s) var(--ear-eq-ease-out, ease);
 }
 
 .workspaceChrome__tabs {
+  position: relative;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -140,6 +145,12 @@
   position: relative;
 }
 
+/* Only Live / Edit panes consume leftover column height. */
+html[data-workspace-pane="liveSpec"] #graphDeck,
+html[data-workspace-pane="edit"] #graphDeck {
+  flex: 1 1 0;
+}
+
 .graphDeck__pane {
   flex: 0 0 auto;
   display: flex;
@@ -156,15 +167,45 @@
 }
 
 .graphDeck__pane--live {
+  flex: 1 1 0;
   min-height: min(58vh, 820px);
 }
 
 .graphDeck__pane--edit {
+  flex: 1 1 0;
   min-height: 12rem;
 }
 
+.graphDeck__pane--edit .graphDeck__body {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.graphDeck__pane--edit .graphDeck__graph {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+}
+
 .graphDeck__pane--loudness {
-  min-height: min(20vh, 252px);
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+.graphDeck__pane--loudness .graphDeck__body {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.graphDeck__pane--loudness .graphDeck__graph {
+  flex: 0 1 auto;
+  min-height: 0;
+  height: min(24vh, 280px);
+  max-height: min(28vh, 320px);
+  overflow: hidden;
 }
 
 .graphDeck__pane[hidden] {
@@ -182,6 +223,25 @@
 }
 
 .graphDeck__pane--edit .graphDeck__body {
+  min-height: 0;
+}
+
+.graphDeck__pane--live .graphDeck__body {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.graphDeck__pane--live .graphDeck__graph {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.graphDeck__pane--live #liveAnalysisInner {
+  flex: 1 1 0;
   min-height: 0;
 }
 
@@ -207,14 +267,22 @@
   display: none !important;
 }
 
-.workspacePane__tab:hover {
-  background: var(--vscode-list-hoverBackground);
+/* Align waveform playhead with loudness plot time axis (Y-axis label gutter). */
+html[data-workspace-pane="loudness"] .waveBand .canvasBox {
+  --timeline-pad-left: 36px;
+  --timeline-pad-right: 8px;
+}
+
+button.workspacePane__tab:hover,
+button.workspacePane__tab:focus {
+  color: var(--ear-eq-toggle-active, #ffffff);
+  background: transparent;
 }
 
 .workspacePane__tab--active {
-  background: var(--vscode-list-activeSelectionBackground);
-  color: var(--vscode-list-activeSelectionForeground);
-  border-color: var(--vscode-panel-border);
+  color: var(--ear-eq-toggle-active, #ffffff);
+  background: transparent;
+  border-color: transparent;
 }
 
 .workspacePane__idle {
@@ -477,8 +545,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   background: var(--vscode-editorWidget-background, #252526);
 }
 
@@ -677,7 +745,7 @@
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
-  padding: 2px 0;
+  padding: 0;
   font-size: 11px;
   color: var(--vscode-descriptionForeground, rgba(255, 255, 255, 0.7));
   width: 100%;
@@ -692,57 +760,13 @@
   flex-wrap: wrap;
 }
 
-.liveMonitoringBar__spacer {
-  flex: 1 1 auto;
-  min-width: 8px;
-}
-
-.liveMonitoringBar__extras {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.liveMonitoringBar__extraLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-  color: var(--vscode-foreground, #ccc);
-  font-size: 11px;
-  cursor: pointer;
-}
-
 .liveMonitoringBar__label {
-  margin-right: 4px;
+  margin-right: 2px;
   font-weight: 600;
-}
-
-.liveMonitoringBar__btn {
-  width: auto !important;
-  min-width: 28px;
-  padding: 2px 6px !important;
-  font-size: 10px !important;
-  line-height: 1.2;
-  background: var(
-    --vscode-button-secondaryBackground,
-    rgba(255, 255, 255, 0.08)
-  ) !important;
-  color: var(--vscode-button-secondaryForeground, #ccc) !important;
-  outline-offset: 1px;
-}
-
-.liveMonitoringBar__btn--active {
-  background: var(--vscode-button-background, #0e639c) !important;
-  color: var(--vscode-button-foreground, #fff) !important;
-}
-
-/** Force band row wrap under channel / swap controls */
-.liveMonitoringBar__break {
-  flex-basis: 100%;
-  height: 0;
+  font-size: var(--text-xs, 10px);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #666666;
 }
 
 .liveMonitoringBar__bands {
@@ -751,3 +775,8 @@
   gap: 4px;
   align-items: center;
 }
+
+#liveMetersRight {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 8px);
+}
+

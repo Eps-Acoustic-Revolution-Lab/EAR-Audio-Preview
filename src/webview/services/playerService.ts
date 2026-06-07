@@ -63,18 +63,42 @@ export default class PlayerService extends Service {
   }
 
   private _gainNode: GainNode;
-  // volume is 0~1
+  private _userVolume = 1;
+  private _hearingProtectionActive = false;
+
+  /** User-requested output gain (0–1.2); unaffected by hearing protection. */
   public get volume() {
-    if (!this._gainNode) {
-      return 1;
-    }
-    return this._gainNode.gain.value;
+    return this._userVolume;
   }
   public set volume(value: number) {
+    this._userVolume = Math.max(0, Math.min(1.2, value));
+    this._applyOutputGain();
+  }
+
+  public get hearingProtectionActive(): boolean {
+    return this._hearingProtectionActive;
+  }
+
+  public setHearingProtectionActive(active: boolean): void {
+    if (this._hearingProtectionActive === active) {
+      return;
+    }
+    this._hearingProtectionActive = active;
+    this._applyOutputGain();
+    this.dispatchEvent(
+      new CustomEvent(EventType.UPDATE_HEARING_PROTECTION, {
+        detail: { active: this._hearingProtectionActive },
+      }),
+    );
+  }
+
+  private _applyOutputGain(): void {
     if (!this._gainNode) {
       return;
     }
-    this._gainNode.gain.value = value;
+    this._gainNode.gain.value = this._hearingProtectionActive
+      ? 0
+      : this._userVolume;
   }
 
   private _hpfNode: BiquadFilterNode;
@@ -177,6 +201,15 @@ export default class PlayerService extends Service {
     this._analyzeSettingsService.addEventListener(
       EventType.AS_UPDATE_SHOW_LIVE_ANALYSIS,
       onLiveToggle,
+    );
+    this._analyzeSettingsService.addEventListener(
+      EventType.AS_UPDATE_HEARING_PROTECTION_ENABLED,
+      () => {
+        if (!this._analyzeSettingsService.hearingProtectionEnabled) {
+          this.setHearingProtectionActive(false);
+        }
+        onLiveToggle();
+      },
     );
 
     // fftSize change — only update fftSize if analysers exist; no glitch since
@@ -310,7 +343,8 @@ export default class PlayerService extends Service {
   private _needsLiveGraph(): boolean {
     return (
       this._analyzeSettingsService.showLevelMeter ||
-      this._analyzeSettingsService.showLiveAnalysis
+      this._analyzeSettingsService.showLiveAnalysis ||
+      this._analyzeSettingsService.hearingProtectionEnabled
     );
   }
 

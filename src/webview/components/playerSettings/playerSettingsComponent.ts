@@ -55,6 +55,26 @@ export default class PlayerSettingsComponent extends Component {
           </div>
 
           <div class="panelGroup panelGroup--nested">
+            <h4 class="panelGroup__title panelGroup__title--sub">Hearing protection</h4>
+            <p class="playerSetting__muted">Mutes playback when the level meter peak exceeds the limit. Uses the same dBFS peak readout as the level meter column.</p>
+            <div class="panelGroup__items">
+              <div class="panelRow">
+                <span class="panelRow__label">Enable</span>
+                <div class="panelRow__control">
+                  <input class="js-playerSetting-hearingProtectionEnabled" type="checkbox">
+                </div>
+              </div>
+              <div class="panelRow">
+                <span class="panelRow__label">Peak limit (dBFS)</span>
+                <div class="panelRow__control panelRow__control--range">
+                  <input class="js-playerSetting-hearingProtectionPeakDbFs" type="range" min="${AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MIN}" max="${AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_MAX}" step="0.5">
+                  <span class="panelRow__value js-playerSetting-hearingProtectionPeakDbFsLabel"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panelGroup panelGroup--nested">
             <h4 class="panelGroup__title panelGroup__title--sub">Monitor band edges</h4>
             <p class="playerSetting__muted">Six ascending crossover frequencies (Hz). Band&nbsp;i listens to [edge<sub>i</sub>, edge<sub>i+1</sub>]. Applies to live playback monitoring only.</p>
             <div class="panelGroup__items playerSetting__monitorEdges">
@@ -90,7 +110,57 @@ export default class PlayerSettingsComponent extends Component {
     `;
 
     this.initPlayerSettingUI();
+    this.initHearingProtectionUI();
     this.initMonitorBandEdgesUI();
+  }
+
+  private initHearingProtectionUI(): void {
+    const as = this._analyzeSettingService;
+    const enabledInput = this._componentRoot.querySelector(
+      ".js-playerSetting-hearingProtectionEnabled",
+    ) as HTMLInputElement;
+    const peakInput = this._componentRoot.querySelector(
+      ".js-playerSetting-hearingProtectionPeakDbFs",
+    ) as HTMLInputElement;
+    const peakLabel = this._componentRoot.querySelector(
+      ".js-playerSetting-hearingProtectionPeakDbFsLabel",
+    ) as HTMLElement;
+
+    const syncPeak = () => {
+      const db = as.hearingProtectionPeakDbFs;
+      peakLabel.textContent = db > 0 ? `+${db.toFixed(1)}` : db.toFixed(1);
+      peakInput.value = String(db);
+      peakInput.disabled = !enabledInput.checked;
+    };
+
+    enabledInput.checked = as.hearingProtectionEnabled;
+    syncPeak();
+
+    this._addEventlistener(enabledInput, EventType.CHANGE, () => {
+      as.hearingProtectionEnabled = enabledInput.checked;
+      syncPeak();
+    });
+    this._addEventlistener(peakInput, EventType.INPUT, () => {
+      as.hearingProtectionPeakDbFs = Number(peakInput.value);
+      syncPeak();
+    });
+    this._addEventlistener(
+      as,
+      EventType.AS_UPDATE_HEARING_PROTECTION_ENABLED,
+      (e: CustomEventInit<{ value: boolean }>) => {
+        enabledInput.checked = e.detail.value;
+        syncPeak();
+      },
+    );
+    this._addEventlistener(
+      as,
+      EventType.AS_UPDATE_HEARING_PROTECTION_PEAK_DBFS,
+      (e: CustomEventInit<{ value: number }>) => {
+        const db = e.detail.value;
+        peakInput.value = String(db);
+        peakLabel.textContent = db > 0 ? `+${db.toFixed(1)}` : db.toFixed(1);
+      },
+    );
   }
 
   private initPlayerSettingUI() {

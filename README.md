@@ -131,10 +131,11 @@ Real-time analysis during playback:
 
 Offline EBU R128 loudness profile:
 
-- **LUFS curves** — Integrated (I), short-term (S), and momentary (M) loudness over time. BSpline-smoothed for display.
+- **LUFS curves** — Integrated (I), short-term (S), and momentary (M) loudness over time. BSpline-smoothed for display. Timeline padding aligns with the waveform above.
 - **True peak markers** — Red markers indicate true-peak excursions above 0 dBTP.
 - **LRA & PLR** — Loudness Range and Peak-to-Loudness Ratio displayed in the info panel.
 - **Time selection** — Drag to select a region and re-analyze with new bounds.
+- **Layout** — Fixed-height inline chart; tab re-entry no longer stretches the container to fill the viewport.
 
 #### Edit & Export Pane
 
@@ -277,10 +278,10 @@ Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms →
 | Element | Location | Role |
 |---------|----------|------|
 | **Info table** | Top-left | Metadata: format, sample rate, bit depth, duration, true peak |
-| **Player bar** | Top-right | Play/pause, volume, seek bar, time readout |
-| **Workspace tabs** | Below player | STFT · Live Spec · Loudness · Edit & Export |
-| **FAB** | Bottom-left | Settings sheet: Options / Player / EasyCut |
-| **Monitoring bar** | Below info table | Solo L, R, M (mid), or S (side) |
+| **Workspace tabs** | Top bar | STFT · Live Spec · Loudness · Edit & Export (ear-eq sliding focus) |
+| **Transport FAB** | Bottom-left | Collapsed play/volume knob; expands to seek, monitor solo, level meter |
+| **Meta FAB** | Bottom-left (stacked) | Settings overlay: Options / Player / Edit & Export |
+| **Seek bar** | STFT pane | Time scrubber lives in the waveform area (not a global header) |
 
 ### Settings
 
@@ -390,16 +391,24 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [x] Loudness profile pane with BSpline-smoothed curves
 - [x] Auto-FFT window inference from visible time range
 - [x] Settings persistence via `globalState`
+- [x] Compact workspace chrome (minimal top tab bar, no global transport header)
+- [x] Transport FAB — play/volume/monitor in bottom-left popover; seek in STFT pane
+- [x] Ear-eq UI tokens — pill controls, sliding focus, segmented controls, knob component
+- [x] Hearing protection — optional peak-dBFS mute in Playback settings
+- [x] LUFS timeline alignment with waveform (`timelinePlotLayout`)
+- [x] Loudness pane layout stability — fixed chart height on tab re-entry
+- [x] Edit & Export panel surfaces + ear-eq segmented controls (channels, listen, destination)
 
 ### Planned
 
-- [ ] Pitch (F0) curve overlay
+**Next (Loudness pane):** extract F0 and other time-series curves (e.g. chroma, onset strength) from analysis, then stack them **vertically** with the existing LUFS chart inside the Loudness workspace pane — shared time axis, independent Y scales per strip.
+
+- [ ] Loudness pane — vertical multi-strip layout (LUFS + F0 + other sequential curves)
+- [ ] Pitch (F0) curve extraction and overlay
 - [ ] Chromagram strip (CQT)
 - [ ] Onset detection / structure markers
 - [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
-- [ ] Edit tab wire-up to EasyCut
-- [ ] monitoring curve for flat frequency response
-- [ ] merge LUFS/F0/STFT pannel to "overlap" layout
+- [ ] Monitoring curve for flat frequency response
 
 
 ---

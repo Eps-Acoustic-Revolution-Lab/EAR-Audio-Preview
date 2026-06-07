@@ -15,7 +15,7 @@ describe("liveMonitoringBarComponent", () => {
   let bar: LiveMonitoringBarComponent;
 
   beforeAll(() => {
-    document.body.innerHTML = '<div id="liveMonitoringBar"></div>';
+    document.body.innerHTML = '<div id="transportMonitorMount"></div>';
     const audioBuffer = new MockAudioBuffer(
       44100,
       2,
@@ -28,7 +28,7 @@ describe("liveMonitoringBarComponent", () => {
       audioBuffer,
     );
     bar = new LiveMonitoringBarComponent(
-      "#liveMonitoringBar",
+      "#transportMonitorMount",
       analyzeSettingsService,
     );
   });
@@ -39,22 +39,6 @@ describe("liveMonitoringBarComponent", () => {
     bar.dispose();
   });
 
-  test("level meter checkbox reflects and updates showLevelMeter", () => {
-    const cb = document.querySelector(
-      ".js-lm-showLevelMeter",
-    ) as HTMLInputElement;
-    expect(cb.checked).toBe(false);
-    cb.checked = true;
-    cb.dispatchEvent(new Event(EventType.CHANGE));
-    expect(analyzeSettingsService.showLevelMeter).toBe(true);
-    analyzeSettingsService.dispatchEvent(
-      new CustomEvent(EventType.AS_UPDATE_SHOW_LEVEL_METER, {
-        detail: { value: false },
-      }),
-    );
-    expect(cb.checked).toBe(false);
-  });
-
   test("SW⇄LR selects swap mode (mutually exclusive with LR)", () => {
     const swapBtn = document.querySelector(
       ".js-lm-swap-mode",
@@ -63,12 +47,8 @@ describe("liveMonitoringBarComponent", () => {
     expect(analyzeSettingsService.liveMonitoringMode).toBe("lr");
     click(swapBtn);
     expect(analyzeSettingsService.liveMonitoringMode).toBe("swap");
-    expect(swapBtn.classList.contains("liveMonitoringBar__btn--active")).toBe(
-      true,
-    );
-    expect(lrBtn.classList.contains("liveMonitoringBar__btn--active")).toBe(
-      false,
-    );
+    expect(swapBtn.classList.contains("earEqPill--active")).toBe(true);
+    expect(lrBtn.classList.contains("earEqPill--active")).toBe(false);
     click(lrBtn);
     expect(analyzeSettingsService.liveMonitoringMode).toBe("lr");
   });
@@ -80,10 +60,7 @@ describe("liveMonitoringBarComponent", () => {
     const bands = document.querySelectorAll(".js-lm-band");
     expect(
       [...bands].every(
-        (b) =>
-          !(b as HTMLElement).classList.contains(
-            "liveMonitoringBar__btn--active",
-          ),
+        (b) => !(b as HTMLElement).classList.contains("earEqPill--active"),
       ),
     ).toBe(true);
   });
@@ -95,7 +72,7 @@ describe("liveMonitoringBarComponent", () => {
     ) as HTMLButtonElement;
     click(b1);
     expect((analyzeSettingsService.monitorBandSoloMask >> 1) & 1).toBe(1);
-    expect(b1.classList.contains("liveMonitoringBar__btn--active")).toBe(true);
+    expect(b1.classList.contains("earEqPill--active")).toBe(true);
     click(b1);
     expect(analyzeSettingsService.monitorBandSoloMask & (1 << 1)).toBe(0);
   });

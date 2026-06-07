@@ -24,8 +24,8 @@ export default class SettingTab extends Component {
     this._componentRoot.innerHTML = `
       <div class="settingTab">
         <div class="settingTab__scroll">
-          <div class="js-settingTabContent-analyze"></div>
           <div class="settingTab__playbackSection js-settingTabContent-player"></div>
+          <div class="js-settingTabContent-analyze"></div>
         </div>
         <footer class="settingTab__footer js-settingTabFooter">
           <button

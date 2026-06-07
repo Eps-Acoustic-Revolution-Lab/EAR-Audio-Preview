@@ -12,6 +12,10 @@ import {
 } from "../../spectrogramFrequencyLayout";
 import Component from "../../component";
 import LoudnessService, { formatDbTp } from "../../services/loudnessService";
+import {
+  readTimelinePadFromElement,
+  timeSecToContainerPercent,
+} from "../../utils/timelinePlotLayout";
 
 export default class FigureInteractionComponent extends Component {
   private selectionOverlay: HTMLDivElement | null = null;
@@ -58,12 +62,21 @@ export default class FigureInteractionComponent extends Component {
           typeof e.detail?.pos === "number" && Number.isFinite(e.detail.pos)
             ? e.detail.pos
             : (e.detail.value * audioBuffer.duration) / 100;
-        const percentInFigureRange = ((sec - props.minTime) / trng) * 100;
-        if (percentInFigureRange < 0) {
+        const rootW = componentRoot.getBoundingClientRect().width;
+        const pad = readTimelinePadFromElement(componentRoot);
+        const percentInFigureRange = timeSecToContainerPercent(
+          sec,
+          props.minTime,
+          props.maxTime,
+          rootW,
+          pad.left,
+          pad.right,
+        );
+        if (percentInFigureRange <= 0) {
           visibleBar.style.width = `0%`;
           return;
         }
-        if (100 < percentInFigureRange) {
+        if (percentInFigureRange >= 100) {
           visibleBar.style.width = `100%`;
           return;
         }
@@ -95,7 +108,16 @@ export default class FigureInteractionComponent extends Component {
           return;
         }
         const sec = e.detail.sec;
-        const percentInFigureRange = ((sec - props.minTime) / trng) * 100;
+        const rootW = componentRoot.getBoundingClientRect().width;
+        const pad = readTimelinePadFromElement(componentRoot);
+        const percentInFigureRange = timeSecToContainerPercent(
+          sec,
+          props.minTime,
+          props.maxTime,
+          rootW,
+          pad.left,
+          pad.right,
+        );
         if (percentInFigureRange < 0 || 100 < percentInFigureRange) {
           positionBar.style.display = "none";
           return;

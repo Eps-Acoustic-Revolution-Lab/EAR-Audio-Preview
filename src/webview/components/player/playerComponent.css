@@ -1,20 +1,10 @@
 .playerComponent {
-  border: 1px solid var(--vscode-foreground);
-  padding: 0.5em;
+  border: none;
+  padding: 0;
 }
 
-.volumeNumber,
-.positionNumber {
-  display: inline;
-  min-width: 0;
-  outline: none;
-  cursor: text;
-  font-variant-numeric: tabular-nums;
-}
-
-.playButton {
-  height: 60px;
-  margin: 1em auto;
+.playerComponent--seekOnly .seekBarBox {
+  margin-top: 0;
 }
 
 .seekBarBox {
@@ -25,26 +15,13 @@
   flex-shrink: 0;
 }
 
-.volumeBar {
-  width: 100%;
-}
-
-.seekBar {
-  width: 100%;
-  height: 14px;
-  margin: 0;
-  position: relative;
-  z-index: 0;
-  box-sizing: border-box;
-}
-
 .inputSeekBar {
   position: absolute;
   left: 0;
   width: 100%;
   top: 50%;
   transform: translateY(-50%);
-  height: 12px;
+  height: 18px;
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -62,8 +39,16 @@
   transform: translateY(-50%);
   height: 4px;
   z-index: 1;
+  background: var(--knob-track-bg, #222222);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .progressFill {
   pointer-events: none;
+  background: var(--knob-accent, #00c3ff);
+  height: 100%;
+  opacity: 0.85;
+  border-radius: 2px;
+  transition: transform 0.05s linear;
 }

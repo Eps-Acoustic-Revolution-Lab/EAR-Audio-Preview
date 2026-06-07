@@ -47,6 +47,11 @@ export class EventType {
     "as-update-high-resolution-spectrogram";
   public static readonly AS_UPDATE_SHOW_LEVEL_METER =
     "as-update-show-level-meter";
+  public static readonly AS_UPDATE_HEARING_PROTECTION_ENABLED =
+    "as-update-hearing-protection-enabled";
+  public static readonly AS_UPDATE_HEARING_PROTECTION_PEAK_DBFS =
+    "as-update-hearing-protection-peak-dbfs";
+  public static readonly UPDATE_HEARING_PROTECTION = "update-hearing-protection";
   public static readonly AS_UPDATE_SHOW_LIVE_ANALYSIS =
     "as-update-show-live-analysis";
   public static readonly AS_UPDATE_LIVE_ANALYSIS_FFT_SIZE =

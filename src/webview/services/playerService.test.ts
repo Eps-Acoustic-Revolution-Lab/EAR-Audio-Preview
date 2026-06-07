@@ -104,6 +104,22 @@ describe("playerService", () => {
     jest.restoreAllMocks();
   });
 
+  test("hearing protection mutes output without changing user volume", async () => {
+    playerService.volume = 1;
+    const detail = await waitEventForAction(
+      () => {
+        playerService.setHearingProtectionActive(true);
+      },
+      playerService,
+      EventType.UPDATE_HEARING_PROTECTION,
+    );
+    expect(detail.active).toBe(true);
+    expect(playerService.volume).toBe(1);
+    expect(playerService.hearingProtectionActive).toBe(true);
+    playerService.setHearingProtectionActive(false);
+    expect(playerService.hearingProtectionActive).toBe(false);
+  });
+
   test("setEditListenState toggles edit listen mode", () => {
     playerService.setEditListenState({
       active: true,

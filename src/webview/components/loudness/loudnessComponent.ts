@@ -4,12 +4,14 @@ import LoudnessService from "../../services/loudnessService";
 import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import LoudnessPane from "./loudnessPane";
+import { EventType } from "../../events";
 
 /**
  * Loudness workspace pane: compact inline chart + expandable fullscreen overlay.
  */
 export default class LoudnessComponent extends Component {
   private _overlay: HTMLElement;
+  private _inlinePane: LoudnessPane;
 
   constructor(
     containerEl: HTMLElement,
@@ -48,7 +50,7 @@ export default class LoudnessComponent extends Component {
       this._overlay.classList.add("hidden");
     };
 
-    this._register(
+    this._inlinePane = this._register(
       new LoudnessPane(
         inlineMount,
         loudnessService,
@@ -57,7 +59,7 @@ export default class LoudnessComponent extends Component {
         audioBuffer,
         "inline",
       ),
-    );
+    ) as LoudnessPane;
 
     const overlayPane = this._register(
       new LoudnessPane(
@@ -88,6 +90,15 @@ export default class LoudnessComponent extends Component {
         closeOverlay();
       }
     });
+
+    this._addEventlistener(document, EventType.WORKSPACE_ACTIVE_PANE, ((
+      ev: Event,
+    ) => {
+      const pane = (ev as CustomEvent<{ pane: string }>).detail?.pane;
+      if (pane === "loudness") {
+        requestAnimationFrame(() => this._inlinePane.scheduleRedraw());
+      }
+    }) as EventListener);
   }
 
   override dispose() {

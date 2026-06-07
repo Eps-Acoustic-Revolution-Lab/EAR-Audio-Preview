@@ -64,6 +64,21 @@ describe("playerSettingsComponent", () => {
     playerSettingsComponent.dispose();
   });
 
+  test("hearing protection controls bind to analyze settings", () => {
+    const enabled = document.querySelector(
+      ".js-playerSetting-hearingProtectionEnabled",
+    ) as HTMLInputElement;
+    const peak = document.querySelector(
+      ".js-playerSetting-hearingProtectionPeakDbFs",
+    ) as HTMLInputElement;
+    expect(enabled).toBeTruthy();
+    expect(peak).toBeTruthy();
+    enabled.checked = true;
+    enabled.dispatchEvent(new Event(EventType.CHANGE));
+    expect(analyzeSettingsService.hearingProtectionEnabled).toBe(true);
+    expect(peak.disabled).toBe(false);
+  });
+
   test("enable-hpf should be updated when user change enable-hpf-input", () => {
     const enableHpf = document.querySelector(
       ".js-playerSetting-enableHpf",

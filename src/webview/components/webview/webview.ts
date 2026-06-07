@@ -18,17 +18,17 @@ import AnalyzeSettingsService, {
 } from "../../services/analyzeSettingsService";
 import InfoTableComponent from "../infoTable/infoTableComponent";
 import MetaFabComponent from "../metaFab/metaFabComponent";
-import PlayerComponent from "../player/playerComponent";
+import TransportFabComponent from "../transportFab/transportFabComponent";
 import SettingTab from "../settingTab/settingTabComponent";
 import AnalyzerComponent from "../analyzer/analyzerComponent";
 import LevelMeterComponent from "../liveMeters/levelMeterComponent";
 import LiveAnalysisComponent from "../liveMeters/liveAnalysisComponent";
-import LiveMonitoringBarComponent from "../liveMeters/liveMonitoringBarComponent";
 import WaveBandComponent from "../waveBand/waveBandComponent";
 import LoudnessComponent from "../loudness/loudnessComponent";
 import LoudnessService from "../../services/loudnessService";
 import { setLoudnessWorkletModuleUrl } from "../../utils/loudnessWorkletLoader";
 import { setActiveWorkspacePane } from "../../workspacePane";
+import { updateEarEqSlidingFocus } from "../../utils/earEqSlidingFocus";
 import EditExportComponent from "../editExport/editExportComponent";
 import EditExportSettingsService from "../../services/editExportSettingsService";
 import EditListenService from "../../services/editListenService";
@@ -47,6 +47,17 @@ const fabLoadRingCircumference = 2 * Math.PI * fabLoadRingRadiusPx;
 /** Portion of the ring reserved for file transfer into the webview (rest = decode + UI). */
 const loadProgressReceiveShare = 0.38;
 
+function updateWorkspaceTabFocus(): void {
+  const strip = document.getElementById("workspaceStrip");
+  const focus = strip?.querySelector(
+    ".workspaceChrome__focus",
+  ) as HTMLElement | null;
+  if (!strip || !focus) {
+    return;
+  }
+  updateEarEqSlidingFocus(strip, focus, ".workspacePane__tab--active");
+}
+
 export default class WebView extends Component {
   private _fileData: Uint8Array;
 
@@ -58,6 +69,7 @@ export default class WebView extends Component {
   private _config: Config;
 
   private _metaFab: MetaFabComponent | null = null;
+  private _transportFab: TransportFabComponent | null = null;
   private _settingsFab: HTMLButtonElement | null = null;
   private _fabPercentEl: HTMLSpanElement | null = null;
   private _loadRingSvg: SVGSVGElement | null = null;
@@ -95,10 +107,6 @@ export default class WebView extends Component {
     const root = document.getElementById("root");
     root.innerHTML = `
       <div id="stickyHeaderChrome" class="stickyHeaderChrome">
-        <div id="transportChrome" class="transportChrome">
-          <div id="player"></div>
-        </div>
-        <div id="liveMonitoringBar"></div>
         <div class="workspaceChrome">
           <div
             id="workspaceStrip"
@@ -106,6 +114,7 @@ export default class WebView extends Component {
             role="tablist"
             aria-label="Visualization mode"
           >
+            <div class="workspaceChrome__focus earEqSlidingFocus" aria-hidden="true"></div>
             <button
               type="button"
               class="workspacePane__tab js-paneSelect-stft"
@@ -213,6 +222,7 @@ export default class WebView extends Component {
       </div>
       <div id="settingsOverlayMount"></div>
       <div id="keyboardShortcutsOverlay"></div>
+      <div id="transportDock" class="transportDock"></div>
       <div id="settingsDock" class="settingsDock">
         <div id="metaPopoverMount"></div>
         <button
@@ -314,6 +324,7 @@ export default class WebView extends Component {
 
   private _showLoadRing() {
     this._metaFab?.setLoading(true);
+    this._transportFab?.setLoading(true);
     this._settingsFab?.classList.add("settingsDock__fab--loading");
     this._loadRingSvg?.classList.remove("settingsDock__fabRingSvg--hidden");
     this._settingsFab?.setAttribute("aria-busy", "true");
@@ -370,6 +381,7 @@ export default class WebView extends Component {
     }
     this._settingsFab.setAttribute("aria-busy", "false");
     this._metaFab?.setLoading(false);
+    this._transportFab?.setLoading(false);
     if (success) {
       this._settingsFab.disabled = false;
       this._settingsFab.setAttribute("title", "Audio file info");
@@ -522,12 +534,16 @@ export default class WebView extends Component {
       playerSettingsService,
       analyzeSettingsService,
     );
-    const playerComponent = new PlayerComponent(
-      "#player",
+    this._disposables.push(playerService);
+
+    const transportFab = new TransportFabComponent(
+      "#transportDock",
       playerService,
       playerSettingsService,
+      analyzeSettingsService,
     );
-    this._disposables.push(playerService, playerComponent);
+    this._transportFab = transportFab;
+    this._disposables.push(transportFab);
 
     const waveBandComponent = new WaveBandComponent(
       "#waveBand .waveBand__channels",
@@ -591,11 +607,7 @@ export default class WebView extends Component {
       playerService,
       analyzeSettingsService,
     );
-    const liveMonitoringBarComponent = new LiveMonitoringBarComponent(
-      "#liveMonitoringBar",
-      analyzeSettingsService,
-    );
-    this._disposables.push(levelMeterComponent, liveMonitoringBarComponent);
+    this._disposables.push(levelMeterComponent);
 
     let meterColumnWidthPx = 112;
     const clampMeterColumnWidth = (width: number) =>
@@ -796,6 +808,7 @@ export default class WebView extends Component {
         document
           .getElementById("tabLoudness")
           ?.setAttribute("aria-selected", "false");
+        requestAnimationFrame(updateWorkspaceTabFocus);
         return;
       }
       const map: Record<string, string> = {
@@ -848,7 +861,12 @@ export default class WebView extends Component {
       } else {
         editListenService.leave();
       }
+      requestAnimationFrame(updateWorkspaceTabFocus);
     }) as EventListener);
+
+    this._addEventlistener(window, "resize", () => {
+      requestAnimationFrame(updateWorkspaceTabFocus);
+    });
 
     setActiveWorkspacePane("none");
 

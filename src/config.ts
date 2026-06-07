@@ -214,6 +214,15 @@ export interface AnalyzeDefault {
   /** Level meter RMS release (dB/s). default: 8 */
   liveLevelMeterReleaseDbPerSec?: number;
 
+  /**
+   * Mute playback when level-meter sample peak exceeds
+   * {@link hearingProtectionPeakDbFs}. default: false
+   */
+  hearingProtectionEnabled?: boolean;
+
+  /** Peak limit for hearing protection (dBFS). default: 6 */
+  hearingProtectionPeakDbFs?: number;
+
   /** @deprecated Migrated to {@link liveSpectrumReleaseDbPerSec}. */
   liveSpectrumSmoothingPct?: number;
 

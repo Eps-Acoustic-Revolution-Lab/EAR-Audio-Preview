@@ -53,7 +53,9 @@ describe("webview", () => {
 
   test("root layout includes workspace strip, wave band, settings overlay, and FAB", () => {
     expect(document.getElementById("stickyHeaderChrome")).not.toBeNull();
-    expect(document.getElementById("transportChrome")).not.toBeNull();
+    expect(document.getElementById("transportDock")).not.toBeNull();
+    expect(document.getElementById("transportChrome")).toBeNull();
+    expect(document.getElementById("liveMonitoringBar")).toBeNull();
     expect(document.getElementById("infoTable")).toBeNull();
     expect(document.getElementById("workspaceStrip")).not.toBeNull();
     expect(document.getElementById("graphDeck")).not.toBeNull();
@@ -171,8 +173,8 @@ describe("webview", () => {
     expect(document.getElementById("audioMeta")?.innerHTML).toBe("");
   });
 
-  test("player is empty after reload", async () => {
-    expect(document.getElementById("player")?.innerHTML).toBe("");
+  test("transport dock mount is present after reload", async () => {
+    expect(document.getElementById("transportDock")).not.toBeNull();
   });
 
   test("wave band channels cleared after reload", async () => {

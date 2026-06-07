@@ -1,0 +1,181 @@
+/* Design tokens from ear-eq DESIGN_SYSTEM.md */
+:root {
+  --surface-0: #111111;
+  --surface-1: #151618;
+  --surface-2: #222226;
+  --surface-3: #2a2a2e;
+  --surface-border: #222222;
+  --surface-border-subtle: #111111;
+
+  --pill-bg: #121214;
+  --pill-border: #0c0c0e;
+  /* Squircle-style large corner radius (ear-eq control tiles) */
+  --pill-radius: 10px;
+  --pill-radius-squircle: 10px / 12px;
+  --pill-text: #aaaaaa;
+  --pill-text-hover: #ffffff;
+  --pill-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+
+  --knob-bg: #111111;
+  --knob-border: #2a2a2d;
+  --knob-face-from: #2a2a2e;
+  --knob-face-to: #171719;
+  --knob-face-border: #333336;
+  --knob-track-bg: #222222;
+  --knob-accent: #00c3ff;
+  --knob-default-size: 56px;
+
+  --text-xs: 10px;
+  --text-sm: 11px;
+
+  --ear-eq-toggle-inactive: #444444;
+  --ear-eq-toggle-active: #ffffff;
+
+  --ear-eq-motion-fast: 0.28s;
+  --ear-eq-motion-medium: 0.38s;
+  --ear-eq-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Shared pill (Monitor buttons, etc.) — squircle corners */
+.earEqPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto !important;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 10px !important;
+  margin: 0;
+  border-radius: var(--pill-radius-squircle);
+  background: var(--pill-bg) !important;
+  border: 1px solid var(--pill-border) !important;
+  box-shadow: var(--pill-shadow);
+  color: var(--pill-text) !important;
+  font-size: var(--text-xs) !important;
+  line-height: 1.2;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+}
+
+.earEqPill:hover {
+  color: var(--pill-text-hover) !important;
+}
+
+.earEqPill--active {
+  color: var(--pill-text-hover) !important;
+}
+
+/* Text toggle (workspace tabs) */
+.earEqToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  min-width: 0;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--pill-radius);
+  background: transparent;
+  color: var(--ear-eq-toggle-inactive);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+}
+
+.earEqToggle:hover {
+  color: var(--ear-eq-toggle-active);
+}
+
+.earEqToggle--active {
+  color: var(--ear-eq-toggle-active);
+}
+
+/* Liquid-glass sliding focus (workspace tabs, segmented controls) */
+.earEqSlidingFocus,
+.workspaceChrome__focus {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: var(--pill-radius, 10px);
+  background: color-mix(
+    in srgb,
+    var(--pill-bg, #121214) 72%,
+    #ffffff 8%
+  );
+  border: 1px solid color-mix(in srgb, var(--pill-border, #0c0c0e) 55%, #ffffff 14%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #ffffff 8%, transparent),
+    0 4px 14px color-mix(in srgb, #000000 28%, transparent);
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    transform var(--ear-eq-motion-medium, 0.38s) var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    width var(--ear-eq-motion-medium, 0.38s) var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    height var(--ear-eq-motion-medium, 0.38s) var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--ear-eq-motion-fast, 0.28s) ease;
+  will-change: transform, width, height;
+}
+
+/* Mutually exclusive option strip (ear-eq pill labels + glass focus) */
+.earEqSegment {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.earEqSegment__option {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 10px !important;
+  margin: 0;
+  border: 1px solid transparent !important;
+  border-radius: var(--pill-radius-squircle);
+  background: transparent !important;
+  color: var(--pill-text, #aaaaaa) !important;
+  font-size: var(--text-xs, 10px) !important;
+  line-height: 1.2;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+}
+
+button.earEqSegment__option:hover,
+button.earEqSegment__option:focus {
+  background: transparent !important;
+  color: var(--pill-text-hover, #ffffff) !important;
+}
+
+.earEqSegment__option--active {
+  color: var(--pill-text-hover, #ffffff) !important;
+  background: transparent !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .earEqSlidingFocus,
+  .workspaceChrome__focus {
+    transition: none;
+  }
+}

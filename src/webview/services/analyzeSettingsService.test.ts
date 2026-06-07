@@ -654,6 +654,27 @@ describe("analyzeSettingsService", () => {
     expect(as.toCachedDefaults().showLevelMeter).toBe(true);
   });
 
+  test("hearingProtection defaults off with +6 dBFS peak limit", () => {
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    expect(as.hearingProtectionEnabled).toBe(false);
+    expect(as.hearingProtectionPeakDbFs).toBe(6);
+  });
+
+  test("hearing protection can be disabled and peak limit persisted", () => {
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.hearingProtectionEnabled = false;
+    as.hearingProtectionPeakDbFs = 3;
+    const cached = as.toCachedDefaults();
+    expect(cached.hearingProtectionEnabled).toBe(false);
+    expect(cached.hearingProtectionPeakDbFs).toBe(3);
+  });
+
   // showLiveAnalysis
   test("showLiveAnalysis should be false by default", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
