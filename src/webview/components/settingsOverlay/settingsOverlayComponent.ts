@@ -56,7 +56,9 @@ export default class SettingsOverlayComponent extends Component {
     `;
 
     this._overlay = root.querySelector(".settingsOverlay") as HTMLElement;
-    this._dialog = root.querySelector(".settingsOverlay__dialog") as HTMLElement;
+    this._dialog = root.querySelector(
+      ".settingsOverlay__dialog",
+    ) as HTMLElement;
     this._gearBtn = document.querySelector(
       ".js-openSettings",
     ) as HTMLButtonElement | null;
@@ -71,7 +73,8 @@ export default class SettingsOverlayComponent extends Component {
       return;
     }
     const pane = getActiveWorkspacePane();
-    titleEl.textContent = PANE_SETTINGS_TITLES[pane] ?? PANE_SETTINGS_TITLES.none;
+    titleEl.textContent =
+      PANE_SETTINGS_TITLES[pane] ?? PANE_SETTINGS_TITLES.none;
   }
 
   private _focusGearButton(): void {
@@ -100,7 +103,8 @@ export default class SettingsOverlayComponent extends Component {
     requestAnimationFrame(() => {
       this._overlay.classList.add("settingsOverlay--open");
     });
-    const firstFocus = this._dialog.querySelector<HTMLElement>(focusableSelector);
+    const firstFocus =
+      this._dialog.querySelector<HTMLElement>(focusableSelector);
     firstFocus?.focus();
   }
 
@@ -155,28 +159,32 @@ export default class SettingsOverlayComponent extends Component {
       }
     });
 
-    this._addEventlistener(this._dialog, EventType.KEY_DOWN, (e: KeyboardEvent) => {
-      if (!this._isOpen || e.key !== "Tab") {
-        return;
-      }
-      const focusables = Array.from(
-        this._dialog.querySelectorAll<HTMLElement>(focusableSelector),
-      );
-      if (focusables.length === 0) {
-        return;
-      }
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-      if (e.shiftKey) {
-        if (active === first) {
-          e.preventDefault();
-          last.focus();
+    this._addEventlistener(
+      this._dialog,
+      EventType.KEY_DOWN,
+      (e: KeyboardEvent) => {
+        if (!this._isOpen || e.key !== "Tab") {
+          return;
         }
-      } else if (active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    });
+        const focusables = Array.from(
+          this._dialog.querySelectorAll<HTMLElement>(focusableSelector),
+        );
+        if (focusables.length === 0) {
+          return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+        if (e.shiftKey) {
+          if (active === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      },
+    );
   }
 }

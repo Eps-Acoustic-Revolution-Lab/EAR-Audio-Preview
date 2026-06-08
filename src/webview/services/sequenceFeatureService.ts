@@ -38,8 +38,7 @@ export default class SequenceFeatureService extends Service {
   private _audioBuffer: AudioBuffer;
   private _postMessage: PostMessage;
   private _profileCache: SequenceFeatureProfile | null = null;
-  private _analyzePromise: Promise<SequenceFeatureProfile | null> | null =
-    null;
+  private _analyzePromise: Promise<SequenceFeatureProfile | null> | null = null;
 
   constructor(audioBuffer: AudioBuffer, postMessage: PostMessage) {
     super();

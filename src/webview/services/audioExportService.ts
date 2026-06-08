@@ -187,11 +187,7 @@ export async function renderExportWav(
   for (let ch = 0; ch < rendered.numberOfChannels; ch++) {
     audioData.push(rendered.getChannelData(ch));
   }
-  return encodeToWav(
-    audioData,
-    rendered.sampleRate,
-    rendered.numberOfChannels,
-  );
+  return encodeToWav(audioData, rendered.sampleRate, rendered.numberOfChannels);
 }
 
 export function bufferRms(buffer: AudioBuffer, channel = 0): number {

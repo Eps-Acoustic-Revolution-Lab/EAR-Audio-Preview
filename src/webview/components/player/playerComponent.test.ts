@@ -80,9 +80,7 @@ describe("playerComponent", () => {
   });
 
   test("update progress fill when seekbar value is updated", () => {
-    const progressFill = document.querySelector(
-      ".progressFill",
-    ) as HTMLElement;
+    const progressFill = document.querySelector(".progressFill") as HTMLElement;
     playerService.dispatchEvent(
       new CustomEvent(EventType.UPDATE_SEEKBAR, {
         detail: {

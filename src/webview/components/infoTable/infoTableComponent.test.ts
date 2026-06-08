@@ -1,8 +1,7 @@
 import InfoTableComponent from "./infoTableComponent";
 
 function metaValue(name: string): string | undefined {
-  return document
-    .querySelector(`.js-audioMeta-${name} .audioMeta__value`)
+  return document.querySelector(`.js-audioMeta-${name} .audioMeta__value`)
     ?.textContent;
 }
 

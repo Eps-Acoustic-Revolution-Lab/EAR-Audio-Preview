@@ -48,7 +48,9 @@ export default class MetaFabComponent extends Component {
     `;
 
     this._popover = mount.querySelector(".metaPopover") as HTMLElement;
-    this._backdrop = mount.querySelector(".js-metaPopoverBackdrop") as HTMLElement;
+    this._backdrop = mount.querySelector(
+      ".js-metaPopoverBackdrop",
+    ) as HTMLElement;
 
     this._initEventListeners();
   }
@@ -110,11 +112,7 @@ export default class MetaFabComponent extends Component {
       this._toggle();
     });
 
-    this._addEventlistener(
-      this._backdrop,
-      EventType.CLICK,
-      () => this.close(),
-    );
+    this._addEventlistener(this._backdrop, EventType.CLICK, () => this.close());
 
     const closeBtn = this._popover.querySelector(
       ".js-metaPopoverClose",

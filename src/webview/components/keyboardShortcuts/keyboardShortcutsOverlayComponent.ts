@@ -30,7 +30,9 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
     }
 
     root.innerHTML = this._generateHTML();
-    this._overlay = root.querySelector(".keyboardShortcutsOverlay") as HTMLElement;
+    this._overlay = root.querySelector(
+      ".keyboardShortcutsOverlay",
+    ) as HTMLElement;
 
     this._initEventListeners();
   }
@@ -53,12 +55,12 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
                 </div>
                 <div class="keyboardShortcutsItem__description">${shortcut.description}</div>
               </div>
-            `
+            `,
               )
               .join("")}
           </div>
         </div>
-      `
+      `,
       )
       .join("");
 
@@ -88,11 +90,23 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
         title: "Zoom & Navigation",
         shortcuts: [
           { keys: ["Drag"], description: "Zoom to selection" },
-          { keys: [this._modKey, "+", "Drag"], description: "Zoom time axis only" },
-          { keys: ["Shift", "+", "Drag"], description: "Zoom frequency/amplitude axis only" },
+          {
+            keys: [this._modKey, "+", "Drag"],
+            description: "Zoom time axis only",
+          },
+          {
+            keys: ["Shift", "+", "Drag"],
+            description: "Zoom frequency/amplitude axis only",
+          },
           { keys: ["Right-click"], description: "Reset view (all axes)" },
-          { keys: [this._modKey, "+", "Right-click"], description: "Reset time axis only" },
-          { keys: ["Shift", "+", "Right-click"], description: "Reset frequency/amplitude axis only" },
+          {
+            keys: [this._modKey, "+", "Right-click"],
+            description: "Reset time axis only",
+          },
+          {
+            keys: ["Shift", "+", "Right-click"],
+            description: "Reset frequency/amplitude axis only",
+          },
         ],
       },
       {
@@ -106,8 +120,14 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
         title: "Help",
         shortcuts: [
           { keys: ["?"], description: "Show keyboard shortcuts" },
-          { keys: [this._modKey, "+", "/"], description: "Toggle settings for current view" },
-          { keys: ["Gear icon"], description: "Toggle settings for current view" },
+          {
+            keys: [this._modKey, "+", "/"],
+            description: "Toggle settings for current view",
+          },
+          {
+            keys: ["Gear icon"],
+            description: "Toggle settings for current view",
+          },
         ],
       },
     ];
@@ -120,7 +140,10 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
       }
 
       const target = e.target as HTMLElement;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
+      if (
+        target &&
+        (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
+      ) {
         return;
       }
 
@@ -143,7 +166,9 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
       }
     });
 
-    const backdrop = this._overlay.querySelector(".keyboardShortcutsOverlay__backdrop");
+    const backdrop = this._overlay.querySelector(
+      ".keyboardShortcutsOverlay__backdrop",
+    );
     if (backdrop) {
       this._addEventlistener(backdrop, EventType.CLICK, () => {
         this._hide();

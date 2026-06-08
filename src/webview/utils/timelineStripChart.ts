@@ -129,7 +129,11 @@ export function drawTimeAxisLabels(
   ctx.fillStyle = "rgba(255,255,255,0.5)";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  ctx.fillText(formatTime(minTime), plot.padL, plot.h - plot.padB + 4 * plot.dpr);
+  ctx.fillText(
+    formatTime(minTime),
+    plot.padL,
+    plot.h - plot.padB + 4 * plot.dpr,
+  );
   ctx.fillText(
     formatTime(maxTime),
     plot.padL + plot.plotW,
@@ -221,7 +225,11 @@ export function dynamicLogHzRange(
     }
   }
   if (!inRange.length) {
-    return { minHz: floorHz, maxHz: ceilHz, ticks: logHzTicks(floorHz, ceilHz) };
+    return {
+      minHz: floorHz,
+      maxHz: ceilHz,
+      ticks: logHzTicks(floorHz, ceilHz),
+    };
   }
   let minHz = percentile(inRange, 0.02);
   let maxHz = percentile(inRange, 0.98);

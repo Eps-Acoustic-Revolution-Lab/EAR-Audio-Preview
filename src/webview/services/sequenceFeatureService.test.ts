@@ -41,10 +41,7 @@ function makeMockEssentia() {
   };
 }
 
-function makeAudioBuffer(
-  length: number,
-  sampleRate = 44100,
-): AudioBuffer {
+function makeAudioBuffer(length: number, sampleRate = 44100): AudioBuffer {
   return {
     duration: length / sampleRate,
     sampleRate,

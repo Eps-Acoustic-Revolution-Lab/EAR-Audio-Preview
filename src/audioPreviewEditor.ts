@@ -312,8 +312,7 @@ export class AudioPreviewEditorProvider
               data: { requestId, profile: profile ?? undefined },
             });
           } catch (err) {
-            const message =
-              err instanceof Error ? err.message : String(err);
+            const message = err instanceof Error ? err.message : String(err);
             this.postMessage(webviewPanel.webview, {
               type: ExtMessageType.SEQUENCE_FEATURES,
               data: { requestId, error: message },
@@ -343,8 +342,7 @@ export class AudioPreviewEditorProvider
               },
             });
           } catch (err) {
-            const message =
-              err instanceof Error ? err.message : String(err);
+            const message = err instanceof Error ? err.message : String(err);
             this.postMessage(webviewPanel.webview, {
               type: ExtMessageType.STFT_RESULT,
               data: { requestId, cacheKey, error: message },

@@ -13,10 +13,7 @@ describe("timelinePlotLayout", () => {
 
   test("timeSecToPlotX respects plot padding", () => {
     expect(timeSecToPlotX(0, 0, 100, w, padL, padR)).toBeCloseTo(padL, 5);
-    expect(timeSecToPlotX(100, 0, 100, w, padL, padR)).toBeCloseTo(
-      w - padR,
-      5,
-    );
+    expect(timeSecToPlotX(100, 0, 100, w, padL, padR)).toBeCloseTo(w - padR, 5);
     expect(timeSecToPlotX(50, 0, 100, w, padL, padR)).toBeCloseTo(
       padL + (w - padL - padR) * 0.5,
       5,

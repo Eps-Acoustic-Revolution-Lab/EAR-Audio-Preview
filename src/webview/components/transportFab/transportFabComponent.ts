@@ -29,7 +29,10 @@ function defaultFabBottom(): number {
   return DOCK_INSET_PX;
 }
 
-function applyKnobVolume(knobValue: number, playerService: PlayerService): void {
+function applyKnobVolume(
+  knobValue: number,
+  playerService: PlayerService,
+): void {
   playerService.volume = knobPercentToGain(knobValue);
 }
 
@@ -123,7 +126,9 @@ export default class TransportFabComponent extends Component {
         </div>
       </div>`;
 
-    this._fabWrap = dock.querySelector(".transportDock__fabWrap") as HTMLElement;
+    this._fabWrap = dock.querySelector(
+      ".transportDock__fabWrap",
+    ) as HTMLElement;
     this._expandChip = dock.querySelector(
       ".js-transportExpand",
     ) as HTMLButtonElement;
@@ -184,10 +189,8 @@ export default class TransportFabComponent extends Component {
     this._disposables.push(this._seekPlayer);
 
     this._syncPlayUi();
-    this._addEventlistener(
-      playerService,
-      EventType.UPDATE_IS_PLAYING,
-      () => this._syncPlayUi(),
+    this._addEventlistener(playerService, EventType.UPDATE_IS_PLAYING, () =>
+      this._syncPlayUi(),
     );
 
     if (playerSettingsService.enableSpacekeyPlay) {
@@ -236,10 +239,7 @@ export default class TransportFabComponent extends Component {
         return;
       }
       const parsed = JSON.parse(raw) as StoredFabPosition;
-      if (
-        Number.isFinite(parsed.left) &&
-        Number.isFinite(parsed.bottom)
-      ) {
+      if (Number.isFinite(parsed.left) && Number.isFinite(parsed.bottom)) {
         this._fabLeft = parsed.left;
         this._fabBottom = parsed.bottom;
       }
@@ -484,10 +484,7 @@ export default class TransportFabComponent extends Component {
       this._playPill.innerHTML = playing
         ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>`
         : `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
-      this._playPill.setAttribute(
-        "aria-label",
-        playing ? "Pause" : "Play",
-      );
+      this._playPill.setAttribute("aria-label", playing ? "Pause" : "Play");
     }
   }
 

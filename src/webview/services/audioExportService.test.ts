@@ -73,8 +73,7 @@ describe("audioExportService", () => {
     expect(right.getChannelData(0)[0]).toBeCloseTo(0.75, 5);
   });
 
-  const hasOffline =
-    typeof globalThis.OfflineAudioContext === "function";
+  const hasOffline = typeof globalThis.OfflineAudioContext === "function";
 
   (hasOffline ? test : test.skip)(
     "HPF attenuates low-frequency energy",

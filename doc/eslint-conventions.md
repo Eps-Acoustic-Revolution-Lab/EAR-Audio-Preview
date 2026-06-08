@@ -30,3 +30,5 @@ npm run ci
 ```
 
 Equivalent to the `check` job in `.github/workflows/ci.yml`: lint, format, test, webpack, VSIX package.
+
+Run `npm run format` before pushing if `format-check` fails — CI only auto-fixes nothing; it fails on any Prettier drift in `src/**/*.ts`.

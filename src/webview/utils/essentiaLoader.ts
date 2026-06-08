@@ -82,7 +82,9 @@ function warnOnce(message: string, err?: unknown): void {
   );
 }
 
-function resolveEssentiaCtor(mod: unknown): (new (wasm: unknown) => EssentiaInstance) | null {
+function resolveEssentiaCtor(
+  mod: unknown,
+): (new (wasm: unknown) => EssentiaInstance) | null {
   if (!mod || typeof mod !== "object") {
     return null;
   }
@@ -159,18 +161,22 @@ async function loadViaPackageIndex(): Promise<EssentiaInstance | null> {
   const essentiaCtor = resolveEssentiaCtor(pkg);
   const wasm = resolveWasmModule(pkg);
   if (!essentiaCtor || !wasm) {
-    throw new Error("Essentia or EssentiaWASM export missing from package index");
+    throw new Error(
+      "Essentia or EssentiaWASM export missing from package index",
+    );
   }
   return new essentiaCtor(wasm);
 }
 
 async function tryLoadEssentia(): Promise<EssentiaInstance | null> {
-  const strategies: Array<{ name: string; run: () => Promise<EssentiaInstance | null> }> =
-    [
-      { name: "ES modules", run: loadViaEsModules },
-      { name: "web factory", run: loadViaWebFactory },
-      { name: "package index", run: loadViaPackageIndex },
-    ];
+  const strategies: Array<{
+    name: string;
+    run: () => Promise<EssentiaInstance | null>;
+  }> = [
+    { name: "ES modules", run: loadViaEsModules },
+    { name: "web factory", run: loadViaWebFactory },
+    { name: "package index", run: loadViaPackageIndex },
+  ];
 
   const errors: string[] = [];
   for (const { name, run } of strategies) {
@@ -180,7 +186,9 @@ async function tryLoadEssentia(): Promise<EssentiaInstance | null> {
         return instance;
       }
     } catch (err) {
-      errors.push(`${name}: ${err instanceof Error ? err.message : String(err)}`);
+      errors.push(
+        `${name}: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 

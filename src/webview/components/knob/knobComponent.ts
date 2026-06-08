@@ -107,8 +107,7 @@ export default class KnobComponent extends Component {
     this._step = options.step ?? 1;
     this._color = options.color ?? "#00c3ff";
     this._warnColor = options.warnColor ?? "#f06464";
-    this._warnThreshold =
-      options.warnThreshold ?? Number.POSITIVE_INFINITY;
+    this._warnThreshold = options.warnThreshold ?? Number.POSITIVE_INFINITY;
     this._size = options.size ?? 56;
     this._arcStartValue = options.arcStartValue ?? this._min;
     this._disabled = options.disabled ?? false;
@@ -143,8 +142,12 @@ export default class KnobComponent extends Component {
 
     this._root = mount.querySelector(".earEqKnob") as HTMLElement;
     this._hit = mount.querySelector(".earEqKnob__hit") as HTMLElement;
-    this._trackPath = mount.querySelector(".earEqKnob__track") as SVGPathElement;
-    this._activePath = mount.querySelector(".earEqKnob__active") as SVGPathElement;
+    this._trackPath = mount.querySelector(
+      ".earEqKnob__track",
+    ) as SVGPathElement;
+    this._activePath = mount.querySelector(
+      ".earEqKnob__active",
+    ) as SVGPathElement;
     this._warnPath = mount.querySelector(".earEqKnob__warn") as SVGPathElement;
     this._tickWrap = mount.querySelector(".earEqKnob__tickWrap") as HTMLElement;
     this._tick = mount.querySelector(".earEqKnob__tick") as HTMLElement;
@@ -188,10 +191,7 @@ export default class KnobComponent extends Component {
     if (this._disabled || this._gestureLocked) {
       return;
     }
-    const next = Math.min(
-      this._max,
-      Math.max(this._min, this._value + delta),
-    );
+    const next = Math.min(this._max, Math.max(this._min, this._value + delta));
     if (next !== this._value) {
       this._value = next;
       this._onChange(this._value);
@@ -306,7 +306,10 @@ export default class KnobComponent extends Component {
 
     if (this._centerMode === "tick") {
       this._tickWrap.style.transform = `rotate(${currentAngle}deg)`;
-      this._tick.classList.toggle("earEqKnob__tick--dragging", this._isDragging);
+      this._tick.classList.toggle(
+        "earEqKnob__tick--dragging",
+        this._isDragging,
+      );
     }
 
     if (this._valueEl) {

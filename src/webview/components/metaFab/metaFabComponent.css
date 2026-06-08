@@ -33,7 +33,9 @@
   overflow: hidden;
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
 }
 
 .metaPopover--open .metaPopover__panel {

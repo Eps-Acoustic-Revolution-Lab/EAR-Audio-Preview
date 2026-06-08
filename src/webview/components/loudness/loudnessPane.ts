@@ -358,8 +358,7 @@ export default class LoudnessPane extends Component {
     }
     const plot = this._plotCssRect();
     const x =
-      plot.left +
-      clamp01((this._playbackSec - minTime) / span) * plot.width;
+      plot.left + clamp01((this._playbackSec - minTime) / span) * plot.width;
     this._playhead.style.display = "block";
     this._playhead.style.left = `${x}px`;
   }
@@ -650,7 +649,11 @@ export default class LoudnessPane extends Component {
       return;
     }
 
-    fillCanvasBackground(ctx, plot, this._canvasBackgroundColor(this._lufsCanvasWrap));
+    fillCanvasBackground(
+      ctx,
+      plot,
+      this._canvasBackgroundColor(this._lufsCanvasWrap),
+    );
 
     const { minTime, maxTime } = this._visibleTimeRange();
     const lufsRange = this._dynamicLufsRange(minTime, maxTime);
@@ -698,7 +701,12 @@ export default class LoudnessPane extends Component {
     for (let i = 0; i < profile.timeSec.length; i++) {
       const time = profile.timeSec[i];
       const dbTp = profile.truePeakDbTp[i];
-      if (time < minTime || time > maxTime || !Number.isFinite(dbTp) || dbTp <= 0) {
+      if (
+        time < minTime ||
+        time > maxTime ||
+        !Number.isFinite(dbTp) ||
+        dbTp <= 0
+      ) {
         continue;
       }
       const x = plot.padL + ((time - minTime) / tSpan) * plot.plotW;
@@ -749,7 +757,11 @@ export default class LoudnessPane extends Component {
       return;
     }
 
-    fillCanvasBackground(ctx, plot, this._canvasBackgroundColor(this._f0CanvasWrap));
+    fillCanvasBackground(
+      ctx,
+      plot,
+      this._canvasBackgroundColor(this._f0CanvasWrap),
+    );
 
     const { minTime, maxTime } = this._visibleTimeRange();
     const hzRange = dynamicLogHzRange(
@@ -800,7 +812,11 @@ export default class LoudnessPane extends Component {
       return;
     }
 
-    fillCanvasBackground(ctx, plot, this._canvasBackgroundColor(this._onsetCanvasWrap));
+    fillCanvasBackground(
+      ctx,
+      plot,
+      this._canvasBackgroundColor(this._onsetCanvasWrap),
+    );
 
     const { minTime, maxTime } = this._visibleTimeRange();
     const fluxRange = dynamicLinearRange(

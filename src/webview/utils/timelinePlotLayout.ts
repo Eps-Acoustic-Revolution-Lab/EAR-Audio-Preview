@@ -46,9 +46,7 @@ export function plotTimeSecFromClientX(
   }
   const plotW = plotWidthPx(containerRect.width, padLeft, padRight);
   const xNorm =
-    plotW > 0
-      ? clamp01((clientX - containerRect.left - padLeft) / plotW)
-      : 0;
+    plotW > 0 ? clamp01((clientX - containerRect.left - padLeft) / plotW) : 0;
   return minTime + xNorm * span;
 }
 

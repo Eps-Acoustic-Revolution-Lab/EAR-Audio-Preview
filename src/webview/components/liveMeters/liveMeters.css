@@ -88,7 +88,8 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: color var(--ear-eq-motion-fast, 0.28s) var(--ear-eq-ease-out, ease);
+  transition: color var(--ear-eq-motion-fast, 0.28s)
+    var(--ear-eq-ease-out, ease);
 }
 
 .workspaceChrome__tabs {
@@ -788,4 +789,3 @@ button.workspacePane__tab:focus {
 #liveMetersRight {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 8px);
 }
-

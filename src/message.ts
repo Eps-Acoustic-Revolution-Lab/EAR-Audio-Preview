@@ -91,7 +91,8 @@ export class WebviewMessageType {
   public static readonly WRITE_WAV = "WRITE_WAV";
   public static readonly ERROR = "RELOAD";
   public static readonly SAVE_ANALYZE_UI = "SAVE_ANALYZE_UI";
-  public static readonly ANALYZE_SEQUENCE_FEATURES = "ANALYZE_SEQUENCE_FEATURES";
+  public static readonly ANALYZE_SEQUENCE_FEATURES =
+    "ANALYZE_SEQUENCE_FEATURES";
   public static readonly ANALYZE_STFT = "ANALYZE_STFT";
 
   public static isCONFIG(msg: WebviewMessage): msg is WebviewConfigMessage {

@@ -312,13 +312,11 @@ export default class PlayerService extends Service {
     }
     if (this._editListenMode === "processed" && this._editProcessedBuffer) {
       const bufDur = Math.max(this._editProcessedBuffer.duration, 1e-6);
-      const offsetInRegion =
-        (this._editPlayStartOffset + elapsed) % bufDur;
+      const offsetInRegion = (this._editPlayStartOffset + elapsed) % bufDur;
       return this._editRegionStart + offsetInRegion;
     }
     const offsetInRegion =
-      (this._editPlayStartOffset - this._editRegionStart + elapsed) %
-      regionLen;
+      (this._editPlayStartOffset - this._editRegionStart + elapsed) % regionLen;
     return this._editRegionStart + offsetInRegion;
   }
 
@@ -726,8 +724,7 @@ export default class PlayerService extends Service {
       this._editListenActive &&
       this._editListenMode === "processed" &&
       this._editProcessedBuffer !== null;
-    const useDryLoop =
-      this._editListenActive && this._editListenMode === "dry";
+    const useDryLoop = this._editListenActive && this._editListenMode === "dry";
 
     if (
       this._editListenActive &&
@@ -820,10 +817,7 @@ export default class PlayerService extends Service {
         : this._audioContext.currentTime;
     const stopped = Math.max(
       0,
-      Math.min(
-        this._playbackSecAtAcTime(acTime),
-        this._audioBuffer.duration,
-      ),
+      Math.min(this._playbackSecAtAcTime(acTime), this._audioBuffer.duration),
     );
     // Keep _playbackPosition (fixed cue / white line); only update playhead display.
     this._currentSec = stopped;

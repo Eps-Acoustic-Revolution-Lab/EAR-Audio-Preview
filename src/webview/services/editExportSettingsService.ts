@@ -162,10 +162,7 @@ export default class EditExportSettingsService extends Service {
       0,
       this._duration,
     );
-    if (
-      start === this._regionStartSec &&
-      end === this._regionEndSec
-    ) {
+    if (start === this._regionStartSec && end === this._regionEndSec) {
       return;
     }
     this._regionStartSec = start;

@@ -588,7 +588,9 @@ export default class WebView extends Component {
       },
     });
 
-    const settingsOverlay = new SettingsOverlayComponent("#settingsOverlayMount");
+    const settingsOverlay = new SettingsOverlayComponent(
+      "#settingsOverlayMount",
+    );
     const settingTabComponent = new SettingTab(
       "#settingTab",
       playerSettingsService,
@@ -749,7 +751,9 @@ export default class WebView extends Component {
     );
     this._disposables.push(editListenService);
     let editExportComponent: EditExportComponent | undefined;
-    const editGraphMount = document.getElementById("editGraphMount") as HTMLElement | null;
+    const editGraphMount = document.getElementById(
+      "editGraphMount",
+    ) as HTMLElement | null;
     const ensureEditMounted = () => {
       if (editExportComponent || !editGraphMount) {
         return;

@@ -107,7 +107,10 @@ describe("EditExportSettingsService", () => {
       lpfFrequency: 8000,
       matchFilterFrequencyToSpectrogram: false,
     };
-    const player = PlayerSettingsService.fromDefaultSetting(playerDefaults, buf);
+    const player = PlayerSettingsService.fromDefaultSetting(
+      playerDefaults,
+      buf,
+    );
     const svc = EditExportSettingsService.create(buf);
     svc.syncFiltersFromPlayer = true;
     svc.applyPlayerFilterSync(player);

@@ -208,7 +208,9 @@ export default class EditExportComponent extends Component {
       </div>
     `;
 
-    this._waveMount = root.querySelector(".js-editExport-waveMount") as HTMLElement;
+    this._waveMount = root.querySelector(
+      ".js-editExport-waveMount",
+    ) as HTMLElement;
     this._waveBoxSelector = `${componentRootSelector} .editExport__waveBox`;
     this._regionStartInput = root.querySelector(
       ".js-editExport-regionStart",
@@ -335,7 +337,9 @@ export default class EditExportComponent extends Component {
   }
 
   private _wireRegionDrag() {
-    const box = this._waveMount.querySelector(".editExport__waveBox") as HTMLElement;
+    const box = this._waveMount.querySelector(
+      ".editExport__waveBox",
+    ) as HTMLElement;
     const dragLayer = document.createElement("div");
     dragLayer.className = "editExport__dragLayer";
     box.appendChild(dragLayer);
@@ -436,7 +440,11 @@ export default class EditExportComponent extends Component {
         this._editExportSettings.regionEndSec = v;
       }
     };
-    this._addEventlistener(this._regionStartInput, EventType.CHANGE, applyStart);
+    this._addEventlistener(
+      this._regionStartInput,
+      EventType.CHANGE,
+      applyStart,
+    );
     this._addEventlistener(this._regionEndInput, EventType.CHANGE, applyEnd);
 
     this._addEventlistener(
@@ -444,7 +452,10 @@ export default class EditExportComponent extends Component {
       EventType.CLICK,
       () => {
         const pos = this._playerService.playbackPosition;
-        this._editExportSettings.setRegion(pos, this._editExportSettings.regionEndSec);
+        this._editExportSettings.setRegion(
+          pos,
+          this._editExportSettings.regionEndSec,
+        );
       },
     );
     this._addEventlistener(
@@ -589,7 +600,6 @@ export default class EditExportComponent extends Component {
     ) as HTMLInputElement;
     syncFilters.checked = s.syncFiltersFromPlayer;
     this._updateFilterControlsState();
-
   }
 
   private _updateDurationHint() {
@@ -644,5 +654,4 @@ export default class EditExportComponent extends Component {
       this._setStatus(err instanceof Error ? err.message : "Export failed.");
     }
   }
-
 }

@@ -224,15 +224,9 @@ export default class LiveAnalysisComponent extends Component {
 
     const handleW = this._colHandle?.offsetWidth ?? 4;
     const availableW = Math.max(0, totalW - handleW);
-    const targetPolarW = Math.max(
-      minPaneWidth,
-      splits.col * availableW,
-    );
+    const targetPolarW = Math.max(minPaneWidth, splits.col * availableW);
     const rowBudget = splits.row * availableH - gonioInfoBarPx;
-    let squareSide = Math.max(
-      minPaneWidth,
-      Math.min(targetPolarW, rowBudget),
-    );
+    let squareSide = Math.max(minPaneWidth, Math.min(targetPolarW, rowBudget));
     let gonioH = Math.max(
       minPaneHeight,
       Math.min(availableH - minPaneHeight, squareSide + gonioInfoBarPx),

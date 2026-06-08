@@ -499,7 +499,11 @@ export default class FigureInteractionComponent extends Component {
 
     // When the control key or shift key is released, update flags about selection range.
     this._addEventlistener(window, EventType.KEY_UP, (event: KeyboardEvent) => {
-      if (event.key !== "Shift" && event.key !== "Control" && event.key !== "Meta") {
+      if (
+        event.key !== "Shift" &&
+        event.key !== "Control" &&
+        event.key !== "Meta"
+      ) {
         return;
       }
 

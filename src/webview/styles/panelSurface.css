@@ -35,7 +35,11 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
-  background: color-mix(in srgb, var(--vscode-input-background) 30%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--vscode-input-background) 30%,
+    transparent
+  );
   border-radius: 4px;
 }
 

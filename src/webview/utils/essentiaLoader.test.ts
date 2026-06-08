@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  loadEssentia,
-  resetEssentiaLoaderForTests,
-} from "./essentiaLoader";
+import { loadEssentia, resetEssentiaLoaderForTests } from "./essentiaLoader";
 
 const mockEssentiaInstance = {
   arrayToVector: (arr: Float32Array) => arr,

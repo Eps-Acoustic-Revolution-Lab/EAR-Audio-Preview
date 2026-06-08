@@ -17,7 +17,11 @@
 .settingsOverlay__backdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, var(--vscode-editor-background) 60%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 60%,
+    transparent
+  );
   pointer-events: auto;
 }
 
@@ -30,7 +34,8 @@
   background: var(--vscode-editorWidget-background);
   border: 1px solid var(--vscode-panel-border);
   border-radius: 8px;
-  box-shadow: 0 8px 32px color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  box-shadow: 0 8px 32px
+    color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
   pointer-events: auto;
   overflow: hidden;
 }
@@ -38,7 +43,9 @@
 .settingsOverlay--animating .settingsOverlay__dialog {
   opacity: 0;
   transform: scale(0.96);
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
 }
 
 .settingsOverlay--animating.settingsOverlay--open .settingsOverlay__dialog {
@@ -80,7 +87,10 @@
 }
 
 .settingsOverlay__close:hover {
-  background: var(--vscode-toolbar-hoverBackground, var(--vscode-list-hoverBackground));
+  background: var(
+    --vscode-toolbar-hoverBackground,
+    var(--vscode-list-hoverBackground)
+  );
 }
 
 .settingsOverlay__close:focus-visible {

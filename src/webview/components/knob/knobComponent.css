@@ -46,7 +46,8 @@
     var(--knob-face-to) 100%
   );
   border: 1px solid var(--knob-face-border);
-  box-shadow: 0 4px 6px -2px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    0 4px 6px -2px rgba(0, 0, 0, 0.5),
     inset 0 1px 1px rgba(255, 255, 255, 0.05);
   display: flex;
   align-items: center;
