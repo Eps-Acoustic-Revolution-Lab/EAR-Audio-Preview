@@ -12,118 +12,116 @@ import {
   piecewiseLogAxisBoundaries,
   piecewiseYNormToHz,
 } from "../spectrogramFrequencyLayout";
-
-/* eslint-disable @typescript-eslint/naming-convention */
-type EssentiaInstance = {
-  arrayToVector(arr: Float32Array): unknown;
-  vectorToArray(vec: unknown): Float32Array;
-  // Essentia's API uses PascalCase method names; disable naming rule for this type
-  Windowing(
-    frame: unknown,
-    normalized?: boolean,
-    size?: number,
-    type?: string,
-    zeroPadding?: number,
-    zeroPhase?: boolean,
-  ): { frame: unknown };
-  Spectrum(frame: unknown, size?: number): { spectrum: unknown };
-  LoudnessEBUR128(
-    left: unknown,
-    right: unknown,
-    hopSize?: number,
-    sampleRate?: number,
-    startAtZero?: boolean,
-  ): {
-    momentaryLoudness: unknown;
-    shortTermLoudness: unknown;
-    integratedLoudness: number;
-    loudnessRange: number;
-  };
-  delete(): void;
-  shutdown(): void;
-};
-/* eslint-enable @typescript-eslint/naming-convention */
-
-// Map our WindowType enum to essentia's string identifiers (camelCase not required for string values)
-const windowTypeMap: Record<WindowType, string> = {
-  [WindowType.Hann]: "hann",
-  [WindowType.Hamming]: "hamming",
-  [WindowType.BlackmanHarris]: "blackmanharris62",
-  [WindowType.Triangular]: "triangular",
-};
+import EssentiaHostClient, {
+  type StftSettingsWire,
+} from "./essentiaHostClient";
+import {
+  essentiaWindowNames,
+  sliceStftFrequencyBand,
+} from "../../shared/stftEssentiaCompute";
 
 export default class AnalyzeService extends Service {
   private _audioBuffer: AudioBuffer;
-  private _essentia: EssentiaInstance | null = null;
+  private _essentiaHostClient: EssentiaHostClient | null = null;
 
   constructor(audioBuffer: AudioBuffer) {
     super();
     this._audioBuffer = audioBuffer;
   }
 
-  public dispose(): void {
-    const ess = this._essentia;
-    if (ess) {
-      try {
-        ess.shutdown();
-      } catch {
-        /* ignore */
-      }
-      try {
-        ess.delete();
-      } catch {
-        /* ignore */
-      }
-      this._essentia = null;
+  public attachEssentiaHostClient(client: EssentiaHostClient): void {
+    this._essentiaHostClient = client;
+  }
+
+  public shareHostClientWith(other: AnalyzeService): void {
+    if (this._essentiaHostClient) {
+      other.attachEssentiaHostClient(this._essentiaHostClient);
     }
+  }
+
+  public dispose(): void {
+    this._essentiaHostClient = null;
     super.dispose();
   }
 
+  /** @deprecated Essentia runs in Extension Host; no webview init required. */
   public async initEssentia(): Promise<void> {
-    if (this._essentia) {
-      return;
-    }
-    try {
-      // Use web-friendly async WASM load so main thread is not blocked
-      // essentia-wasm.web.js exports EssentiaWASM as a factory function
-      const essPkg = await import("essentia.js");
-      /* eslint-disable @typescript-eslint/naming-convention */
-      const essPkgUntyped = essPkg as unknown as {
-        EssentiaWASM: () => Promise<unknown>;
-        Essentia: new (wasm: unknown) => EssentiaInstance;
-      };
-      /* eslint-enable @typescript-eslint/naming-convention */
-      const wasmModule = await essPkgUntyped.EssentiaWASM();
-      this._essentia = new essPkgUntyped.Essentia(wasmModule);
-    } catch {
-      this._essentia = null;
-    }
+    return;
   }
 
   public get essentiaReady(): boolean {
-    return this._essentia !== null;
+    return this._essentiaHostClient !== null;
+  }
+
+  public get audioBuffer(): AudioBuffer {
+    return this._audioBuffer;
+  }
+
+  private _stftWireFromSettings(
+    settings: AnalyzeSettingsProps,
+  ): StftSettingsWire {
+    return {
+      windowSize: settings.windowSize,
+      windowType: essentiaWindowNames[settings.windowType] ?? "hann",
+      hopSize: settings.hopSize,
+      minTime: settings.minTime,
+      maxTime: settings.maxTime,
+      minFrequency: settings.minFrequency,
+      maxFrequency: settings.maxFrequency,
+    };
+  }
+
+  /** Pre-fetch Essentia STFT from Extension Host (required before getSpectrogram when fftBackend=Essentia). */
+  public async ensureHostStftReady(
+    ch: number,
+    settings: AnalyzeSettingsProps,
+  ): Promise<void> {
+    if (
+      settings.fftBackend !== FftBackend.Essentia ||
+      !this._essentiaHostClient
+    ) {
+      return;
+    }
+    const wire = this._stftWireFromSettings(settings);
+    if (
+      this._essentiaHostClient.getCached(
+        ch,
+        this._audioBuffer.sampleRate,
+        this._audioBuffer.length,
+        wire,
+      )
+    ) {
+      return;
+    }
+    const data = this._audioBuffer.getChannelData(ch);
+    await this._essentiaHostClient.requestStft(
+      ch,
+      data,
+      this._audioBuffer.sampleRate,
+      wire,
+    );
+  }
+
+  private _getHostFullSpectrogram(
+    ch: number,
+    settings: AnalyzeSettingsProps,
+  ): number[][] | null {
+    if (!this._essentiaHostClient) {
+      return null;
+    }
+    const wire = this._stftWireFromSettings(settings);
+    return (
+      this._essentiaHostClient.getCached(
+        ch,
+        this._audioBuffer.sampleRate,
+        this._audioBuffer.length,
+        wire,
+      ) ?? null
+    );
   }
 
   public getLUFS(): number {
-    if (!this._essentia) {
-      return 0;
-    }
-    const numCh = this._audioBuffer.numberOfChannels;
-    const leftData = this._audioBuffer.getChannelData(0);
-    // EBU R128 needs stereo; mono files get the single channel duplicated
-    const rightData =
-      numCh >= 2 ? this._audioBuffer.getChannelData(1) : leftData;
-
-    const leftVec = this._essentia.arrayToVector(leftData);
-    const rightVec = this._essentia.arrayToVector(rightData);
-
-    const result = this._essentia.LoudnessEBUR128(
-      leftVec,
-      rightVec,
-      0.1,
-      this._audioBuffer.sampleRate,
-    );
-    return result.integratedLoudness;
+    return 0;
   }
 
   // round input value to the nearest nice number, which has the most significant digit of 1, 2, 5
@@ -225,73 +223,20 @@ export default class AnalyzeService extends Service {
   }
 
   public getSpectrogram(ch: number, settings: AnalyzeSettingsProps) {
-    if (this._essentia && settings.fftBackend === FftBackend.Essentia) {
-      return this._getSpectrogramEssentia(ch, settings);
+    if (settings.fftBackend === FftBackend.Essentia) {
+      const full = this._getHostFullSpectrogram(ch, settings);
+      if (!full?.length) {
+        return [];
+      }
+      return sliceStftFrequencyBand(
+        full,
+        this._audioBuffer.sampleRate,
+        settings.windowSize,
+        settings.minFrequency,
+        settings.maxFrequency,
+      );
     }
     return this._getSpectrogramOoura(ch, settings);
-  }
-
-  private _getSpectrogramEssentia(
-    ch: number,
-    settings: AnalyzeSettingsProps,
-  ): number[][] {
-    const data = this._audioBuffer.getChannelData(ch);
-    const sampleRate = this._audioBuffer.sampleRate;
-    const windowSize = settings.windowSize;
-    const df = sampleRate / windowSize;
-    const minFreqIndex = Math.floor(settings.minFrequency / df);
-    const maxFreqIndex = Math.min(
-      Math.floor(settings.maxFrequency / df),
-      windowSize / 2,
-    );
-
-    const startIndex = Math.floor(settings.minTime * sampleRate);
-    const endIndex = Math.floor(settings.maxTime * sampleRate);
-
-    const windowType = windowTypeMap[settings.windowType];
-    let maxValue = Number.EPSILON;
-    const spectrogram: number[][] = [];
-
-    for (let i = startIndex; i < endIndex; i += settings.hopSize) {
-      const s = i - windowSize / 2;
-      const frame = new Float32Array(windowSize);
-      for (let j = 0; j < windowSize; j++) {
-        const idx = s + j;
-        if (idx >= 0 && idx < data.length) {
-          frame[j] = data[idx];
-        }
-      }
-
-      const frameVec = this._essentia.arrayToVector(frame);
-      // normalized=false to keep amplitude consistent with Ooura path
-      const windowed = this._essentia.Windowing(
-        frameVec,
-        false,
-        windowSize,
-        windowType,
-        0,
-        false,
-      );
-      const specOut = this._essentia.Spectrum(windowed.frame, windowSize);
-      const specArr = this._essentia.vectorToArray(specOut.spectrum);
-
-      const ps: number[] = [];
-      for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-        const v = specArr[j] * specArr[j];
-        ps.push(v);
-        if (maxValue < v) {
-          maxValue = v;
-        }
-      }
-      spectrogram.push(ps);
-    }
-
-    for (let i = 0; i < spectrogram.length; i++) {
-      for (let j = 0; j < spectrogram[i].length; j++) {
-        spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
-      }
-    }
-    return spectrogram;
   }
 
   private _getSpectrogramOoura(
@@ -362,10 +307,59 @@ export default class AnalyzeService extends Service {
   }
 
   public getMelSpectrogram(ch: number, settings: AnalyzeSettingsProps) {
-    if (this._essentia && settings.fftBackend === FftBackend.Essentia) {
-      return this._getMelSpectrogramEssentia(ch, settings);
+    if (settings.fftBackend === FftBackend.Essentia) {
+      return this._getMelSpectrogramFromHost(ch, settings);
     }
     return this._getMelSpectrogramOoura(ch, settings);
+  }
+
+  private _getMelSpectrogramFromHost(
+    ch: number,
+    settings: AnalyzeSettingsProps,
+  ): number[][] {
+    const full = this._getHostFullSpectrogram(ch, settings);
+    if (!full?.length) {
+      return [];
+    }
+    const sampleRate = this._audioBuffer.sampleRate;
+    const df = sampleRate / settings.windowSize;
+    const minFreqIndex = Math.floor(
+      AnalyzeService.hzToMel(settings.minFrequency) / df,
+    );
+    const maxFreqIndex = Math.floor(
+      AnalyzeService.hzToMel(settings.maxFrequency) / df,
+    );
+
+    const spectrogram: number[][] = [];
+    for (const row of full) {
+      const spectrum: number[] = row.map((db) => {
+        const linear = Math.pow(10, db / 10);
+        return linear;
+      });
+      const melSpectrum = this.applyMelFilterBank(
+        settings.melFilterNum,
+        spectrum,
+        sampleRate,
+        minFreqIndex,
+        maxFreqIndex,
+      );
+      spectrogram.push(melSpectrum);
+    }
+
+    let maxValue = Number.EPSILON;
+    for (const frame of spectrogram) {
+      for (const v of frame) {
+        if (maxValue < v) {
+          maxValue = v;
+        }
+      }
+    }
+    for (let i = 0; i < spectrogram.length; i++) {
+      for (let j = 0; j < spectrogram[i].length; j++) {
+        spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
+      }
+    }
+    return spectrogram;
   }
 
   private _getMelSpectrogramOoura(
@@ -446,78 +440,6 @@ export default class AnalyzeService extends Service {
       }
     }
 
-    return spectrogram;
-  }
-
-  private _getMelSpectrogramEssentia(
-    ch: number,
-    settings: AnalyzeSettingsProps,
-  ): number[][] {
-    // Use essentia for the STFT part, then apply our JS Mel filter bank
-    const data = this._audioBuffer.getChannelData(ch);
-    const sampleRate = this._audioBuffer.sampleRate;
-    const windowSize = settings.windowSize;
-    const startIndex = Math.floor(settings.minTime * sampleRate);
-    const endIndex = Math.floor(settings.maxTime * sampleRate);
-
-    const df = sampleRate / windowSize;
-    const minFreqIndex = Math.floor(
-      AnalyzeService.hzToMel(settings.minFrequency) / df,
-    );
-    const maxFreqIndex = Math.floor(
-      AnalyzeService.hzToMel(settings.maxFrequency) / df,
-    );
-
-    const windowType = windowTypeMap[settings.windowType];
-    const spectrogram: number[][] = [];
-
-    for (let i = startIndex; i < endIndex; i += settings.hopSize) {
-      const s = i - windowSize / 2;
-      const frame = new Float32Array(windowSize);
-      for (let j = 0; j < windowSize; j++) {
-        const idx = s + j;
-        if (idx >= 0 && idx < data.length) {
-          frame[j] = data[idx];
-        }
-      }
-
-      const frameVec = this._essentia.arrayToVector(frame);
-      const windowed = this._essentia.Windowing(
-        frameVec,
-        false,
-        windowSize,
-        windowType,
-        0,
-        false,
-      );
-      const specOut = this._essentia.Spectrum(windowed.frame, windowSize);
-      const specArr = this._essentia.vectorToArray(specOut.spectrum);
-
-      const spectrum: number[] = Array.from(specArr).map((v) => v * v);
-
-      const melSpectrum = this.applyMelFilterBank(
-        settings.melFilterNum,
-        spectrum,
-        sampleRate,
-        minFreqIndex,
-        maxFreqIndex,
-      );
-      spectrogram.push(melSpectrum);
-    }
-
-    let maxValue = Number.EPSILON;
-    for (const frame of spectrogram) {
-      for (const v of frame) {
-        if (maxValue < v) {
-          maxValue = v;
-        }
-      }
-    }
-    for (let i = 0; i < spectrogram.length; i++) {
-      for (let j = 0; j < spectrogram[i].length; j++) {
-        spectrogram[i][j] = 10 * Math.log10(spectrogram[i][j] / maxValue);
-      }
-    }
     return spectrogram;
   }
 

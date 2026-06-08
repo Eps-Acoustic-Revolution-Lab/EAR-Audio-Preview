@@ -189,23 +189,32 @@ html[data-workspace-pane="edit"] #graphDeck {
   overflow: auto;
 }
 
+/* Loudness pane fills the viz column below the waveform. */
+html[data-workspace-pane="loudness"] #graphDeck {
+  flex: 1 1 0;
+}
+
 .graphDeck__pane--loudness {
-  flex: 0 0 auto;
+  flex: 1 1 0;
   min-height: 0;
   max-height: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .graphDeck__pane--loudness .graphDeck__body {
-  flex: 0 1 auto;
+  flex: 1 1 0;
   min-height: 0;
 }
 
 .graphDeck__pane--loudness .graphDeck__graph {
-  flex: 0 1 auto;
+  flex: 1 1 0;
   min-height: 0;
-  height: min(24vh, 280px);
-  max-height: min(28vh, 320px);
+  height: auto;
+  max-height: none;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .graphDeck__pane[hidden] {
@@ -267,9 +276,9 @@ html[data-workspace-pane="edit"] #graphDeck {
   display: none !important;
 }
 
-/* Align waveform playhead with loudness plot time axis (Y-axis label gutter). */
+/* Waveform and loudness strips share full-width time plot (Y labels overlay inside strips). */
 html[data-workspace-pane="loudness"] .waveBand .canvasBox {
-  --timeline-pad-left: 36px;
+  --timeline-pad-left: 0px;
   --timeline-pad-right: 8px;
 }
 

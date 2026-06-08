@@ -120,17 +120,95 @@
   color: var(--vscode-descriptionForeground);
 }
 
-.loudnessComponent__canvasWrap {
+.loudnessComponent__strips {
   flex: 1 1 auto;
-  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   position: relative;
   overflow: hidden;
+  cursor: crosshair;
+}
+
+.loudnessComponent__strip {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 72px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.loudnessComponent__strip--lufs {
+  flex: 1.15 1 0;
+}
+
+.loudnessComponent__stripBadge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.38);
+  line-height: 1.3;
+}
+
+.loudnessComponent__stripPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--vscode-editor-font-family, monospace);
+  font-size: 10px;
+  color: var(--vscode-descriptionForeground);
+  pointer-events: none;
+}
+
+.loudnessComponent__stripPlaceholder.hidden {
+  display: none !important;
+}
+
+.loudnessComponent__interactionOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.loudnessComponent__strips .loudnessComponent__hoverLine,
+.loudnessComponent__strips .loudnessComponent__playhead,
+.loudnessComponent__strips .loudnessComponent__selection {
+  pointer-events: none;
+}
+
+.loudnessComponent__canvasWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  --timeline-pad-left: 0px;
+  --timeline-pad-right: 8px;
+}
+
+.loudnessComponent__strip--lufs .loudnessComponent__canvasWrap {
+  min-height: 72px;
 }
 
 .loudnessComponent__canvas {
   display: block;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .loudnessComponent__legend {
@@ -187,7 +265,7 @@
 
 .loudnessComponent__hoverReadout {
   position: fixed;
-  z-index: 4;
+  z-index: 5;
   pointer-events: none;
   visibility: hidden;
   max-width: calc(100vw - 16px);

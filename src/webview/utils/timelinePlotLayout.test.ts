@@ -1,6 +1,7 @@
 import {
   TIMELINE_PLOT_PAD_LEFT,
   TIMELINE_PLOT_PAD_RIGHT,
+  plotTimeSecFromClientX,
   timeSecToContainerPercent,
   timeSecToPlotX,
 } from "./timelinePlotLayout";
@@ -28,5 +29,15 @@ describe("timelinePlotLayout", () => {
       (x / w) * 100,
       5,
     );
+  });
+
+  test("plotTimeSecFromClientX inverts timeSecToPlotX", () => {
+    const rect = { left: 100, width: w, top: 0, height: 0 } as DOMRect;
+    const sec = 42;
+    const x = timeSecToPlotX(sec, 0, 100, w, padL, padR);
+    const clientX = rect.left + x;
+    expect(
+      plotTimeSecFromClientX(clientX, rect, 0, 100, padL, padR),
+    ).toBeCloseTo(sec, 5);
   });
 });

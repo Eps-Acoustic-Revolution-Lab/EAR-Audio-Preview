@@ -9,6 +9,8 @@ import {
   WebviewMessage,
   WebviewMessageType,
 } from "./message";
+import { analyzeSequenceFeaturesInHost } from "./extensionHost/sequenceFeatureHost";
+import { analyzeStftInHost } from "./extensionHost/stftHost";
 
 const analyzeUiCacheKey = "wavPreview.analyzeUiCache.v1";
 
@@ -206,6 +208,15 @@ export class AudioPreviewEditorProvider
               ),
             )
             .toString(),
+          essentiaWasmUri: webviewPanel.webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "essentia-wasm.web.wasm",
+              ),
+            )
+            .toString(),
         };
         this.postMessage(webviewPanel.webview, {
           type: ExtMessageType.CONFIG,
@@ -283,6 +294,64 @@ export class AudioPreviewEditorProvider
         if (WebviewMessageType.isERROR(msg)) {
           vscode.window.showErrorMessage(msg.data.message);
         }
+        break;
+
+      case WebviewMessageType.ANALYZE_SEQUENCE_FEATURES:
+        if (WebviewMessageType.isAnalyzeSequenceFeatures(msg)) {
+          const { requestId, samples, sampleRate, hopSec } = msg.data;
+          const buf = samples as ArrayBuffer;
+          const mono = new Float32Array(buf, 0, buf.byteLength / 4);
+          try {
+            const profile = await analyzeSequenceFeaturesInHost(
+              mono,
+              sampleRate,
+              hopSec,
+            );
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.SEQUENCE_FEATURES,
+              data: { requestId, profile: profile ?? undefined },
+            });
+          } catch (err) {
+            const message =
+              err instanceof Error ? err.message : String(err);
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.SEQUENCE_FEATURES,
+              data: { requestId, error: message },
+            });
+          }
+        }
+        break;
+
+      case WebviewMessageType.ANALYZE_STFT:
+        if (WebviewMessageType.isAnalyzeStft(msg)) {
+          const { requestId, cacheKey, samples, sampleRate, settings } =
+            msg.data;
+          const buf = samples as ArrayBuffer;
+          const channelData = new Float32Array(buf, 0, buf.byteLength / 4);
+          try {
+            const wire = await analyzeStftInHost(
+              channelData,
+              sampleRate,
+              settings,
+            );
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.STFT_RESULT,
+              data: {
+                requestId,
+                cacheKey,
+                wire: wire ?? undefined,
+              },
+            });
+          } catch (err) {
+            const message =
+              err instanceof Error ? err.message : String(err);
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.STFT_RESULT,
+              data: { requestId, cacheKey, error: message },
+            });
+          }
+        }
+        break;
     }
   }
 

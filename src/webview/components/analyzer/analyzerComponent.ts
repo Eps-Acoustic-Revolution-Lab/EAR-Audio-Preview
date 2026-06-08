@@ -3,7 +3,9 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import AnalyzeService from "../../services/analyzeService";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import AnalyzeSettingsService, {
+  FftBackend,
+} from "../../services/analyzeSettingsService";
 import SpectrogramComponent from "../spectrogram/spectrogramComponent";
 import FigureInteractionComponent from "../figureInteraction/figureInteractionComponent";
 import LoudnessService from "../../services/loudnessService";
@@ -64,12 +66,12 @@ export default class AnalyzerComponent extends Component {
     this._analyzeResultBox.style.display = "block";
 
     this._addEventlistener(this._analyzeService, EventType.ANALYZE, () => {
-      this.renderAnalyzeResult();
+      void this.renderAnalyzeResult();
     });
     this._addEventlistener(
       this._analyzeSettingsService,
       EventType.AS_UPDATE_LIVE_MONITORING_MODE,
-      () => this.renderAnalyzeResult(),
+      () => void this.renderAnalyzeResult(),
     );
 
     this._analyzeService.analyze();
@@ -135,16 +137,25 @@ export default class AnalyzerComponent extends Component {
     const data = mode === "m" ? mid : side;
     const audioBuffer = this._createMonoBuffer(data);
     const analyzeService = new AnalyzeService(audioBuffer);
+    this._analyzeService.shareHostClientWith(analyzeService);
     this._midSideDerived = { analyzeService, audioBuffer };
     return [{ analyzeService, audioBuffer, ch: 0, numOfCh: 1 }];
   }
 
-  private renderAnalyzeResult() {
+  private async renderAnalyzeResult() {
     this.clearAnalyzeResult();
     this._disposeMidSideDerived();
 
     const settings = this._analyzeSettingsService.toProps();
     const displayChannels = this._displayChannels();
+
+    if (settings.fftBackend === FftBackend.Essentia) {
+      await Promise.all(
+        displayChannels.map((entry) =>
+          entry.analyzeService.ensureHostStftReady(entry.ch, settings),
+        ),
+      );
+    }
 
     displayChannels.forEach((entry, index) => {
       if (this._analyzeSettingsService.spectrogramVisible) {

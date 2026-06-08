@@ -3,6 +3,7 @@ import Component from "../../component";
 import LoudnessService from "../../services/loudnessService";
 import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import SequenceFeatureService from "../../services/sequenceFeatureService";
 import LoudnessPane from "./loudnessPane";
 import { EventType } from "../../events";
 
@@ -19,6 +20,7 @@ export default class LoudnessComponent extends Component {
     playerService: PlayerService,
     analyzeSettingsService: AnalyzeSettingsService,
     audioBuffer: AudioBuffer,
+    sequenceFeatureService: SequenceFeatureService | null,
   ) {
     super();
 
@@ -58,6 +60,8 @@ export default class LoudnessComponent extends Component {
         analyzeSettingsService,
         audioBuffer,
         "inline",
+        undefined,
+        sequenceFeatureService,
       ),
     ) as LoudnessPane;
 
@@ -70,6 +74,7 @@ export default class LoudnessComponent extends Component {
         audioBuffer,
         "fullscreen",
         { onExitFullscreen: closeOverlay },
+        sequenceFeatureService,
       ),
     );
 

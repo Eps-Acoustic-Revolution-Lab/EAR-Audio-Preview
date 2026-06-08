@@ -13,9 +13,7 @@ import { IAudioDecoder } from "../../decoders/audioDecoderInterface";
 import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import AnalyzeService from "../../services/analyzeService";
-import AnalyzeSettingsService, {
-  FftBackend,
-} from "../../services/analyzeSettingsService";
+import AnalyzeSettingsService from "../../services/analyzeSettingsService";
 import InfoTableComponent from "../infoTable/infoTableComponent";
 import MetaFabComponent from "../metaFab/metaFabComponent";
 import TransportFabComponent from "../transportFab/transportFabComponent";
@@ -26,6 +24,8 @@ import LiveAnalysisComponent from "../liveMeters/liveAnalysisComponent";
 import WaveBandComponent from "../waveBand/waveBandComponent";
 import LoudnessComponent from "../loudness/loudnessComponent";
 import LoudnessService from "../../services/loudnessService";
+import SequenceFeatureService from "../../services/sequenceFeatureService";
+import EssentiaHostClient from "../../services/essentiaHostClient";
 import { setLoudnessWorkletModuleUrl } from "../../utils/loudnessWorkletLoader";
 import { setActiveWorkspacePane } from "../../workspacePane";
 import { updateEarEqSlidingFocus } from "../../utils/earEqSlidingFocus";
@@ -473,6 +473,18 @@ export default class WebView extends Component {
         this.initWebview();
         break;
       }
+
+      case ExtMessageType.SEQUENCE_FEATURES:
+        if (ExtMessageType.isSequenceFeatures(msg)) {
+          SequenceFeatureService.handleExtensionResponse(msg);
+        }
+        break;
+
+      case ExtMessageType.STFT_RESULT:
+        if (ExtMessageType.isStftResult(msg)) {
+          EssentiaHostClient.handleExtensionResponse(msg);
+        }
+        break;
     }
   }
 
@@ -519,6 +531,9 @@ export default class WebView extends Component {
     );
 
     const analyzeService = new AnalyzeService(audioBuffer);
+    analyzeService.attachEssentiaHostClient(
+      new EssentiaHostClient(this._postMessage),
+    );
     const loudnessService = new LoudnessService(audioBuffer);
     const analyzeSettingsService = AnalyzeSettingsService.fromDefaultSetting(
       this._config.analyzeDefault,
@@ -667,9 +682,6 @@ export default class WebView extends Component {
         return;
       }
       stftGraphMount.removeAttribute("hidden");
-      if (analyzeSettingsService.fftBackend === FftBackend.Essentia) {
-        await analyzeService.initEssentia();
-      }
       analyzeSettingsService.spectrogramVisible = true;
       stftAnalyzer = new AnalyzerComponent(
         "#stftGraphMount",
@@ -709,6 +721,11 @@ export default class WebView extends Component {
       if (loudnessComponent || !loudnessGraphMount) {
         return;
       }
+      const sequenceFeatureService = new SequenceFeatureService(
+        audioBuffer,
+        this._postMessage,
+      );
+      this._disposables.push(sequenceFeatureService);
       loudnessGraphMount.removeAttribute("hidden");
       loudnessComponent = new LoudnessComponent(
         loudnessGraphMount,
@@ -716,6 +733,7 @@ export default class WebView extends Component {
         playerService,
         analyzeSettingsService,
         audioBuffer,
+        sequenceFeatureService,
       );
       this._disposables.push(loudnessComponent);
     };

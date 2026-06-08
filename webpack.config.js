@@ -29,6 +29,15 @@ class ExtractLoudnessWorkletPlugin {
       const outPath = path.join(__dirname, "dist/loudness.worklet.js");
       fs.mkdirSync(path.dirname(outPath), { recursive: true });
       fs.writeFileSync(outPath, body, "utf8");
+
+      const essentiaWasmSrc = path.join(
+        __dirname,
+        "node_modules/essentia.js/dist/essentia-wasm.web.wasm",
+      );
+      const essentiaWasmOut = path.join(__dirname, "dist/essentia-wasm.web.wasm");
+      if (fs.existsSync(essentiaWasmSrc)) {
+        fs.copyFileSync(essentiaWasmSrc, essentiaWasmOut);
+      }
     });
   }
 }

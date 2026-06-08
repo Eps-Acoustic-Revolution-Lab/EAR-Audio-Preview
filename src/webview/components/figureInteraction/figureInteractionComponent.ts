@@ -13,6 +13,7 @@ import {
 import Component from "../../component";
 import LoudnessService, { formatDbTp } from "../../services/loudnessService";
 import {
+  plotTimeSecFromClientX,
   readTimelinePadFromElement,
   timeSecToContainerPercent,
 } from "../../utils/timelinePlotLayout";
@@ -28,6 +29,7 @@ export default class FigureInteractionComponent extends Component {
   private currentX: number = 0;
   private currentY: number = 0;
   private readonly onWaveformCanvas: boolean;
+  private readonly _componentRoot: Element;
 
   constructor(
     componentRootSelector: string,
@@ -42,6 +44,10 @@ export default class FigureInteractionComponent extends Component {
     super();
     this.onWaveformCanvas = onWaveformCanvas;
     const componentRoot = document.querySelector(componentRootSelector);
+    if (!componentRoot) {
+      throw new Error(`Figure root not found: ${componentRootSelector}`);
+    }
+    this._componentRoot = componentRoot;
 
     // register seekbar (playback progress) on figures
     const visibleBar = document.createElement("div");
@@ -237,7 +243,15 @@ export default class FigureInteractionComponent extends Component {
       if (trng <= 0) {
         return;
       }
-      const t = props.minTime + (xn / rect.width) * trng;
+      const pad = readTimelinePadFromElement(this._componentRoot);
+      const t = plotTimeSecFromClientX(
+        lastClientX,
+        rect,
+        props.minTime,
+        props.maxTime,
+        pad.left,
+        pad.right,
+      );
       const sr = audioBuffer.sampleRate;
       const center = Math.min(
         Math.max(0, Math.floor(t * sr)),
@@ -439,10 +453,15 @@ export default class FigureInteractionComponent extends Component {
           if (clickTrng <= 0 || rect.width <= 0) {
             return;
           }
-          const xPercentInFigureRange =
-            ((mouseUpX - rect.left) / rect.width) * 100;
-          const sec =
-            (xPercentInFigureRange / 100) * clickTrng + clickProps.minTime;
+          const pad = readTimelinePadFromElement(this._componentRoot);
+          const sec = plotTimeSecFromClientX(
+            mouseUpX,
+            rect,
+            clickProps.minTime,
+            clickProps.maxTime,
+            pad.left,
+            pad.right,
+          );
           playerService.setPlaybackPosition(sec);
           return;
         }
@@ -584,15 +603,27 @@ export default class FigureInteractionComponent extends Component {
     analyzeService: AnalyzeService,
   ) {
     const settings = analyseSettingsService.toProps();
-    const minX = Math.min(mouseUpX, mouseDownX) - rect.left;
-    const maxX = Math.max(mouseUpX, mouseDownX) - rect.left;
     const minY = Math.min(mouseUpY, mouseDownY) - rect.top;
     const maxY = Math.max(mouseUpY, mouseDownY) - rect.top;
 
     if (!this.isValueAxisOnly) {
-      const timeRange = settings.maxTime - settings.minTime;
-      const minTime = (minX / rect.width) * timeRange + settings.minTime;
-      const maxTime = (maxX / rect.width) * timeRange + settings.minTime;
+      const pad = readTimelinePadFromElement(this._componentRoot);
+      const minTime = plotTimeSecFromClientX(
+        Math.min(mouseUpX, mouseDownX),
+        rect,
+        settings.minTime,
+        settings.maxTime,
+        pad.left,
+        pad.right,
+      );
+      const maxTime = plotTimeSecFromClientX(
+        Math.max(mouseUpX, mouseDownX),
+        rect,
+        settings.minTime,
+        settings.maxTime,
+        pad.left,
+        pad.right,
+      );
       analyseSettingsService.minTime = minTime;
       analyseSettingsService.maxTime = maxTime;
     }

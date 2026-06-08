@@ -129,13 +129,15 @@ Real-time analysis during playback:
 
 #### Loudness Pane
 
-Offline EBU R128 loudness profile:
+Offline EBU R128 loudness profile with stacked timeline strips (shared time axis):
 
-- **LUFS curves** — Integrated (I), short-term (S), and momentary (M) loudness over time. BSpline-smoothed for display. Timeline padding aligns with the waveform above.
-- **True peak markers** — Red markers indicate true-peak excursions above 0 dBTP.
+- **LUFS strip** — Integrated (I), short-term (S), and momentary (M) loudness over time. BSpline-smoothed for display. Timeline padding aligns with the waveform above.
+- **F0 strip** — Fundamental frequency (Hz, log scale) via Essentia `PitchYinFFT`; unvoiced frames are left blank.
+- **Onset strip** — Spectral flux onset strength via Essentia `Flux` (half-rectified L2).
+- **True peak markers** — Red markers on the LUFS strip indicate true-peak excursions above 0 dBTP.
 - **LRA & PLR** — Loudness Range and Peak-to-Loudness Ratio displayed in the info panel.
-- **Time selection** — Drag to select a region and re-analyze with new bounds.
-- **Layout** — Fixed-height inline chart; tab re-entry no longer stretches the container to fill the viewport.
+- **Time selection** — Drag across any strip to select a region and re-analyze with new bounds.
+- **Layout** — Three compact horizontal strips; tab re-entry keeps stable height (no viewport stretch).
 
 #### Edit & Export Pane
 
@@ -398,17 +400,15 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [x] LUFS timeline alignment with waveform (`timelinePlotLayout`)
 - [x] Loudness pane layout stability — fixed chart height on tab re-entry
 - [x] Edit & Export panel surfaces + ear-eq segmented controls (channels, listen, destination)
+- [x] Loudness multi-strip layout — LUFS + F0 (PitchYinFFT) + Onset flux (Essentia)
 
 ### Planned
 
-**Next (Loudness pane):** extract F0 and other time-series curves (e.g. chroma, onset strength) from analysis, then stack them **vertically** with the existing LUFS chart inside the Loudness workspace pane — shared time axis, independent Y scales per strip.
-
-- [ ] Loudness pane — vertical multi-strip layout (LUFS + F0 + other sequential curves)
-- [ ] Pitch (F0) curve extraction and overlay
-- [ ] Chromagram strip (CQT)
-- [ ] Onset detection / structure markers
+- [ ] Chromagram strip (CQT) or PredominantPitchMelodia for polyphonic melody
+- [ ] Optional third-strip feature toggle (Spectral Centroid, etc.)
 - [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
 - [ ] Monitoring curve for flat frequency response
+- [ ] Worker offload for long-file Essentia sequence analysis
 
 
 ---

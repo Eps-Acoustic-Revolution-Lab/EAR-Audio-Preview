@@ -1,6 +1,10 @@
 import "../../styles/figure.css";
 import AnalyzeService from "../../services/analyzeService";
 import { AnalyzeSettingsProps } from "../../services/analyzeSettingsService";
+import {
+  plotWidthPx,
+  readTimelinePadFromElement,
+} from "../../utils/timelinePlotLayout";
 
 export default class WaveFormComponent {
   public static readonly MIN_DATA_POINTS_PER_PIXEL = 5;
@@ -32,6 +36,12 @@ export default class WaveFormComponent {
       ) || width,
     );
 
+    const { left: padL, right: padR } =
+      readTimelinePadFromElement(componentRoot);
+    const plotW = plotWidthPx(layoutW, padL, padR);
+    const plotRight = padL + plotW;
+    const timeSpan = settings.maxTime - settings.minTime;
+
     const canvasW = Math.max(1, Math.floor(layoutW * dpr));
     const canvasH = Math.max(1, Math.floor(height * dpr));
 
@@ -58,21 +68,21 @@ export default class WaveFormComponent {
     axisContext.font = `12px Arial`;
     componentRoot.appendChild(axisCanvas);
 
-    // draw horizontal axis
+    // draw horizontal axis (time) inside plot area
     const [niceT, digitT] = AnalyzeService.roundToNearestNiceNumber(
-      (settings.maxTime - settings.minTime) / 10,
+      timeSpan / 10,
     );
-    const dx = layoutW / (settings.maxTime - settings.minTime);
+    const dx = plotW / Math.max(1e-9, timeSpan);
     const t0 = Math.ceil(settings.minTime / niceT) * niceT;
-    const numTAxis = Math.floor((settings.maxTime - settings.minTime) / niceT);
+    const numTAxis = Math.floor(timeSpan / niceT);
     for (let i = 0; i <= numTAxis; i++) {
       const t = t0 + niceT * i;
-      const x = (t - settings.minTime) * dx;
+      const x = padL + (t - settings.minTime) * dx;
 
       axisContext.fillStyle = "rgb(245,130,32)";
-      if (layoutW * (5 / 100) < x && x < layoutW * (95 / 100)) {
+      if (plotRight * (5 / 100) < x && x < plotRight * (95 / 100)) {
         axisContext.fillText(`${t.toFixed(digitT)}`, x, 10);
-      } // don't draw near the edge
+      }
 
       axisContext.fillStyle = "rgb(180,120,20)";
       for (let j = 0; j < height; j++) {
@@ -80,7 +90,7 @@ export default class WaveFormComponent {
       }
     }
 
-    // draw vertical axis
+    // draw vertical axis (amplitude)
     const [niceA, digitA] = AnalyzeService.roundToNearestNiceNumber(
       (settings.maxAmplitude - settings.minAmplitude) /
         (10 * settings.waveformVerticalScale),
@@ -97,11 +107,11 @@ export default class WaveFormComponent {
       axisContext.fillStyle = "rgb(245,130,32)";
       if (12 < y && y < height) {
         axisContext.fillText(`${a.toFixed(digitA)}`, 4, y - 2);
-      } // don't draw near the edge
+      }
 
       axisContext.fillStyle = "rgb(180,120,20)";
       if (12 < y && y < height) {
-        for (let j = 0; j < layoutW; j++) {
+        for (let j = padL; j < plotRight; j++) {
           axisContext.fillRect(j, y, 1, 1);
         }
       }
@@ -115,13 +125,13 @@ export default class WaveFormComponent {
     const n = Math.max(0, endIndex - startIndex);
     const ar = settings.maxAmplitude - settings.minAmplitude;
 
-    if (n > 0 && ar > 0 && layoutW > 0) {
-      const ymin = new Float32Array(layoutW).fill(Number.POSITIVE_INFINITY);
-      const ymax = new Float32Array(layoutW).fill(Number.NEGATIVE_INFINITY);
+    if (n > 0 && ar > 0 && plotW > 0) {
+      const ymin = new Float32Array(plotW).fill(Number.POSITIVE_INFINITY);
+      const ymax = new Float32Array(plotW).fill(Number.NEGATIVE_INFINITY);
       const maxSamplesPerColumn = 16384;
-      for (let col = 0; col < layoutW; col++) {
-        const t0i = Math.floor((col / layoutW) * n);
-        const t1i = Math.min(n, Math.ceil(((col + 1) / layoutW) * n));
+      for (let col = 0; col < plotW; col++) {
+        const t0i = Math.floor((col / plotW) * n);
+        const t1i = Math.min(n, Math.ceil(((col + 1) / plotW) * n));
         const span = Math.max(1, t1i - t0i);
         const step = Math.max(1, Math.ceil(span / maxSamplesPerColumn));
         for (let k = t0i; k < t1i; k += step) {
@@ -136,7 +146,7 @@ export default class WaveFormComponent {
       }
 
       context.fillStyle = "rgb(160,60,200)";
-      for (let col = 0; col < layoutW; col++) {
+      for (let col = 0; col < plotW; col++) {
         const lo = ymin[col];
         const hi = ymax[col];
         if (!Number.isFinite(lo) || !Number.isFinite(hi)) {
@@ -149,11 +159,10 @@ export default class WaveFormComponent {
         top = Math.max(0, Math.min(height, top));
         bot = Math.max(0, Math.min(height, bot));
         const h = Math.max(1, bot - top);
-        context.fillRect(col, top, 1, h);
+        context.fillRect(padL + col, top, 1, h);
       }
     }
 
-    // draw channel label
     if (numOfCh > 1) {
       let channelText = "";
       if (numOfCh === 2) {
