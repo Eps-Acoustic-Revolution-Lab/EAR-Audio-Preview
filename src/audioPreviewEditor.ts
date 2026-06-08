@@ -12,7 +12,7 @@ import {
 import { analyzeSequenceFeaturesInHost } from "./extensionHost/sequenceFeatureHost";
 import { analyzeStftInHost } from "./extensionHost/stftHost";
 
-const analyzeUiCacheKey = "wavPreview.analyzeUiCache.v1";
+const analyzeUiCacheKey = "earAudioPreview.analyzeUiCache.v1";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
   static async create(
@@ -95,7 +95,7 @@ export class AudioPreviewEditorProvider
     );
   }
 
-  private static readonly viewType = "wavPreview.audioPreview";
+  private static readonly viewType = "earAudioPreview.audioPreview";
 
   private readonly webviews = new WebviewCollection();
 
@@ -108,7 +108,7 @@ export class AudioPreviewEditorProvider
     fileExt: string;
     fileName: string;
   } {
-    const config = vscode.workspace.getConfiguration("WavPreview");
+    const config = vscode.workspace.getConfiguration("EarAudioPreview");
     const fileExt = document.uri.fsPath.split(".").pop()?.toLowerCase() ?? "";
     const workspaceAnalyze =
       (config.get("analyzeDefault") as AnalyzeDefault) ??
@@ -227,7 +227,7 @@ export class AudioPreviewEditorProvider
 
       case WebviewMessageType.SAVE_ANALYZE_UI:
         if (WebviewMessageType.isSaveAnalyzeUi(msg)) {
-          const cfg = vscode.workspace.getConfiguration("WavPreview");
+          const cfg = vscode.workspace.getConfiguration("EarAudioPreview");
           if (cfg.get("cacheAnalyzeUi") !== false) {
             await this._context.globalState.update(analyzeUiCacheKey, msg.data);
           }

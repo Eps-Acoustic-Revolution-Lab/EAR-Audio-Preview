@@ -110,7 +110,7 @@ export class EventType {
   public static readonly MOUSE_UP = "mouseup";
   public static readonly CONTEXT_MENU = "contextmenu";
   /** Hover readout for waveform / spectrogram (dispatched on `window`). */
-  public static readonly CURSOR_READOUT = "wav-preview-cursor-readout";
+  public static readonly CURSOR_READOUT = "ear-audio-preview-cursor-readout";
 }
 
 /** Payload for {@link EventType.CURSOR_READOUT} (CustomEvent on `window`). */

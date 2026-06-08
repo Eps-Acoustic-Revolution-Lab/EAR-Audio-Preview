@@ -4,6 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-007ACC?logo=visualstudiocode&logoColor=white)](https://code.visualstudio.com/api/extension-guides/custom-editors)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/Eps-Acoustic-Revolution-Lab.ear-audio-preview?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=Eps-Acoustic-Revolution-Lab.ear-audio-preview)
 
 </div>
 
@@ -17,7 +18,7 @@
   **A professional-grade audio analysis tool inside VS Code.**
 
   Waveform · GPU Spectrogram · Goniometer · Phase Correlation
-  <br />LUFS Loudness · True Peak · Stereo Metering · WAV Export
+  <br />LUFS / F0 / Onset Timeline · True Peak · Stereo Metering · WAV Export
 
   [![earlab](https://img.shields.io/badge/earlab-Eps--Acoustic--Revolution--Lab-2ea44f?logo=github)](https://github.com/Eps-Acoustic-Revolution-Lab)
 
@@ -30,7 +31,19 @@
 
 ---
 
-## What's new
+## What's new in v0.2.0
+
+- **Marketplace release** — install directly from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Eps-Acoustic-Revolution-Lab.ear-audio-preview)
+- **Transport FAB** — compact bottom-left play / volume / monitor controls; seek bar integrated into the STFT waveform
+- **Settings overlay** — gear popover for Options, Player, and Edit & Export (replaces the old bottom-sheet FAB)
+- **Edit & Export** — full region select, preview listen, and WAV export workflow
+- **Loudness timeline** — stacked LUFS, F0 (PitchYinFFT), and onset-flux strips on a shared time axis
+- **Extension-host Essentia** — STFT and sequence analysis offloaded to the Node.js host for CSP-safe processing
+- **EAR identity** — extension ID `Eps-Acoustic-Revolution-Lab.ear-audio-preview`; settings namespace `EarAudioPreview.*`
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full release history.
+
+### Compared to upstream
 
 The upstream extension pioneered the VS Code Custom Editor model for audio, but its monolithic FFmpeg WASM decoder required Docker to build. This project replaces the entire stack while keeping the same extension-host-to-webview message contract.
 
@@ -41,7 +54,7 @@ The upstream extension pioneered the VS Code Custom Editor model for audio, but 
 | **FFT** | Ooura only | Ooura + Essentia.js (multi-window, LUFS) |
 | **Metering** | Basic waveform only | LUFS, true peak, goniometer, phase correlation spectrum, stereo level meter |
 | **Live monitoring** | None | Full analyser tap: L/R/M/S solo, 5-band monitor matrix |
-| **Loudness** | None | Offline EBU R128 profile + live loudness-worklet |
+| **Loudness** | None | Offline EBU R128 profile + live loudness-worklet + F0/onset strips |
 | **Onboarding** | Docker + manual build | `npm install && npm run webpack` |
 
 ---
@@ -50,7 +63,19 @@ The upstream extension pioneered the VS Code Custom Editor model for audio, but 
 
 ### For Users
 
-Install from VSIX file:
+**Recommended — VS Code Marketplace:**
+
+1. Open VS Code → Extensions (`Cmd+Shift+X` / `Ctrl+Shift+X`)
+2. Search for **EAR Audio Preview** or publisher **Eps-Acoustic-Revolution-Lab**
+3. Click **Install**
+
+Or install from the command line:
+
+```sh
+code --install-extension Eps-Acoustic-Revolution-Lab.ear-audio-preview
+```
+
+**Alternative — VSIX file** (e.g. from [GitHub Releases](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/releases)):
 
 ```sh
 code --install-extension ear-audio-preview-*.vsix
@@ -71,15 +96,32 @@ To make Audio Preview the default for audio files:
 
 ```jsonc
 "workbench.editorAssociations": {
-  "*.wav":  "wavPreview.audioPreview",
-  "*.mp3":  "wavPreview.audioPreview",
-  "*.flac": "wavPreview.audioPreview",
-  "*.ogg":  "wavPreview.audioPreview",
-  "*.opus": "wavPreview.audioPreview",
-  "*.aac":  "wavPreview.audioPreview",
-  "*.m4a":  "wavPreview.audioPreview"
+  "*.wav":  "earAudioPreview.audioPreview",
+  "*.mp3":  "earAudioPreview.audioPreview",
+  "*.flac": "earAudioPreview.audioPreview",
+  "*.ogg":  "earAudioPreview.audioPreview",
+  "*.opus": "earAudioPreview.audioPreview",
+  "*.aac":  "earAudioPreview.audioPreview",
+  "*.m4a":  "earAudioPreview.audioPreview"
 }
 ```
+
+### Migrating from upstream or older builds
+
+If you previously used [sukumo28/vscode-audio-preview](https://github.com/sukumo28/vscode-audio-preview) or an earlier EAR build, update `settings.json`:
+
+```jsonc
+// Editor associations: wavPreview.audioPreview → earAudioPreview.audioPreview
+"workbench.editorAssociations": {
+  "*.wav": "earAudioPreview.audioPreview"
+}
+
+// Settings namespace: WavPreview.* → EarAudioPreview.*
+"EarAudioPreview.autoAnalyze": true
+"EarAudioPreview.analyzeDefault": { }
+```
+
+Analyze UI cache stored under the old `wavPreview.analyzeUiCache.v1` key is not migrated; panel settings reset once after upgrade.
 
 ---
 
@@ -263,13 +305,13 @@ Benchmarks (Apple Silicon, 300 s stereo file): spectrogram CPU pack **~41 ms →
 2. **Set as default editor** (optional) — Add to your `settings.json`:
    ```jsonc
    "workbench.editorAssociations": {
-     "*.wav":  "wavPreview.audioPreview",
-     "*.mp3":  "wavPreview.audioPreview",
-     "*.flac": "wavPreview.audioPreview",
-     "*.ogg":  "wavPreview.audioPreview",
-     "*.opus": "wavPreview.audioPreview",
-     "*.aac":  "wavPreview.audioPreview",
-     "*.m4a":  "wavPreview.audioPreview"
+     "*.wav":  "earAudioPreview.audioPreview",
+     "*.mp3":  "earAudioPreview.audioPreview",
+     "*.flac": "earAudioPreview.audioPreview",
+     "*.ogg":  "earAudioPreview.audioPreview",
+     "*.opus": "earAudioPreview.audioPreview",
+     "*.aac":  "earAudioPreview.audioPreview",
+     "*.m4a":  "earAudioPreview.audioPreview"
    }
    ```
 

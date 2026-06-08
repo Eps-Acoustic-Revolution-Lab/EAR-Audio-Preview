@@ -181,7 +181,7 @@ export interface AnalyzeDefault {
 
   /**
    * When true (default), the extension remembers analyze UI settings between files.
-   * Controlled by WavPreview.cacheAnalyzeUi; not applied by the webview directly.
+   * Controlled by EarAudioPreview.cacheAnalyzeUi; not applied by the webview directly.
    */
   cacheAnalyzeUi?: boolean;
 

@@ -1,8 +1,8 @@
 {
-  "name": "wav-preview",
+  "name": "ear-audio-preview",
   "displayName": "EAR Audio Preview",
   "description": "EAR Audio Preview — play, preview & analyze audio files in VS Code. (wav,mp3,ogg,aac,flac,opus,m4a,sph)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.59.1"
   },
@@ -30,14 +30,14 @@
   },
   "license": "MIT",
   "activationEvents": [
-    "onCustomEditor:wavPreview.audioPreview"
+    "onCustomEditor:earAudioPreview.audioPreview"
   ],
   "main": "./dist/extension.js",
   "browser": "./dist/web/extension.js",
   "contributes": {
     "customEditors": [
       {
-        "viewType": "wavPreview.audioPreview",
+        "viewType": "earAudioPreview.audioPreview",
         "displayName": "Audio Preview",
         "selector": [
           {
@@ -69,29 +69,29 @@
       }
     ],
     "configuration": {
-      "title": "WavPreview",
+      "title": "EAR Audio Preview",
       "properties": {
-        "WavPreview.autoAnalyze": {
+        "EarAudioPreview.autoAnalyze": {
           "type": "boolean",
           "default": false,
           "description": "automatically analyze audio file when you open it"
         },
-        "WavPreview.playerDefault": {
+        "EarAudioPreview.playerDefault": {
           "type": "object",
           "default": {},
           "description": "default values of player settings"
         },
-        "WavPreview.analyzeDefault": {
+        "EarAudioPreview.analyzeDefault": {
           "type": "object",
           "default": {},
           "description": "default values of analyze settings"
         },
-        "WavPreview.highResolutionSpectrogram": {
+        "EarAudioPreview.highResolutionSpectrogram": {
           "type": "boolean",
           "default": false,
           "description": "Use a larger spectrogram canvas for sharper STFT rendering (more frequency columns per width)."
         },
-        "WavPreview.cacheAnalyzeUi": {
+        "EarAudioPreview.cacheAnalyzeUi": {
           "type": "boolean",
           "default": true,
           "description": "Remember analyze panel settings between audio files (stored by the extension, not cookies)."
@@ -114,7 +114,8 @@
     "format": "prettier --write \"src/**/*.{js,ts,css}\"",
     "lint-check": "eslint \"src/**/*.{js,ts}\" || (echo \"Lint errors found\" && exit 1)",
     "format-check": "prettier --check \"src/**/*.ts\" || (echo \"Formatting errors found\" && exit 1)",
-    "vsix": "vsce package"
+    "vsix": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
@@ -123,6 +124,7 @@
     "@types/vscode": "^1.59.1",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
+    "@vscode/vsce": "^3.3.0",
     "css-loader": "^7.1.1",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^9.1.0",
@@ -135,8 +137,7 @@
     "ts-loader": "^9.2.6",
     "typescript": "^5.3.3",
     "webpack": "^5.64.0",
-    "webpack-cli": "^4.9.1",
-    "@vscode/vsce": "^3.3.0"
+    "webpack-cli": "^4.9.1"
   },
   "dependencies": {
     "@wasm-audio-decoders/flac": "^0.2.10",

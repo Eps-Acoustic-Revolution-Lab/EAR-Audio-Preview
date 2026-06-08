@@ -1,29 +1,29 @@
 # Configuration Reference
 
-All settings use the `WavPreview.*` namespace, declared in `package.json` → `contributes.configuration`. They can be set in VS Code's `settings.json` or via the FAB settings sheet (which persists to `globalState`).
+All settings use the `EarAudioPreview.*` namespace, declared in `package.json` → `contributes.configuration`. They can be set in VS Code's `settings.json` or via the FAB settings sheet (which persists to `globalState`).
 
 ## Top-level settings
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `WavPreview.autoAnalyze` | `boolean` | `false` | Run STFT automatically when a file opens |
-| `WavPreview.highResolutionSpectrogram` | `boolean` | `false` | Double spectrogram pixel dimensions for sharper rendering |
-| `WavPreview.cacheAnalyzeUi` | `boolean` | `true` | Persist analyze settings across files via `globalState` |
-| `WavPreview.playerDefault` | `object` | `{}` | Default values for player settings |
-| `WavPreview.analyzeDefault` | `object` | `{}` | Default values for analyze and meter settings |
+| `EarAudioPreview.autoAnalyze` | `boolean` | `false` | Run STFT automatically when a file opens |
+| `EarAudioPreview.highResolutionSpectrogram` | `boolean` | `false` | Double spectrogram pixel dimensions for sharper rendering |
+| `EarAudioPreview.cacheAnalyzeUi` | `boolean` | `true` | Persist analyze settings across files via `globalState` |
+| `EarAudioPreview.playerDefault` | `object` | `{}` | Default values for player settings |
+| `EarAudioPreview.analyzeDefault` | `object` | `{}` | Default values for analyze and meter settings |
 
 ### Example
 
 ```jsonc
 {
-  "WavPreview.autoAnalyze": true,
-  "WavPreview.cacheAnalyzeUi": true,
-  "WavPreview.analyzeDefault": {
+  "EarAudioPreview.autoAnalyze": true,
+  "EarAudioPreview.cacheAnalyzeUi": true,
+  "EarAudioPreview.analyzeDefault": {
     "showLevelMeter": true,
     "showLiveAnalysis": true,
     "spectrogramVisible": true
   },
-  "WavPreview.playerDefault": {
+  "EarAudioPreview.playerDefault": {
     "initialVolume": 80
   }
 }
@@ -31,7 +31,7 @@ All settings use the `WavPreview.*` namespace, declared in `package.json` → `c
 
 ---
 
-## Player settings (`WavPreview.playerDefault`)
+## Player settings (`EarAudioPreview.playerDefault`)
 
 | Key | Type | Default | Range | Description |
 |-----|------|---------|-------|-------------|
@@ -50,7 +50,7 @@ Both filters use Butterworth (Q = 1/√2) biquad filters. Changing filter settin
 
 ---
 
-## Analyze settings (`WavPreview.analyzeDefault`)
+## Analyze settings (`EarAudioPreview.analyzeDefault`)
 
 ### Waveform
 
@@ -113,7 +113,7 @@ Hop size is computed automatically from window size, time range, and canvas widt
 
 ## Persistence
 
-When `WavPreview.cacheAnalyzeUi` is `true` (default), the settings sheet values are persisted to `globalState` under the key `wavPreview.analyzeUiCache.v1`. The extension host merges cached values on top of workspace defaults on each file open.
+When `EarAudioPreview.cacheAnalyzeUi` is `true` (default), the settings sheet values are persisted to `globalState` under the key `earAudioPreview.analyzeUiCache.v1`. The extension host merges cached values on top of workspace defaults on each file open.
 
 The webview sends `SAVE_ANALYZE_UI` messages debounced at 500 ms. Only changed settings trigger a dispatch. The full cached state is serialized via `AnalyzeSettingsService.toCachedDefaults()`.
 
