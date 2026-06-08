@@ -114,6 +114,7 @@
     "format": "prettier --write \"src/**/*.{js,ts,css}\"",
     "lint-check": "eslint \"src/**/*.{js,ts}\" || (echo \"Lint errors found\" && exit 1)",
     "format-check": "prettier --check \"src/**/*.ts\" || (echo \"Formatting errors found\" && exit 1)",
+    "ci": "npm run lint-check && npm run format-check && npm test && npm run webpack && npm run vsix",
     "vsix": "vsce package",
     "publish": "vsce publish"
   },

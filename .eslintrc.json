@@ -26,6 +26,16 @@
                 "format": ["PascalCase"]
             },
             {
+                "selector": "variable",
+                "modifiers": ["const"],
+                "format": ["camelCase", "UPPER_CASE"],
+                "leadingUnderscore": "allow"
+            },
+            {
+                "selector": "objectLiteralMethod",
+                "format": ["camelCase", "PascalCase"]
+            },
+            {
                 "selector": ["variable", "function", "parameter", "method", "property"],
                 "format": ["camelCase"],
                 "leadingUnderscore": "allow"
