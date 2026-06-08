@@ -18,8 +18,9 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - run: npm test
       - run: npm run lint-check
+      - run: npm run format-check
+      - run: npm test
       - run: npm run webpack
       - name: Package VSIX
         run: npx vsce package --out ./dist/
