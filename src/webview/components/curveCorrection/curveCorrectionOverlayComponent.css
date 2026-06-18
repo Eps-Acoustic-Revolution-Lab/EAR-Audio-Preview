@@ -1,0 +1,222 @@
+@import "../../styles/panelSurface.css";
+
+.curveCorrectionOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.curveCorrectionOverlay[hidden] {
+  display: none !important;
+}
+
+.curveCorrectionOverlay__backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(
+    in srgb,
+    var(--vscode-editor-background) 60%,
+    transparent
+  );
+  pointer-events: auto;
+}
+
+.curveCorrectionOverlay__dialog {
+  position: relative;
+  width: min(92vw, 720px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px
+    color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  pointer-events: auto;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.curveCorrectionOverlay--open .curveCorrectionOverlay__dialog {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.curveCorrectionOverlay__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.curveCorrectionOverlay__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.curveCorrectionOverlay__close {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.curveCorrectionOverlay__body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.curveCorrectionOverlay__combobox {
+  position: relative;
+  margin-bottom: 0.35rem;
+}
+
+.curveCorrectionOverlay__search {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  background: var(--vscode-input-background);
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  color: var(--vscode-foreground);
+}
+
+.curveCorrectionOverlay__search:focus {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: -1px;
+}
+
+.curveCorrectionOverlay__search::placeholder {
+  color: var(--vscode-input-placeholderForeground, var(--vscode-descriptionForeground));
+}
+
+.curveCorrectionOverlay__importRow {
+  margin: 0 0 0.75rem;
+  text-align: right;
+}
+
+.curveCorrectionOverlay__import {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--vscode-textLink-foreground, var(--vscode-foreground));
+  font-size: 0.8125rem;
+  font-family: inherit;
+  line-height: 1.4;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+.curveCorrectionOverlay__import:hover {
+  background: transparent;
+  color: var(--vscode-textLink-activeForeground, var(--vscode-foreground));
+}
+
+.curveCorrectionOverlay__import:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.curveCorrectionOverlay__list {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  max-height: 8rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--vscode-input-border);
+  border-radius: 4px;
+  background: var(--vscode-dropdown-background, var(--vscode-editorWidget-background));
+  box-shadow: 0 4px 12px
+    color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
+}
+
+.curveCorrectionOverlay__list.curveCorrectionOverlay__list--collapsed {
+  display: none;
+}
+
+.curveCorrectionOverlay__listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--vscode-foreground);
+}
+
+.curveCorrectionOverlay__listItem:hover,
+.curveCorrectionOverlay__listItem--active {
+  background: color-mix(
+    in srgb,
+    var(--vscode-list-hoverBackground, #2a2d2e) 80%,
+    transparent
+  );
+}
+
+.curveCorrectionOverlay__badge {
+  flex-shrink: 0;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 3px;
+  color: var(--vscode-badge-foreground, #fff);
+  background: var(--vscode-badge-background, #4d4d4d);
+}
+
+.curveCorrectionOverlay__canvas {
+  display: block;
+  width: 100%;
+  height: 200px;
+  margin: 0.5rem 0;
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 4px;
+  background: #0f0f0f;
+  cursor: crosshair;
+}
+
+.curveCorrectionOverlay__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.curveCorrectionOverlay__status {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--vscode-descriptionForeground);
+  min-height: 1.2em;
+}
+
+.curveCorrectionOverlay__status--error {
+  color: var(--vscode-errorForeground, #f48771);
+}

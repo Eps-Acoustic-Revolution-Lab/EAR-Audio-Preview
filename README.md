@@ -382,6 +382,24 @@ Click the FAB (bottom-left) to open the settings sheet. Three tabs:
 **Save Button:**
 - Click **Save** at the bottom of the settings sheet to redraw the spectrogram with current analysis settings. Settings persist automatically to VS Code `globalState` (debounced, 500 ms).
 
+**Headphone curve correction (Monitor):**
+- Open the Transport FAB → **Monitor** section → click the profile row (or press `Cmd+Shift+E` / `Ctrl+Shift+E`)
+- Search [autoeq.app](https://autoeq.app) for your headphone model, pick measurement + target curve, then **Apply preset**
+- **BYPASS** toggles real-time EQ without clearing the profile
+- **Save to workspace** writes `.vscode/ear-headphone-eq.json`; **Save globally** stores in extension `globalState`
+- EQ applies to **live playback only** in v1 (not baked into Edit & Export)
+
+---
+
+## Network & privacy
+
+The **curve correction** feature contacts **https://autoeq.app** via the **extension host** (Node.js) to:
+
+- List headphone measurement entries and target curves
+- Request parametric EQ (PEQ) presets for a selected model
+
+**Your audio files are never uploaded.** Only headphone model metadata (name, measurement source, target label, sample rate) is sent to AutoEq when you apply a preset. The webview cannot call AutoEq directly because the API does not allow cross-origin requests from `vscode-webview://` origins; the extension proxies those HTTP calls instead.
+
 ---
 
 ## Development
@@ -443,13 +461,14 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [x] Loudness pane layout stability — fixed chart height on tab re-entry
 - [x] Edit & Export panel surfaces + ear-eq segmented controls (channels, listen, destination)
 - [x] Loudness multi-strip layout — LUFS + F0 (PitchYinFFT) + Onset flux (Essentia)
+- [x] Monitoring curve for flat frequency response (AutoEq PEQ, live playback)
 
 ### Planned
 
 - [ ] Chromagram strip (CQT) or PredominantPitchMelodia for polyphonic melody
 - [ ] Optional third-strip feature toggle (Spectral Centroid, etc.)
 - [ ] Frequency-weighted RMS (dBA, dB-B, dB-C)
-- [ ] Monitoring curve for flat frequency response
+- [ ] Bake headphone EQ into Edit & Export processed output
 - [ ] Worker offload for long-file Essentia sequence analysis
 
 

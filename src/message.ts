@@ -1,4 +1,5 @@
 import { Config } from "./config";
+import type { HeadphoneEqPersistedState } from "./webview/types/headphoneEq";
 import type { SequenceFeatureProfileWire } from "./shared/sequenceFeatureCompute";
 import type { StftSpectrogramWire } from "./shared/stftEssentiaCompute";
 
@@ -9,6 +10,8 @@ export class ExtMessageType {
   public static readonly RELOAD = "RELOAD";
   public static readonly SEQUENCE_FEATURES = "SEQUENCE_FEATURES";
   public static readonly STFT_RESULT = "STFT_RESULT";
+  public static readonly AUTOEQ_RESULT = "AUTOEQ_RESULT";
+  public static readonly EQ_PRESET_OP_RESULT = "EQ_PRESET_OP_RESULT";
 
   public static isCONFIG(msg: ExtMessage): msg is ExtConfigMessage {
     return msg.type === ExtMessageType.CONFIG;
@@ -31,6 +34,18 @@ export class ExtMessageType {
   public static isStftResult(msg: ExtMessage): msg is ExtStftResultMessage {
     return msg.type === ExtMessageType.STFT_RESULT;
   }
+
+  public static isAutoEqResult(
+    msg: ExtMessage,
+  ): msg is ExtAutoEqResultMessage {
+    return msg.type === ExtMessageType.AUTOEQ_RESULT;
+  }
+
+  public static isEqPresetOpResult(
+    msg: ExtMessage,
+  ): msg is ExtEqPresetOpResultMessage {
+    return msg.type === ExtMessageType.EQ_PRESET_OP_RESULT;
+  }
 }
 
 export type ExtMessage =
@@ -38,7 +53,9 @@ export type ExtMessage =
   | ExtDataMessage
   | ExtReloadMessage
   | ExtSequenceFeaturesMessage
-  | ExtStftResultMessage;
+  | ExtStftResultMessage
+  | ExtAutoEqResultMessage
+  | ExtEqPresetOpResultMessage;
 
 export class ExtConfigMessage {
   type = ExtMessageType.CONFIG;
@@ -84,6 +101,52 @@ export class ExtStftResultMessage {
   data: ExtStftResultMessageData;
 }
 
+export type AutoEqRequestEndpoint = "entries" | "targets" | "equalize";
+
+export interface AutoEqEqualizeWireBody {
+  name: string;
+  source: string;
+  rig: string;
+  target: string;
+  fs: number;
+}
+
+export interface WebviewAutoEqRequestMessageData {
+  requestId: string;
+  endpoint: AutoEqRequestEndpoint;
+  body?: AutoEqEqualizeWireBody;
+}
+
+export class WebviewAutoEqRequestMessage {
+  type = WebviewMessageType.AUTOEQ_REQUEST;
+  data: WebviewAutoEqRequestMessageData;
+}
+
+export interface ExtAutoEqResultMessageData {
+  requestId: string;
+  endpoint: AutoEqRequestEndpoint;
+  payload?: unknown;
+  error?: string;
+}
+
+export class ExtAutoEqResultMessage {
+  type = ExtMessageType.AUTOEQ_RESULT;
+  data: ExtAutoEqResultMessageData;
+}
+
+export type EqPresetOp = "import" | "list" | "read" | "write_library";
+
+export interface ExtEqPresetOpResultMessageData {
+  requestId: string;
+  payload?: unknown;
+  error?: string;
+}
+
+export class ExtEqPresetOpResultMessage {
+  type = ExtMessageType.EQ_PRESET_OP_RESULT;
+  data: ExtEqPresetOpResultMessageData;
+}
+
 // Type of messages from Webview to Extension
 export class WebviewMessageType {
   public static readonly CONFIG = "CONFIG";
@@ -94,6 +157,10 @@ export class WebviewMessageType {
   public static readonly ANALYZE_SEQUENCE_FEATURES =
     "ANALYZE_SEQUENCE_FEATURES";
   public static readonly ANALYZE_STFT = "ANALYZE_STFT";
+  public static readonly SAVE_EQ_SETTINGS = "SAVE_EQ_SETTINGS";
+  public static readonly WRITE_EQ_PROFILE = "WRITE_EQ_PROFILE";
+  public static readonly AUTOEQ_REQUEST = "AUTOEQ_REQUEST";
+  public static readonly EQ_PRESET_OP = "EQ_PRESET_OP";
 
   public static isCONFIG(msg: WebviewMessage): msg is WebviewConfigMessage {
     return msg.type === WebviewMessageType.CONFIG;
@@ -128,6 +195,30 @@ export class WebviewMessageType {
   ): msg is WebviewAnalyzeStftMessage {
     return msg.type === WebviewMessageType.ANALYZE_STFT;
   }
+
+  public static isSaveEqSettings(
+    msg: WebviewMessage,
+  ): msg is WebviewSaveEqSettingsMessage {
+    return msg.type === WebviewMessageType.SAVE_EQ_SETTINGS;
+  }
+
+  public static isWriteEqProfile(
+    msg: WebviewMessage,
+  ): msg is WebviewWriteEqProfileMessage {
+    return msg.type === WebviewMessageType.WRITE_EQ_PROFILE;
+  }
+
+  public static isAutoEqRequest(
+    msg: WebviewMessage,
+  ): msg is WebviewAutoEqRequestMessage {
+    return msg.type === WebviewMessageType.AUTOEQ_REQUEST;
+  }
+
+  public static isEqPresetOp(
+    msg: WebviewMessage,
+  ): msg is WebviewEqPresetOpMessage {
+    return msg.type === WebviewMessageType.EQ_PRESET_OP;
+  }
 }
 
 export type WebviewMessage =
@@ -137,7 +228,11 @@ export type WebviewMessage =
   | WebviewErrorMessage
   | WebviewSaveAnalyzeUiMessage
   | WebviewAnalyzeSequenceFeaturesMessage
-  | WebviewAnalyzeStftMessage;
+  | WebviewAnalyzeStftMessage
+  | WebviewSaveEqSettingsMessage
+  | WebviewWriteEqProfileMessage
+  | WebviewAutoEqRequestMessage
+  | WebviewEqPresetOpMessage;
 
 export class WebviewConfigMessage {
   type = WebviewMessageType.CONFIG;
@@ -214,6 +309,27 @@ export interface WebviewAnalyzeStftMessageData {
 export class WebviewAnalyzeStftMessage {
   type = WebviewMessageType.ANALYZE_STFT;
   data: WebviewAnalyzeStftMessageData;
+}
+
+export class WebviewSaveEqSettingsMessage {
+  type = WebviewMessageType.SAVE_EQ_SETTINGS;
+  data: HeadphoneEqPersistedState;
+}
+
+export class WebviewWriteEqProfileMessage {
+  type = WebviewMessageType.WRITE_EQ_PROFILE;
+  data: HeadphoneEqPersistedState;
+}
+
+export interface WebviewEqPresetOpMessageData {
+  requestId: string;
+  op: EqPresetOp;
+  payload?: unknown;
+}
+
+export class WebviewEqPresetOpMessage {
+  type = WebviewMessageType.EQ_PRESET_OP;
+  data: WebviewEqPresetOpMessageData;
 }
 
 // Type of post message funtion

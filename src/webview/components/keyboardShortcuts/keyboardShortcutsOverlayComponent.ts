@@ -117,6 +117,15 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
         ],
       },
       {
+        title: "Monitoring",
+        shortcuts: [
+          {
+            keys: [this._modKey, "+", "Shift", "+", "E"],
+            description: "Open / close curve correction (headphone EQ)",
+          },
+        ],
+      },
+      {
         title: "Help",
         shortcuts: [
           { keys: ["?"], description: "Show keyboard shortcuts" },

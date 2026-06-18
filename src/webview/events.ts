@@ -100,15 +100,22 @@ export class EventType {
   public static readonly EE_UPDATE_DESTINATION = "ee-update-destination";
   public static readonly EE_UPDATE_LISTEN_MODE = "ee-update-listen-mode";
   public static readonly EL_UPDATE_ACTIVE = "el-update-active";
+  // headphone EQ
+  public static readonly HE_UPDATE_BYPASSED = "he-update-bypassed";
+  public static readonly HE_UPDATE_PROFILE = "he-update-profile";
+  public static readonly HE_OPEN_OVERLAY = "he-open-overlay";
   // other
   public static readonly CLICK = "click";
   public static readonly CHANGE = "change";
   public static readonly INPUT = "input";
+  public static readonly FOCUS = "focus";
+  public static readonly BLUR = "blur";
   public static readonly KEY_DOWN = "keydown";
   public static readonly KEY_UP = "keyup";
   public static readonly MOUSE_DOWN = "mousedown";
   public static readonly MOUSE_MOVE = "mousemove";
   public static readonly MOUSE_UP = "mouseup";
+  public static readonly MOUSE_LEAVE = "mouseleave";
   public static readonly CONTEXT_MENU = "contextmenu";
   /** Hover readout for waveform / spectrogram (dispatched on `window`). */
   public static readonly CURSOR_READOUT = "ear-audio-preview-cursor-readout";

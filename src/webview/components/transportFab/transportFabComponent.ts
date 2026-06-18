@@ -4,6 +4,7 @@ import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import PlayerSettingsService from "../../services/playerSettingsService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import HeadphoneEqSettingsService from "../../services/headphoneEqSettingsService";
 import KnobComponent from "../knob/knobComponent";
 import LiveMonitoringBarComponent from "../liveMeters/liveMonitoringBarComponent";
 import PlayerComponent from "../player/playerComponent";
@@ -13,6 +14,7 @@ import {
   KNOB_VOLUME_UNITY,
   knobPercentToGain,
 } from "../../utils/volumeMapping";
+import { isTypingTarget } from "../../utils/keyboardTarget";
 
 const META_FAB_SIZE_PX = 52;
 const DOCK_INSET_PX = 12;
@@ -63,6 +65,8 @@ export default class TransportFabComponent extends Component {
     playerService: PlayerService,
     playerSettingsService: PlayerSettingsService,
     analyzeSettingsService: AnalyzeSettingsService,
+    headphoneEqSettings?: HeadphoneEqSettingsService,
+    onOpenCurveCorrection?: () => void,
   ) {
     super();
     this._playerService = playerService;
@@ -103,10 +107,6 @@ export default class TransportFabComponent extends Component {
             <section>
               <h3 class="transportPopover__sectionTitle">Monitor</h3>
               <div id="transportMonitorMount"></div>
-            </section>
-            <section class="transportPopover__future" aria-disabled="true">
-              <h3 class="transportPopover__sectionTitle">Curve correction</h3>
-              <p>Coming soon</p>
             </section>
             <section>
               <h3 class="transportPopover__sectionTitle">Seek</h3>
@@ -177,6 +177,8 @@ export default class TransportFabComponent extends Component {
     this._monitorBar = new LiveMonitoringBarComponent(
       "#transportMonitorMount",
       analyzeSettingsService,
+      headphoneEqSettings,
+      onOpenCurveCorrection,
     );
     this._disposables.push(this._monitorBar);
 
@@ -195,7 +197,7 @@ export default class TransportFabComponent extends Component {
 
     if (playerSettingsService.enableSpacekeyPlay) {
       this._addEventlistener(window, EventType.KEY_DOWN, (e: KeyboardEvent) => {
-        if (e.isComposing || e.code !== "Space") {
+        if (e.isComposing || e.code !== "Space" || isTypingTarget(e.target)) {
           return;
         }
         e.preventDefault();

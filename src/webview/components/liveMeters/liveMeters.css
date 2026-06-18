@@ -786,6 +786,51 @@ button.workspacePane__tab:focus {
   align-items: center;
 }
 
+.liveMonitoringBar__eqStrip {
+  flex-basis: 100%;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--vscode-panel-border, #444) 55%, transparent);
+}
+
+.eqMonitorStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.eqMonitorStrip__profile {
+  flex: 1 1 8rem;
+  min-width: 0;
+  justify-content: space-between;
+  max-width: 100%;
+}
+
+.eqMonitorStrip__profileText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  text-align: left;
+}
+
+.eqMonitorStrip__chevron {
+  flex-shrink: 0;
+  opacity: 0.65;
+  margin-left: 4px;
+}
+
+.eqMonitorStrip__meta {
+  flex-basis: 100%;
+  font-size: var(--text-xs, 10px);
+  color: var(--vscode-descriptionForeground, #888);
+  padding-left: 2px;
+}
+
 #liveMetersRight {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 8px);
 }

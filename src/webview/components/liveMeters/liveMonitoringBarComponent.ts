@@ -6,11 +6,15 @@ import {
   monitorBandSoloBypassActive,
   type LiveMonitoringMode,
 } from "../../utils/liveMonitoring";
+import type HeadphoneEqSettingsService from "../../services/headphoneEqSettingsService";
+import EqMonitorStripComponent from "./eqMonitorStripComponent";
 
 export default class LiveMonitoringBarComponent extends Component {
   constructor(
     rootSelector: string,
     analyzeSettingsService: AnalyzeSettingsService,
+    headphoneEqSettings?: HeadphoneEqSettingsService,
+    onOpenCurveCorrection?: () => void,
   ) {
     super();
     const root = document.querySelector(rootSelector) as HTMLElement;
@@ -39,6 +43,7 @@ export default class LiveMonitoringBarComponent extends Component {
             <button type="button" class="earEqPill js-lm-bands-reset" title="Clear band solo (full bandwidth)">RESET</button>
           </div>
         </div>
+        <div id="eqMonitorStripMount" class="liveMonitoringBar__eqStrip"></div>
       </div>`;
 
     const setModeActive = (mode: LiveMonitoringMode) => {
@@ -115,5 +120,14 @@ export default class LiveMonitoringBarComponent extends Component {
       EventType.AS_UPDATE_MONITOR_BAND_SOLO_MASK,
       () => syncBands(),
     );
+
+    if (headphoneEqSettings && onOpenCurveCorrection) {
+      const eqStrip = new EqMonitorStripComponent(
+        "#eqMonitorStripMount",
+        headphoneEqSettings,
+        onOpenCurveCorrection,
+      );
+      this._disposables.push(eqStrip);
+    }
   }
 }

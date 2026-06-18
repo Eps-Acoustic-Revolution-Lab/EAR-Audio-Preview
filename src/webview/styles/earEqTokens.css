@@ -69,6 +69,11 @@
   color: var(--pill-text-hover) !important;
 }
 
+.earEqPill--bypass {
+  color: var(--pill-text-hover) !important;
+  border-color: color-mix(in srgb, var(--knob-accent, #00c3ff) 45%, var(--pill-border)) !important;
+}
+
 /* Text toggle (workspace tabs) */
 .earEqToggle {
   display: inline-flex;

@@ -11,8 +11,25 @@ import {
 } from "./message";
 import { analyzeSequenceFeaturesInHost } from "./extensionHost/sequenceFeatureHost";
 import { analyzeStftInHost } from "./extensionHost/stftHost";
+import {
+  equalizeAutoEqInHost,
+  fetchAutoEqEntriesInHost,
+  fetchAutoEqTargetsInHost,
+} from "./extensionHost/autoEqHost";
+import {
+  listWorkspaceEqPresetsInHost,
+  pickEqPresetFileInHost,
+  readWorkspaceEqPresetInHost,
+  writeWorkspaceEqPresetInHost,
+} from "./extensionHost/eqPresetHost";
+import type {
+  HeadphoneEqPersistedState,
+  HeadphoneEqProfile,
+} from "./webview/types/headphoneEq";
 
 const analyzeUiCacheKey = "earAudioPreview.analyzeUiCache.v1";
+const headphoneEqCacheKey = "earAudioPreview.headphoneEq.v1";
+const workspaceEqFileName = "ear-headphone-eq.json";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
   static async create(
@@ -136,6 +153,40 @@ export class AudioPreviewEditorProvider
     };
   }
 
+  private async loadHeadphoneEqState(
+    document: AudioPreviewDocument,
+  ): Promise<HeadphoneEqPersistedState> {
+    const config = vscode.workspace.getConfiguration("EarAudioPreview");
+    const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+    if (folder) {
+      const eqUri = vscode.Uri.joinPath(
+        folder.uri,
+        ".vscode",
+        workspaceEqFileName,
+      );
+      try {
+        const raw = await vscode.workspace.fs.readFile(eqUri);
+        const parsed = JSON.parse(
+          new TextDecoder().decode(raw),
+        ) as HeadphoneEqPersistedState;
+        if (parsed && typeof parsed === "object") {
+          return parsed;
+        }
+      } catch {
+        /* no workspace file */
+      }
+    }
+    const global = this._context.globalState.get<HeadphoneEqPersistedState>(
+      headphoneEqCacheKey,
+    );
+    if (global) {
+      return global;
+    }
+    const bypassByDefault =
+      config.get<boolean>("headphoneEq.bypassByDefault") !== false;
+    return { bypassed: bypassByDefault, profile: null };
+  }
+
   async openCustomDocument(
     uri: vscode.Uri,
     openContext: { backupId?: string },
@@ -197,8 +248,10 @@ export class AudioPreviewEditorProvider
   ) {
     switch (msg.type) {
       case WebviewMessageType.CONFIG: {
+        const headphoneEq = await this.loadHeadphoneEqState(document);
         const data = {
           ...this.buildWebviewConfig(document),
+          headphoneEq,
           loudnessWorkletUri: webviewPanel.webview
             .asWebviewUri(
               vscode.Uri.joinPath(
@@ -287,6 +340,137 @@ export class AudioPreviewEditorProvider
           vscode.window.showInformationMessage(
             `Success! Wav file written to: ${wavUri.fsPath}`,
           );
+        }
+        break;
+
+      case WebviewMessageType.SAVE_EQ_SETTINGS:
+        if (WebviewMessageType.isSaveEqSettings(msg)) {
+          await this._context.globalState.update(
+            headphoneEqCacheKey,
+            msg.data,
+          );
+          vscode.window.showInformationMessage(
+            "Headphone EQ settings saved globally.",
+          );
+        }
+        break;
+
+      case WebviewMessageType.WRITE_EQ_PROFILE:
+        if (WebviewMessageType.isWriteEqProfile(msg)) {
+          const dir = vscode.workspace.getWorkspaceFolder(document.uri);
+          if (!dir) {
+            vscode.window.showErrorMessage(
+              "No workspace folder available to save EQ profile.",
+            );
+            break;
+          }
+          const vscodeDir = vscode.Uri.joinPath(dir.uri, ".vscode");
+          const eqUri = vscode.Uri.joinPath(vscodeDir, workspaceEqFileName);
+          try {
+            await vscode.workspace.fs.createDirectory(vscodeDir);
+          } catch {
+            /* may exist */
+          }
+          const json = JSON.stringify(msg.data, null, 2);
+          await vscode.workspace.fs.writeFile(
+            eqUri,
+            new TextEncoder().encode(json),
+          );
+          vscode.window.showInformationMessage(
+            `Headphone EQ saved to ${eqUri.fsPath}`,
+          );
+        }
+        break;
+
+      case WebviewMessageType.AUTOEQ_REQUEST:
+        if (WebviewMessageType.isAutoEqRequest(msg)) {
+          const { requestId, endpoint, body } = msg.data;
+          try {
+            let payload: unknown;
+            if (endpoint === "entries") {
+              payload = await fetchAutoEqEntriesInHost();
+            } else if (endpoint === "targets") {
+              payload = await fetchAutoEqTargetsInHost();
+            } else if (body) {
+              payload = await equalizeAutoEqInHost(body);
+            } else {
+              throw new Error("AutoEq equalize request missing body");
+            }
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.AUTOEQ_RESULT,
+              data: { requestId, endpoint, payload },
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.AUTOEQ_RESULT,
+              data: { requestId, endpoint, error: message },
+            });
+          }
+        }
+        break;
+
+      case WebviewMessageType.EQ_PRESET_OP:
+        if (WebviewMessageType.isEqPresetOp(msg)) {
+          const { requestId, op, payload } = msg.data;
+          const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+          try {
+            let result: unknown;
+            switch (op) {
+              case "import":
+                result = await pickEqPresetFileInHost();
+                break;
+              case "list":
+                result = folder
+                  ? {
+                      presets: await listWorkspaceEqPresetsInHost(folder.uri),
+                      hasWorkspace: true,
+                    }
+                  : { presets: [], hasWorkspace: false };
+                break;
+              case "read": {
+                if (!folder) {
+                  throw new Error("No workspace folder");
+                }
+                const fileName = (payload as { fileName?: string })?.fileName;
+                if (!fileName) {
+                  throw new Error("Missing preset file name");
+                }
+                result = await readWorkspaceEqPresetInHost(folder.uri, fileName);
+                break;
+              }
+              case "write_library": {
+                if (!folder) {
+                  throw new Error(
+                    "No workspace folder available to save preset",
+                  );
+                }
+                const profile = (payload as { profile?: HeadphoneEqProfile })
+                  ?.profile;
+                if (!profile) {
+                  throw new Error("Missing preset profile");
+                }
+                const savedFileName = await writeWorkspaceEqPresetInHost(
+                  folder.uri,
+                  profile,
+                );
+                result = { fileName: savedFileName };
+                break;
+              }
+              default:
+                throw new Error(`Unknown EQ preset op: ${op}`);
+            }
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.EQ_PRESET_OP_RESULT,
+              data: { requestId, payload: result },
+            });
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            this.postMessage(webviewPanel.webview, {
+              type: ExtMessageType.EQ_PRESET_OP_RESULT,
+              data: { requestId, error: message },
+            });
+          }
         }
         break;
 

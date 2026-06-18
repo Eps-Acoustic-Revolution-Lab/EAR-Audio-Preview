@@ -2,7 +2,7 @@ module.exports = {
   automock: false,
   rootDir: "src",
   testEnvironment: "jsdom",
-  setupFiles: ["jest-canvas-mock"],
+  setupFiles: ["jest-canvas-mock", "<rootDir>/__mocks__/jestSetup.js"],
   moduleNameMapper: {
     "\\.css$": "<rootDir>/__mocks__/styleMock.js",
     "^loudness-worklet$": "<rootDir>/__mocks__/loudness-worklet.ts",

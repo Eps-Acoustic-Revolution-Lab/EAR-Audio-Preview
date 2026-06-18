@@ -14,6 +14,8 @@ import {
 } from "loudness-worklet";
 import { loadLoudnessWorkletModule } from "../utils/loudnessWorkletLoader";
 import type { EditListenMode } from "./editExportSettingsService";
+import type HeadphoneEqSettingsService from "./headphoneEqSettingsService";
+import { createEqChain, disposeEqNodes } from "./headphoneEqService";
 
 export default class PlayerService extends Service {
   private _audioContext: AudioContext;
@@ -103,6 +105,8 @@ export default class PlayerService extends Service {
 
   private _hpfNode: BiquadFilterNode;
   private _lpfNode: BiquadFilterNode;
+  private _headphoneEqSettings: HeadphoneEqSettingsService | null = null;
+  private _eqNodes: AudioNode[] = [];
 
   // Live analyser graph nodes (created/destroyed on demand)
   private _liveGraphActive: boolean = false;
@@ -138,12 +142,14 @@ export default class PlayerService extends Service {
     audioBuffer: AudioBuffer,
     playerSettingsService: PlayerSettingsService,
     analyzeSettingsService: AnalyzeSettingsService,
+    headphoneEqSettings?: HeadphoneEqSettingsService,
   ) {
     super();
     this._audioContext = audioContext;
     this._audioBuffer = audioBuffer;
     this._playerSettingsService = playerSettingsService;
     this._analyzeSettingsService = analyzeSettingsService;
+    this._headphoneEqSettings = headphoneEqSettings ?? null;
 
     // init volume — do NOT connect to destination here; routing is decided in play()
     this._gainNode = this._audioContext.createGain();
@@ -185,6 +191,27 @@ export default class PlayerService extends Service {
       EventType.PS_UPDATE_LPF_FREQUENCY,
       applyFilters,
     );
+
+    const applyHeadphoneEq = () => {
+      if (!this._isPlaying) {
+        return;
+      }
+      if (this._editListenActive && this._editListenMode === "processed") {
+        return;
+      }
+      this.pause();
+      this.play();
+    };
+    if (this._headphoneEqSettings) {
+      this._headphoneEqSettings.addEventListener(
+        EventType.HE_UPDATE_BYPASSED,
+        applyHeadphoneEq,
+      );
+      this._headphoneEqSettings.addEventListener(
+        EventType.HE_UPDATE_PROFILE,
+        applyHeadphoneEq,
+      );
+    }
 
     // rebuild live graph when toggles change
     const onLiveToggle = () => {
@@ -749,6 +776,23 @@ export default class PlayerService extends Service {
       this._hpfNode.frequency.value = this._playerSettingsService.hpfFrequency;
       this._hpfNode.connect(lastNode);
       lastNode = this._hpfNode;
+    }
+
+    disposeEqNodes(this._eqNodes);
+    this._eqNodes = [];
+    if (
+      !useProcessed &&
+      this._headphoneEqSettings?.shouldApplyEq()
+    ) {
+      const { nodes, chain } = createEqChain(
+        this._audioContext,
+        this._headphoneEqSettings,
+      );
+      this._eqNodes = nodes;
+      if (chain) {
+        chain.output.connect(lastNode);
+        lastNode = chain.input;
+      }
     }
 
     this._connectGainOutput();

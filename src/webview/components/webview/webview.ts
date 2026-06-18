@@ -26,6 +26,9 @@ import LoudnessComponent from "../loudness/loudnessComponent";
 import LoudnessService from "../../services/loudnessService";
 import SequenceFeatureService from "../../services/sequenceFeatureService";
 import EssentiaHostClient from "../../services/essentiaHostClient";
+import AutoEqHostClient from "../../services/autoEqHostClient";
+import EqPresetHostClient from "../../services/eqPresetHostClient";
+import { bindAutoEqHost, unbindAutoEqHost } from "../../services/autoEqApiClient";
 import { setLoudnessWorkletModuleUrl } from "../../utils/loudnessWorkletLoader";
 import { setActiveWorkspacePane } from "../../workspacePane";
 import { updateEarEqSlidingFocus } from "../../utils/earEqSlidingFocus";
@@ -34,6 +37,9 @@ import EditExportSettingsService from "../../services/editExportSettingsService"
 import EditListenService from "../../services/editListenService";
 import SettingsOverlayComponent from "../settingsOverlay/settingsOverlayComponent";
 import KeyboardShortcutsOverlayComponent from "../keyboardShortcuts/keyboardShortcutsOverlayComponent";
+import HeadphoneEqSettingsService from "../../services/headphoneEqSettingsService";
+import CurveCorrectionOverlayComponent from "../curveCorrection/curveCorrectionOverlayComponent";
+import "../curveCorrection/curveCorrectionOverlayComponent.css";
 
 type CreateAudioContext = (sampleRate: number) => AudioContext;
 type CreateDecoder = (
@@ -222,6 +228,7 @@ export default class WebView extends Component {
       </div>
       <div id="settingsOverlayMount"></div>
       <div id="keyboardShortcutsOverlay"></div>
+      <div id="curveCorrectionOverlayMount"></div>
       <div id="transportDock" class="transportDock"></div>
       <div id="settingsDock" class="settingsDock">
         <div id="metaPopoverMount"></div>
@@ -485,6 +492,18 @@ export default class WebView extends Component {
           EssentiaHostClient.handleExtensionResponse(msg);
         }
         break;
+
+      case ExtMessageType.AUTOEQ_RESULT:
+        if (ExtMessageType.isAutoEqResult(msg)) {
+          AutoEqHostClient.handleExtensionResponse(msg);
+        }
+        break;
+
+      case ExtMessageType.EQ_PRESET_OP_RESULT:
+        if (ExtMessageType.isEqPresetOpResult(msg)) {
+          EqPresetHostClient.handleExtensionResponse(msg);
+        }
+        break;
     }
   }
 
@@ -543,11 +562,35 @@ export default class WebView extends Component {
     analyzeSettingsService.waveformVisible = true;
     analyzeSettingsService.showLiveAnalysis = false;
 
+    const headphoneEqSettings = new HeadphoneEqSettingsService();
+    headphoneEqSettings.loadPersisted(this._config.headphoneEq);
+    this._disposables.push(headphoneEqSettings);
+
+    const autoEqHostClient = new AutoEqHostClient(this._postMessage);
+    bindAutoEqHost((req) => autoEqHostClient.request(req));
+    this._register({
+      dispose: () => {
+        unbindAutoEqHost();
+      },
+    });
+
+    const eqPresetHostClient = new EqPresetHostClient(this._postMessage);
+
+    const curveCorrectionOverlay = new CurveCorrectionOverlayComponent(
+      "#curveCorrectionOverlayMount",
+      headphoneEqSettings,
+      decoder.sampleRate,
+      this._postMessage,
+      eqPresetHostClient,
+    );
+    this._disposables.push(curveCorrectionOverlay);
+
     const playerService = new PlayerService(
       audioContext,
       audioBuffer,
       playerSettingsService,
       analyzeSettingsService,
+      headphoneEqSettings,
     );
     this._disposables.push(playerService);
 
@@ -556,6 +599,8 @@ export default class WebView extends Component {
       playerService,
       playerSettingsService,
       analyzeSettingsService,
+      headphoneEqSettings,
+      () => curveCorrectionOverlay.open(),
     );
     this._transportFab = transportFab;
     this._disposables.push(transportFab);

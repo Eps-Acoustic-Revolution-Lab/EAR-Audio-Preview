@@ -95,6 +95,11 @@
           "type": "boolean",
           "default": true,
           "description": "Remember analyze panel settings between audio files (stored by the extension, not cookies)."
+        },
+        "EarAudioPreview.headphoneEq.bypassByDefault": {
+          "type": "boolean",
+          "default": true,
+          "description": "When no saved headphone EQ profile exists, start playback with curve correction bypassed (safe default)."
         }
       }
     }
