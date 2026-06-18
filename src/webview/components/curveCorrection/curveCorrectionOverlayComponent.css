@@ -105,7 +105,10 @@
 }
 
 .curveCorrectionOverlay__search::placeholder {
-  color: var(--vscode-input-placeholderForeground, var(--vscode-descriptionForeground));
+  color: var(
+    --vscode-input-placeholderForeground,
+    var(--vscode-descriptionForeground)
+  );
 }
 
 .curveCorrectionOverlay__importRow {
@@ -151,7 +154,10 @@
   list-style: none;
   border: 1px solid var(--vscode-input-border);
   border-radius: 4px;
-  background: var(--vscode-dropdown-background, var(--vscode-editorWidget-background));
+  background: var(
+    --vscode-dropdown-background,
+    var(--vscode-editorWidget-background)
+  );
   box-shadow: 0 4px 12px
     color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
 }

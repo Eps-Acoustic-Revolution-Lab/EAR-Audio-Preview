@@ -35,9 +35,7 @@ export class ExtMessageType {
     return msg.type === ExtMessageType.STFT_RESULT;
   }
 
-  public static isAutoEqResult(
-    msg: ExtMessage,
-  ): msg is ExtAutoEqResultMessage {
+  public static isAutoEqResult(msg: ExtMessage): msg is ExtAutoEqResultMessage {
     return msg.type === ExtMessageType.AUTOEQ_RESULT;
   }
 

@@ -36,9 +36,7 @@ export default class ParametricEqEditorComponent extends Component {
     super();
     this._sampleRate = sampleRate;
     this._onChange = onChange;
-    const canvas = document.querySelector(
-      canvasSelector,
-    ) as HTMLCanvasElement;
+    const canvas = document.querySelector(canvasSelector) as HTMLCanvasElement;
     if (!canvas) {
       throw new Error(`Canvas not found: ${canvasSelector}`);
     }
@@ -103,7 +101,12 @@ export default class ParametricEqEditorComponent extends Component {
     return this._canvas.getBoundingClientRect();
   }
 
-  private _hitHandle(px: number, py: number, plotW: number, plotH: number): number {
+  private _hitHandle(
+    px: number,
+    py: number,
+    plotW: number,
+    plotH: number,
+  ): number {
     const minHz = this._minHz();
     const maxHz = this._maxHz();
     for (let i = 0; i < this._filters.length; i++) {
@@ -228,7 +231,8 @@ export default class ParametricEqEditorComponent extends Component {
       }
       const y = oy + gainToPlotY(db, plotH, DEFAULT_DISPLAY_RANGE);
       const label = db > 0 ? `+${db}` : `${db}`;
-      ctx.fillStyle = db === 0 ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.4)";
+      ctx.fillStyle =
+        db === 0 ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.4)";
       ctx.fillText(label, ox + plotW + 4, y);
     }
 

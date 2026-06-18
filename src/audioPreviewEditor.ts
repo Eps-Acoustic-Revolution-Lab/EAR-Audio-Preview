@@ -176,9 +176,10 @@ export class AudioPreviewEditorProvider
         /* no workspace file */
       }
     }
-    const global = this._context.globalState.get<HeadphoneEqPersistedState>(
-      headphoneEqCacheKey,
-    );
+    const global =
+      this._context.globalState.get<HeadphoneEqPersistedState>(
+        headphoneEqCacheKey,
+      );
     if (global) {
       return global;
     }
@@ -345,10 +346,7 @@ export class AudioPreviewEditorProvider
 
       case WebviewMessageType.SAVE_EQ_SETTINGS:
         if (WebviewMessageType.isSaveEqSettings(msg)) {
-          await this._context.globalState.update(
-            headphoneEqCacheKey,
-            msg.data,
-          );
+          await this._context.globalState.update(headphoneEqCacheKey, msg.data);
           vscode.window.showInformationMessage(
             "Headphone EQ settings saved globally.",
           );
@@ -436,7 +434,10 @@ export class AudioPreviewEditorProvider
                 if (!fileName) {
                   throw new Error("Missing preset file name");
                 }
-                result = await readWorkspaceEqPresetInHost(folder.uri, fileName);
+                result = await readWorkspaceEqPresetInHost(
+                  folder.uri,
+                  fileName,
+                );
                 break;
               }
               case "write_library": {

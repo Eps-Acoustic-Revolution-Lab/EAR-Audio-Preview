@@ -25,7 +25,9 @@ export default class EqMonitorStripComponent extends Component {
       </div>`;
 
     const bypassBtn = root.querySelector(".js-he-bypass") as HTMLButtonElement;
-    const profileBtn = root.querySelector(".js-he-profile") as HTMLButtonElement;
+    const profileBtn = root.querySelector(
+      ".js-he-profile",
+    ) as HTMLButtonElement;
     const profileText = root.querySelector(
       ".js-he-profileText",
     ) as HTMLSpanElement;
@@ -70,8 +72,6 @@ export default class EqMonitorStripComponent extends Component {
     this._addEventlistener(settings, EventType.HE_UPDATE_BYPASSED, () =>
       sync(),
     );
-    this._addEventlistener(settings, EventType.HE_UPDATE_PROFILE, () =>
-      sync(),
-    );
+    this._addEventlistener(settings, EventType.HE_UPDATE_PROFILE, () => sync());
   }
 }

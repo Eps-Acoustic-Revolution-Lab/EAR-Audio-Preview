@@ -34,7 +34,10 @@ export default class HeadphoneEqSettingsService extends Service {
     return this._profile !== null && !this._bypassed;
   }
 
-  public setProfile(profile: HeadphoneEqProfile | null, opts?: { keepBypass?: boolean }) {
+  public setProfile(
+    profile: HeadphoneEqProfile | null,
+    opts?: { keepBypass?: boolean },
+  ) {
     this._profile = profile ? structuredClone(profile) : null;
     if (profile && opts?.keepBypass !== true) {
       this._bypassed = false;
@@ -80,7 +83,9 @@ export default class HeadphoneEqSettingsService extends Service {
     );
   }
 
-  public loadPersisted(state: HeadphoneEqPersistedState | null | undefined): void {
+  public loadPersisted(
+    state: HeadphoneEqPersistedState | null | undefined,
+  ): void {
     if (!state || typeof state !== "object") {
       return;
     }

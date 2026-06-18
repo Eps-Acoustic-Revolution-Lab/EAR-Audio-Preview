@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  parseEqPresetFile,
-  sanitizePresetFileName,
-} from "./parseEqPreset";
+import { parseEqPresetFile, sanitizePresetFileName } from "./parseEqPreset";
 
 describe("parseEqPresetFile", () => {
   test("parses AutoEq equalize JSON response", () => {

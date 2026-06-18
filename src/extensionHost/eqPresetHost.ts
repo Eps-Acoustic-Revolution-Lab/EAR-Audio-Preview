@@ -41,7 +41,10 @@ export async function listWorkspaceEqPresetsInHost(
     const entries = await vscode.workspace.fs.readDirectory(dir);
     const out: WorkspaceEqPresetIndexEntry[] = [];
     for (const [name, type] of entries) {
-      if (type !== vscode.FileType.File || !name.toLowerCase().endsWith(".json")) {
+      if (
+        type !== vscode.FileType.File ||
+        !name.toLowerCase().endsWith(".json")
+      ) {
         continue;
       }
       try {

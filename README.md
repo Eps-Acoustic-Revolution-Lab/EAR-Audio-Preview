@@ -31,6 +31,12 @@
 
 ---
 
+## What's new in v0.3.0
+
+- **Headphone curve correction** — AutoEq PEQ compensation in the Transport FAB Monitor panel; search models, visualize curves, bypass or apply in real time
+- **Curve Correction overlay** — `Cmd+Shift+E` / `Ctrl+Shift+E` opens the full EQ editor; save profiles per-workspace or globally
+- **Extension-host AutoEq proxy** — headphone metadata only (no audio upload); CSP-safe access to [autoeq.app](https://autoeq.app)
+
 ## What's new in v0.2.0
 
 - **Marketplace release** — install directly from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Eps-Acoustic-Revolution-Lab.ear-audio-preview)

@@ -4,11 +4,7 @@ import {
   type PostMessage,
 } from "../../message";
 
-type EqPresetOp =
-  | "import"
-  | "list"
-  | "read"
-  | "write_library";
+type EqPresetOp = "import" | "list" | "read" | "write_library";
 
 interface PendingEqPreset {
   resolve: (value: unknown) => void;
@@ -27,9 +23,7 @@ export default class EqPresetHostClient {
 
   constructor(private _postMessage: PostMessage) {}
 
-  public static handleExtensionResponse(
-    msg: ExtEqPresetOpResultMessage,
-  ): void {
+  public static handleExtensionResponse(msg: ExtEqPresetOpResultMessage): void {
     const pending = EqPresetHostClient._pending.get(msg.data.requestId);
     if (!pending) {
       return;

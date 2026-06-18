@@ -70,10 +70,7 @@ function mapRawFilters(filters: RawPeqFilter[]): EqFilterBand[] {
   }));
 }
 
-function parseJsonPreset(
-  text: string,
-  fileName?: string,
-): HeadphoneEqProfile {
+function parseJsonPreset(text: string, fileName?: string): HeadphoneEqProfile {
   const parsed = JSON.parse(text) as unknown;
   if (!parsed || typeof parsed !== "object") {
     throw new Error("Invalid JSON preset");
@@ -163,7 +160,10 @@ function parseTxtPreset(text: string, fileName?: string): HeadphoneEqProfile {
     throw new Error("No filters found in preset text");
   }
   if (!sawPreamp) {
-    preampDb = -Math.max(0, ...filters.map((f) => (f.gainDb > 0 ? f.gainDb : 0)));
+    preampDb = -Math.max(
+      0,
+      ...filters.map((f) => (f.gainDb > 0 ? f.gainDb : 0)),
+    );
   }
 
   const baseName = fileName ? slugFileBase(fileName) : "Imported preset";

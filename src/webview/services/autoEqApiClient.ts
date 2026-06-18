@@ -43,7 +43,10 @@ export function unbindAutoEqHost(): void {
   hostRequest = null;
 }
 
-async function fetchJson<T>(path: string, endpoint: AutoEqEndpoint): Promise<T> {
+async function fetchJson<T>(
+  path: string,
+  endpoint: AutoEqEndpoint,
+): Promise<T> {
   if (hostRequest) {
     return (await hostRequest({ endpoint })) as T;
   }
@@ -123,10 +126,7 @@ export function buildProfileId(
   return `${name}|${variant.source}|${variant.rig}|${targetLabel}`;
 }
 
-export function buildDisplayName(
-  name: string,
-  targetLabel: string,
-): string {
+export function buildDisplayName(name: string, targetLabel: string): string {
   return `${name} · ${targetLabel}`;
 }
 

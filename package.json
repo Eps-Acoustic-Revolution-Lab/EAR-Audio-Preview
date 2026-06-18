@@ -2,7 +2,7 @@
   "name": "ear-audio-preview",
   "displayName": "EAR Audio Preview",
   "description": "EAR Audio Preview — play, preview & analyze audio files in VS Code. (wav,mp3,ogg,aac,flac,opus,m4a,sph)",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.59.1"
   },

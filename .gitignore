@@ -5,5 +5,5 @@
 .vscode-test
 .cursor
 .claude
-.docs
+docs/*
 CLAUDE.md

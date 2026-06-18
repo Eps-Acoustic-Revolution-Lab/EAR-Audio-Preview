@@ -780,10 +780,7 @@ export default class PlayerService extends Service {
 
     disposeEqNodes(this._eqNodes);
     this._eqNodes = [];
-    if (
-      !useProcessed &&
-      this._headphoneEqSettings?.shouldApplyEq()
-    ) {
+    if (!useProcessed && this._headphoneEqSettings?.shouldApplyEq()) {
       const { nodes, chain } = createEqChain(
         this._audioContext,
         this._headphoneEqSettings,

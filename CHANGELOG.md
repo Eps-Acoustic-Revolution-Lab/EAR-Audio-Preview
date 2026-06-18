@@ -4,6 +4,26 @@ All notable changes to **EAR Audio Preview** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] - 2026-06-18
+
+### Added
+
+- **Headphone curve correction (Monitor)** — real-time parametric EQ compensation via Web Audio `BiquadFilterNode`, integrated into the Transport FAB Monitor popover
+- **AutoEq integration** — search [autoeq.app](https://autoeq.app) for headphone models; extension host proxies API calls (entries, targets, PEQ presets) so the webview stays CSP-safe
+- **Curve Correction overlay** — full-screen panel for model search, frequency-response visualization, parametric band editing, and BYPASS toggle (`Cmd+Shift+E` / `Ctrl+Shift+E`)
+- **EQ preset persistence** — save profiles to workspace (`.vscode/ear-headphone-eq.json`) or extension `globalState`; load on open with per-workspace override
+- **EQ monitor strip** — compact profile summary row in the Monitor section (model, target, bypass state)
+- **Setting** `EarAudioPreview.headphoneEq.bypassByDefault` — safe default: bypass correction when no saved profile exists
+
+### Changed
+
+- **README** — headphone EQ usage, network/privacy notes for AutoEq; roadmap item marked done
+- Removed obsolete `audio-preview-perf-upgrade-plan.md` and unused `images/how-to-use.gif`
+
+### Notes
+
+- v0.3.0 applies headphone EQ to **live playback only**; Edit & Export processed output is not yet baked with the correction curve.
+
 ## [0.2.0] - 2026-06-08
 
 First public release on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/) under publisher **Eps-Acoustic-Revolution-Lab**.

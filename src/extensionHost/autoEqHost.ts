@@ -12,7 +12,10 @@ export interface AutoEqEqualizeHostBody {
   fs: number;
 }
 
-async function readJsonResponse(res: Response, label: string): Promise<unknown> {
+async function readJsonResponse(
+  res: Response,
+  label: string,
+): Promise<unknown> {
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     throw new Error(

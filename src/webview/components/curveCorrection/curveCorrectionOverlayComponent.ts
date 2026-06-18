@@ -118,7 +118,9 @@ export default class CurveCorrectionOverlayComponent extends Component {
         </div>
       </div>`;
 
-    this._overlay = root.querySelector(".curveCorrectionOverlay") as HTMLElement;
+    this._overlay = root.querySelector(
+      ".curveCorrectionOverlay",
+    ) as HTMLElement;
 
     this._editor = new ParametricEqEditorComponent(
       ".js-cc-canvas",
@@ -190,10 +192,7 @@ export default class CurveCorrectionOverlayComponent extends Component {
         this.close();
         return;
       }
-      const mod =
-        this._modKey === "meta"
-          ? e.metaKey
-          : e.ctrlKey;
+      const mod = this._modKey === "meta" ? e.metaKey : e.ctrlKey;
       if (e.key.toLowerCase() === "e" && e.shiftKey && mod) {
         e.preventDefault();
         this.toggle();
@@ -346,7 +345,9 @@ export default class CurveCorrectionOverlayComponent extends Component {
       const search = this._overlay.querySelector(
         ".js-cc-search",
       ) as HTMLInputElement;
-      const list = this._overlay.querySelector(".js-cc-list") as HTMLUListElement;
+      const list = this._overlay.querySelector(
+        ".js-cc-list",
+      ) as HTMLUListElement;
       this._filterItems(search.value);
       this._renderList(list);
     } catch (err) {
@@ -366,7 +367,9 @@ export default class CurveCorrectionOverlayComponent extends Component {
       const search = this._overlay.querySelector(
         ".js-cc-search",
       ) as HTMLInputElement;
-      const list = this._overlay.querySelector(".js-cc-list") as HTMLUListElement;
+      const list = this._overlay.querySelector(
+        ".js-cc-list",
+      ) as HTMLUListElement;
       this._filterItems(search.value);
       this._renderList(list);
     } catch (err) {

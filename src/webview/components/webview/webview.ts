@@ -28,7 +28,10 @@ import SequenceFeatureService from "../../services/sequenceFeatureService";
 import EssentiaHostClient from "../../services/essentiaHostClient";
 import AutoEqHostClient from "../../services/autoEqHostClient";
 import EqPresetHostClient from "../../services/eqPresetHostClient";
-import { bindAutoEqHost, unbindAutoEqHost } from "../../services/autoEqApiClient";
+import {
+  bindAutoEqHost,
+  unbindAutoEqHost,
+} from "../../services/autoEqApiClient";
 import { setLoudnessWorkletModuleUrl } from "../../utils/loudnessWorkletLoader";
 import { setActiveWorkspacePane } from "../../workspacePane";
 import { updateEarEqSlidingFocus } from "../../utils/earEqSlidingFocus";

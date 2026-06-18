@@ -19,8 +19,7 @@ export function freqToPlotX(
 ): number {
   const lo = Math.log10(minHz);
   const hi = Math.log10(maxHz);
-  const t =
-    (Math.log10(Math.max(minHz, freq)) - lo) / Math.max(1e-9, hi - lo);
+  const t = (Math.log10(Math.max(minHz, freq)) - lo) / Math.max(1e-9, hi - lo);
   return t * plotW;
 }
 

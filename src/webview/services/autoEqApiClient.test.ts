@@ -43,12 +43,9 @@ describe("autoEqApiClient", () => {
 
   test("mapEqualizeResponse throws when no filters returned", () => {
     expect(() =>
-      mapEqualizeResponse(
-        "X",
-        { source: "a", rig: "b", form: "c" },
-        "T",
-        { parametric_eq: { filters: [] } },
-      ),
+      mapEqualizeResponse("X", { source: "a", rig: "b", form: "c" }, "T", {
+        parametric_eq: { filters: [] },
+      }),
     ).toThrow(/no parametric EQ filters/i);
   });
 
