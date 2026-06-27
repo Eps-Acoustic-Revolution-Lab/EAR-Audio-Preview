@@ -177,6 +177,26 @@ export default class AnalyzeSettingsComponent extends Component {
               </div>
             </div>
             <div class="panelRow">
+              <span class="panelRow__label">Spectrum mode</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-liveSpectrumMode">
+                  <option value="fft">FFT</option>
+                  <option value="cqt">CQT (Constant-Q)</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
+              <span class="panelRow__label">CQT bins</span>
+              <div class="panelRow__control">
+                <select class="js-analyzeSetting-liveCqtBins">
+                  <option value="48">48</option>
+                  <option value="96">96</option>
+                  <option value="192">192</option>
+                  <option value="300">300</option>
+                </select>
+              </div>
+            </div>
+            <div class="panelRow">
               <span class="panelRow__label">Spectrum tilt</span>
               <div class="panelRow__control">
                 <select class="js-analyzeSetting-liveSpectrumTilt">
@@ -831,6 +851,38 @@ export default class AnalyzeSettingsComponent extends Component {
         liveSpectrumTiltSelect.value = String(e.detail.value);
       },
     );
+
+    // Spectrum mode (FFT / CQT)
+    const liveSpectrumModeSelect = <HTMLSelectElement>(
+      this._componentRoot.querySelector(".js-analyzeSetting-liveSpectrumMode")
+    );
+    liveSpectrumModeSelect.value = settings.liveSpectrumMode;
+    this._addEventlistener(liveSpectrumModeSelect, EventType.CHANGE, () => {
+      settings.liveSpectrumMode = liveSpectrumModeSelect.value as "fft" | "cqt";
+    });
+    this._addEventlistener(settings, EventType.AS_UPDATE_LIVE_SPECTRUM_MODE, ((
+      e: CustomEvent,
+    ) => {
+      liveSpectrumModeSelect.value = String(e.detail.value);
+    }) as EventListener);
+
+    // CQT bins
+    const liveCqtBinsSelect = <HTMLSelectElement>(
+      this._componentRoot.querySelector(".js-analyzeSetting-liveCqtBins")
+    );
+    liveCqtBinsSelect.value = String(settings.liveCqtBins);
+    this._addEventlistener(liveCqtBinsSelect, EventType.CHANGE, () => {
+      settings.liveCqtBins = Number(liveCqtBinsSelect.value) as
+        | 48
+        | 96
+        | 192
+        | 300;
+    });
+    this._addEventlistener(settings, EventType.AS_UPDATE_LIVE_CQT_BINS, ((
+      e: CustomEvent,
+    ) => {
+      liveCqtBinsSelect.value = String(e.detail.value);
+    }) as EventListener);
   }
 
   private updateColorBar(settings: AnalyzeSettingsProps) {

@@ -243,15 +243,12 @@ export default class PlayerService extends Service {
     // analysers are not in the signal path (they tap, not block)
     this._analyzeSettingsService.addEventListener(
       EventType.AS_UPDATE_LIVE_ANALYSIS_FFT_SIZE,
-      () => {
-        const fftSize = this._analyzeSettingsService.liveAnalysisFftSize;
-        if (this._analyserL) {
-          this._analyserL.fftSize = fftSize;
-        }
-        if (this._analyserR) {
-          this._analyserR.fftSize = fftSize;
-        }
-      },
+      () => this._syncAnalyserFftSize(),
+    );
+
+    this._analyzeSettingsService.addEventListener(
+      EventType.AS_UPDATE_LIVE_SPECTRUM_MODE,
+      () => this._syncAnalyserFftSize(),
     );
 
     this._analyzeSettingsService.addEventListener(
@@ -276,6 +273,20 @@ export default class PlayerService extends Service {
       return null;
     }
     return { left: this._analyserL, right: this._analyserR };
+  }
+
+  /** Set analyser fftSize: CQT mode forces 32768; FFT mode uses the user setting. */
+  private _syncAnalyserFftSize(): void {
+    const fftSize =
+      this._analyzeSettingsService.liveSpectrumMode === "cqt"
+        ? 32768
+        : this._analyzeSettingsService.liveAnalysisFftSize;
+    if (this._analyserL) {
+      this._analyserL.fftSize = fftSize;
+    }
+    if (this._analyserR) {
+      this._analyserR.fftSize = fftSize;
+    }
   }
 
   public get audioContext(): AudioContext {
@@ -401,7 +412,10 @@ export default class PlayerService extends Service {
 
   private _createLiveGraph(): void {
     const ctx = this._audioContext;
-    const fftSize = this._analyzeSettingsService.liveAnalysisFftSize;
+    const fftSize =
+      this._analyzeSettingsService.liveSpectrumMode === "cqt"
+        ? 32768
+        : this._analyzeSettingsService.liveAnalysisFftSize;
     const numChannels = Math.min(2, this._audioBuffer.numberOfChannels);
 
     this._splitter = ctx.createChannelSplitter(numChannels);

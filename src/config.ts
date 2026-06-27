@@ -257,6 +257,16 @@ export interface AnalyzeDefault {
   liveSpectrumTiltDbPerOct?: 0 | 1.5 | 3 | 4.5 | 6;
 
   /**
+   * Live spectrum analysis mode.
+   * "fft" = standard FFT with log rebinning (default);
+   * "cqt" = Goertzel constant-Q transform (wavelet-like, per-bin window length).
+   */
+  liveSpectrumMode?: "fft" | "cqt";
+
+  /** Number of frequency bins for CQT mode. 48 | 96 | 192 | 300. default: 96 */
+  liveCqtBins?: 48 | 96 | 192 | 300;
+
+  /**
    * Live monitoring matrix: stereo path for headphones + live meters.
    * "lr" = stereo L→L, R→R; "swap" = stereo with L/R outputs exchanged; other = solo MS/L/R.
    */

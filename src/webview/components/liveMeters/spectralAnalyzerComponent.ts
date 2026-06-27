@@ -11,21 +11,29 @@ import {
 import {
   monitoringGainsForMode,
   spectrumTiltDbAboveFloor,
+  applyMonitoringToTimeDomain,
 } from "../../utils/liveMonitoring";
+import {
+  buildCqtCache,
+  cqtCacheValid,
+  goertzelCqt,
+  type CqtCache,
+  type CqtConfig,
+} from "../../utils/goertzelCqt";
 import {
   smoothPeakDisplayAlongBinsInto,
   stepSpectralPeakDisplay,
 } from "../../utils/spectralPeakDisplay";
 import {
-  logFreqs,
-  logPoints,
-  spectrumFreqTicks,
-  freqToCanvasX,
-  hzFromCanvasX,
-  logIndexFromHz,
   lerpF32,
   fmtHzLive,
   formatFreqTickLabel,
+  freqToCanvasXParam,
+  hzFromCanvasXParam,
+  logIndexFromHzParam,
+  logFreqPointsParam,
+  fftSpectrumFreqTicksForSr,
+  cqtSpectrumFreqTicksForSr,
 } from "../../utils/liveLogSpectrumAxis";
 
 const dbFloor = -90;
@@ -47,19 +55,41 @@ export default class SpectralAnalyzerComponent extends Component {
   private _rafId: number = 0;
   private _bufL: Float32Array = new Float32Array(1024);
   private _bufR: Float32Array = new Float32Array(1024);
-  private _emaPeakLogical: Float32Array = new Float32Array(logPoints);
+
+  // ── Dynamic state arrays (sized to _numPoints: 300 for FFT, numBins for CQT) ──
+  private _emaPeakLogical = new Float32Array(0);
   /** Smoothed toward {@link _emaPeakLogical} for stroked outline + readout (reduces spatial kinks across bins). */
-  private _emaPeakDisplay: Float32Array = new Float32Array(logPoints);
+  private _emaPeakDisplay = new Float32Array(0);
   /** Temp for one pass of {@link smoothPeakDisplayAlongBinsInto}. */
-  private _peakSpatialScratch: Float32Array = new Float32Array(logPoints);
-  private _emaRms: Float32Array = new Float32Array(logPoints);
+  private _peakSpatialScratch = new Float32Array(0);
+  private _emaRms = new Float32Array(0);
   /** Wall-clock expiry (ms since `performance.now()` origin) after last peak crest; decay only after this time. */
-  private _peakHoldUntilMs: Float64Array = new Float64Array(logPoints);
+  private _peakHoldUntilMs = new Float64Array(0);
+
   private _hoverCx = 0;
   private _hoverCy = 0;
   private _hoverClientX = 0;
   private _hoverClientY = 0;
   private _hoverActive = false;
+  private _cqtCache: CqtCache | null = null;
+  private _cqtDbBuf: Float32Array = new Float32Array(0);
+  private _timeBufL: Float32Array = new Float32Array(0);
+  private _timeBufR: Float32Array = new Float32Array(0);
+  private _timeMixL: Float32Array = new Float32Array(0);
+  private _timeMixR: Float32Array = new Float32Array(0);
+
+  // ── Dynamic axis state ──
+  private static readonly _fftFreqMin = 10;
+  private static readonly _fftLogPoints = 300;
+  private static readonly _cqtFreqMin = 8;
+
+  private _axisMin = 10;
+  private _axisMax = 20000;
+  private _numPoints = 0;
+  /** X-positions for curve control points: logFreqs(300) for FFT, cqtCache.freqs for CQT. */
+  private _curveFreqs: Float64Array = new Float64Array(0);
+  private _fftLogFreqs: Float64Array | null = null;
+  private _fftSampleRate = 0;
 
   /** Keep animating while playing or while the pointer is over the plot (crosshair / readout when paused). */
   private _shouldRunRaf(): boolean {
@@ -93,11 +123,6 @@ export default class SpectralAnalyzerComponent extends Component {
       ".spectralAnalyzer__hoverReadout",
     ) as HTMLElement;
 
-    this._emaPeakLogical.fill(dbFloor);
-    this._emaPeakDisplay.fill(dbFloor);
-    this._emaRms.fill(dbFloor);
-    this._peakHoldUntilMs.fill(0);
-
     this._addEventlistener(
       containerEl,
       EventType.MOUSE_MOVE,
@@ -127,7 +152,82 @@ export default class SpectralAnalyzerComponent extends Component {
       this._syncRafToState();
     });
 
+    this._addEventlistener(
+      analyzeSettingsService,
+      EventType.AS_UPDATE_LIVE_SPECTRUM_MODE,
+      () => {
+        this._resetBallistics();
+        this._cqtCache = null;
+        this._syncRafToState();
+      },
+    );
+    this._addEventlistener(
+      analyzeSettingsService,
+      EventType.AS_UPDATE_LIVE_CQT_BINS,
+      () => {
+        this._cqtCache = null;
+      },
+    );
+
     this._syncRafToState();
+  }
+
+  private _ensureArraySize(n: number): void {
+    if (this._emaRms.length === n) {
+      return;
+    }
+    this._numPoints = n;
+    this._emaPeakLogical = new Float32Array(n);
+    this._emaPeakDisplay = new Float32Array(n);
+    this._peakSpatialScratch = new Float32Array(n);
+    this._emaRms = new Float32Array(n);
+    this._peakHoldUntilMs = new Float64Array(n);
+    this._resetBallistics();
+  }
+
+  private _resetBallistics(): void {
+    if (this._emaRms.length === 0) {
+      return;
+    }
+    this._emaPeakLogical.fill(dbFloor);
+    this._emaPeakDisplay.fill(dbFloor);
+    this._peakSpatialScratch.fill(0);
+    this._emaRms.fill(dbFloor);
+    this._peakHoldUntilMs.fill(0);
+  }
+
+  /** Recompute axis range, point count, and curve-point frequencies for the current mode + sample rate. */
+  private _configureAxis(isCqt: boolean, sampleRate: number): void {
+    const nyquist = sampleRate / 2;
+
+    if (isCqt) {
+      const numBins = this._analyzeSettingsService.liveCqtBins;
+      this._axisMin = SpectralAnalyzerComponent._cqtFreqMin;
+      this._axisMax = nyquist;
+      this._ensureArraySize(numBins);
+      // curveFreqs set from cqtCache.freqs inside _computeCqtFrame;
+      // for non-playing state (draw axis only), generate a placeholder
+      if (!this._cqtCache || this._curveFreqs.length !== numBins) {
+        this._curveFreqs = logFreqPointsParam(
+          this._axisMin,
+          this._axisMax,
+          numBins,
+        );
+      }
+    } else {
+      this._axisMin = SpectralAnalyzerComponent._fftFreqMin;
+      this._axisMax = nyquist;
+      this._ensureArraySize(SpectralAnalyzerComponent._fftLogPoints);
+      if (this._fftSampleRate !== sampleRate || !this._fftLogFreqs) {
+        this._fftLogFreqs = logFreqPointsParam(
+          this._axisMin,
+          this._axisMax,
+          SpectralAnalyzerComponent._fftLogPoints,
+        );
+        this._fftSampleRate = sampleRate;
+      }
+      this._curveFreqs = this._fftLogFreqs;
+    }
   }
 
   private _startRaf() {
@@ -152,9 +252,114 @@ export default class SpectralAnalyzerComponent extends Component {
     }
   }
 
+  private _computeFftFrame(analysers: {
+    left: AnalyserNode;
+    right: AnalyserNode;
+  }): Float32Array {
+    const fftSize = analysers.left.fftSize;
+    if (this._bufL.length !== fftSize / 2) {
+      this._bufL = new Float32Array(fftSize / 2);
+      this._bufR = new Float32Array(fftSize / 2);
+      this._resetBallistics();
+    }
+
+    analysers.left.getFloatFrequencyData(this._bufL);
+    analysers.right.getFloatFrequencyData(this._bufR);
+
+    const sampleRate = analysers.left.context.sampleRate;
+    const binCount = this._bufL.length;
+    const binHz = sampleRate / fftSize;
+    const g = monitoringGainsForMode(
+      this._analyzeSettingsService.liveMonitoringMode,
+    );
+    const tilt = this._analyzeSettingsService.liveSpectrumTiltDbPerOct;
+
+    const srcXs = new Float64Array(binCount);
+    const srcYs = new Float64Array(binCount);
+    for (let k = 0; k < binCount; k++) {
+      const f = (k + 0.5) * binHz;
+      srcXs[k] = f;
+      const dBL = isFinite(this._bufL[k])
+        ? Math.max(this._bufL[k], dbFloor)
+        : dbFloor;
+      const dBR = isFinite(this._bufR[k])
+        ? Math.max(this._bufR[k], dbFloor)
+        : dbFloor;
+      const lLin = Math.pow(10, dBL / 20);
+      const rLin = Math.pow(10, dBR / 20);
+      const oL = g.ll * lLin + g.rl * rLin;
+      const oR = g.lr * lLin + g.rr * rLin;
+      const pLin = Math.sqrt(oL * oL + oR * oR) / Math.SQRT2 + 1e-15;
+      let db = 20 * Math.log10(pLin);
+      db = Math.max(dbFloor, Math.min(dbCeil + 12, db));
+      db += spectrumTiltDbAboveFloor(f, tilt, db, dbFloor, 18);
+      srcYs[k] = Math.max(dbFloor, Math.min(dbCeil + 12, db));
+    }
+
+    const resampled = akimaResample(srcXs, srcYs, this._curveFreqs);
+    return quinticBSplineSmooth(resampled);
+  }
+
+  private _computeCqtFrame(analysers: {
+    left: AnalyserNode;
+    right: AnalyserNode;
+  }): Float32Array {
+    const fftSize = analysers.left.fftSize;
+    const sampleRate = analysers.left.context.sampleRate;
+    const numBins = this._analyzeSettingsService.liveCqtBins;
+
+    if (this._timeBufL.length !== fftSize) {
+      this._timeBufL = new Float32Array(fftSize);
+      this._timeBufR = new Float32Array(fftSize);
+      this._timeMixL = new Float32Array(fftSize);
+      this._timeMixR = new Float32Array(fftSize);
+      this._resetBallistics();
+    }
+
+    const cqtCfg: CqtConfig = {
+      numBins,
+      sampleRate,
+      bufferLength: fftSize,
+      freqMin: SpectralAnalyzerComponent._cqtFreqMin,
+      freqMax: sampleRate / 2,
+    };
+    if (!cqtCacheValid(this._cqtCache, cqtCfg)) {
+      this._cqtCache = buildCqtCache(cqtCfg);
+      this._cqtDbBuf = new Float32Array(numBins);
+    }
+
+    analysers.left.getFloatTimeDomainData(this._timeBufL);
+    analysers.right.getFloatTimeDomainData(this._timeBufR);
+
+    applyMonitoringToTimeDomain(
+      this._analyzeSettingsService.liveMonitoringMode,
+      this._timeBufL,
+      this._timeBufR,
+      this._timeMixL,
+      this._timeMixR,
+    );
+
+    for (let i = 0; i < fftSize; i++) {
+      const l = this._timeMixL[i];
+      const r = this._timeMixR[i];
+      this._timeMixL[i] = Math.sqrt(l * l + r * r) / Math.SQRT2;
+    }
+
+    goertzelCqt(this._timeMixL, this._cqtCache, this._cqtDbBuf);
+
+    // Store CQT bin frequencies as the curve x-positions
+    this._curveFreqs = this._cqtCache!.freqs;
+    // Return raw CQT dB values directly — no resampling
+    return this._cqtDbBuf;
+  }
+
   private _draw() {
     const analysers = this._playerService.getAnalysers();
     const playing = this._playerService.isPlaying;
+
+    const isCqt = this._analyzeSettingsService.liveSpectrumMode === "cqt";
+    const sampleRate = this._playerService.sampleRate;
+    this._configureAxis(isCqt, sampleRate);
 
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.max(1, Math.floor(this._container.clientWidth));
@@ -173,7 +378,7 @@ export default class SpectralAnalyzerComponent extends Component {
     const padL = 28 * dpr;
     const padB = 16 * dpr;
     const padT = 6 * dpr;
-    const padR = 4 * dpr;
+    const padR = 14 * dpr;
     const drawW = w - padL - padR;
     const drawH = h - padB - padT;
 
@@ -186,7 +391,10 @@ export default class SpectralAnalyzerComponent extends Component {
       return;
     }
 
-    const freqToX = (f: number) => freqToCanvasX(f, padL, drawW);
+    const axMin = this._axisMin;
+    const axMax = this._axisMax;
+    const freqToX = (f: number) =>
+      freqToCanvasXParam(f, padL, drawW, axMin, axMax);
     const dbToY = (db: number) =>
       padT + (1 - (db - dbFloor) / (dbCeil - dbFloor)) * drawH;
 
@@ -201,7 +409,11 @@ export default class SpectralAnalyzerComponent extends Component {
       ctx.stroke();
     }
 
-    for (const f of spectrumFreqTicks) {
+    const ticks = isCqt
+      ? cqtSpectrumFreqTicksForSr(sampleRate)
+      : fftSpectrumFreqTicksForSr(sampleRate);
+
+    for (const f of ticks) {
       const x = freqToX(f);
       ctx.beginPath();
       ctx.moveTo(x, padT);
@@ -222,9 +434,11 @@ export default class SpectralAnalyzerComponent extends Component {
       );
     }
 
-    ctx.textAlign = "center";
-    for (const f of spectrumFreqTicks) {
+    for (let fi = 0; fi < ticks.length; fi++) {
+      const f = ticks[fi];
       const label = formatFreqTickLabel(f);
+      ctx.textAlign =
+        fi === 0 ? "left" : fi === ticks.length - 1 ? "right" : "center";
       ctx.fillText(label, freqToX(f), padT + drawH + 11 * dpr);
     }
 
@@ -237,19 +451,22 @@ export default class SpectralAnalyzerComponent extends Component {
 
     const drawSpectrumCurves = () => {
       const bottomY = padT + drawH;
+      const nPts = this._numPoints;
+      const cFreqs = this._curveFreqs;
+      if (nPts < 2 || cFreqs.length < nPts) {
+        return;
+      }
 
       const rmsGradient = ctx.createLinearGradient(0, padT, 0, padT + drawH);
       rmsGradient.addColorStop(0, "rgba(0,180,216,0.55)");
       rmsGradient.addColorStop(1, "rgba(0,100,160,0.12)");
       ctx.fillStyle = rmsGradient;
       ctx.beginPath();
-      ctx.moveTo(freqToX(logFreqs[0]), bottomY);
-      for (let i = 0; i < logPoints; i++) {
-        const x = freqToX(logFreqs[i]);
-        const y = dbToY(clampDb(this._emaRms[i]));
-        ctx.lineTo(x, y);
+      ctx.moveTo(freqToX(cFreqs[0]), bottomY);
+      for (let i = 0; i < nPts; i++) {
+        ctx.lineTo(freqToX(cFreqs[i]), dbToY(clampDb(this._emaRms[i])));
       }
-      ctx.lineTo(freqToX(logFreqs[logPoints - 1]), bottomY);
+      ctx.lineTo(freqToX(cFreqs[nPts - 1]), bottomY);
       ctx.closePath();
       ctx.fill();
 
@@ -257,8 +474,8 @@ export default class SpectralAnalyzerComponent extends Component {
       ctx.lineWidth = 1.25 * dpr;
       ctx.lineJoin = "round";
       ctx.beginPath();
-      for (let i = 0; i < logPoints; i++) {
-        const x = freqToX(logFreqs[i]);
+      for (let i = 0; i < nPts; i++) {
+        const x = freqToX(cFreqs[i]);
         const y = dbToY(clampDb(this._emaPeakDisplay[i]));
         if (i === 0) {
           ctx.moveTo(x, y);
@@ -270,58 +487,12 @@ export default class SpectralAnalyzerComponent extends Component {
     };
 
     if (analysers) {
-      const fftSize = analysers.left.fftSize;
-      if (this._bufL.length !== fftSize / 2) {
-        this._bufL = new Float32Array(fftSize / 2);
-        this._bufR = new Float32Array(fftSize / 2);
-        this._emaPeakLogical = new Float32Array(logPoints);
-        this._emaPeakDisplay = new Float32Array(logPoints);
-        this._peakSpatialScratch = new Float32Array(logPoints);
-        this._emaRms = new Float32Array(logPoints);
-        this._peakHoldUntilMs = new Float64Array(logPoints);
-        this._emaPeakLogical.fill(dbFloor);
-        this._emaPeakDisplay.fill(dbFloor);
-        this._emaRms.fill(dbFloor);
-        this._peakHoldUntilMs.fill(0);
-      }
-
       if (playing) {
-        analysers.left.getFloatFrequencyData(this._bufL);
-        analysers.right.getFloatFrequencyData(this._bufR);
+        const inst = isCqt
+          ? this._computeCqtFrame(analysers)
+          : this._computeFftFrame(analysers);
 
-        const sampleRate = analysers.left.context.sampleRate;
-        const binCount = this._bufL.length;
-        const binHz = sampleRate / fftSize;
-        const g = monitoringGainsForMode(
-          this._analyzeSettingsService.liveMonitoringMode,
-        );
-        const tilt = this._analyzeSettingsService.liveSpectrumTiltDbPerOct;
-
-        const srcXs = new Float64Array(binCount);
-        const srcYs = new Float64Array(binCount);
-        for (let k = 0; k < binCount; k++) {
-          const f = (k + 0.5) * binHz;
-          srcXs[k] = f;
-          const dBL = isFinite(this._bufL[k])
-            ? Math.max(this._bufL[k], dbFloor)
-            : dbFloor;
-          const dBR = isFinite(this._bufR[k])
-            ? Math.max(this._bufR[k], dbFloor)
-            : dbFloor;
-          const lLin = Math.pow(10, dBL / 20);
-          const rLin = Math.pow(10, dBR / 20);
-          const oL = g.ll * lLin + g.rl * rLin;
-          const oR = g.lr * lLin + g.rr * rLin;
-          const pLin = Math.sqrt(oL * oL + oR * oR) / Math.SQRT2 + 1e-15;
-          let db = 20 * Math.log10(pLin);
-          db = Math.max(dbFloor, Math.min(dbCeil + 12, db));
-          db += spectrumTiltDbAboveFloor(f, tilt, db, dbFloor, 18);
-          srcYs[k] = Math.max(dbFloor, Math.min(dbCeil + 12, db));
-        }
-
-        const resampled = akimaResample(srcXs, srcYs, logFreqs);
-        const inst = quinticBSplineSmooth(resampled);
-
+        const nPts = this._numPoints;
         const decay = emaDecayFromReleaseDbPerSec(
           this._analyzeSettingsService.liveSpectrumReleaseDbPerSec,
         );
@@ -333,7 +504,7 @@ export default class SpectralAnalyzerComponent extends Component {
         const nowMs =
           typeof performance !== "undefined" ? performance.now() : 0;
 
-        for (let i = 0; i < logPoints; i++) {
+        for (let i = 0; i < nPts; i++) {
           const v = clampDb(inst[i]);
 
           const pk = this._emaPeakLogical[i];
@@ -351,7 +522,7 @@ export default class SpectralAnalyzerComponent extends Component {
           this._emaRms[i] = decay * this._emaRms[i] + (1 - decay) * v;
         }
 
-        for (let i = 0; i < logPoints; i++) {
+        for (let i = 0; i < nPts; i++) {
           this._emaPeakDisplay[i] = stepSpectralPeakDisplay(
             this._emaPeakLogical[i],
             this._emaPeakDisplay[i],
@@ -361,9 +532,9 @@ export default class SpectralAnalyzerComponent extends Component {
         smoothPeakDisplayAlongBinsInto(
           this._emaPeakDisplay,
           this._peakSpatialScratch,
-          logPoints,
+          nPts,
         );
-        this._emaPeakDisplay.set(this._peakSpatialScratch);
+        this._emaPeakDisplay.set(this._peakSpatialScratch.subarray(0, nPts));
       }
 
       drawSpectrumCurves();
@@ -385,12 +556,23 @@ export default class SpectralAnalyzerComponent extends Component {
       ctx.stroke();
       ctx.restore();
 
-      const hz = hzFromCanvasX(mx, padL, drawW);
+      const hz = hzFromCanvasXParam(
+        mx,
+        padL,
+        drawW,
+        this._axisMin,
+        this._axisMax,
+      );
       const dbY = dbFromCanvasY(my, padT, drawH);
       let pkStr = "—";
       let rmStr = "—";
-      if (analysers && this._emaPeakDisplay.length >= 2) {
-        const li = logIndexFromHz(hz);
+      if (analysers && this._numPoints >= 2) {
+        const li = logIndexFromHzParam(
+          hz,
+          this._axisMin,
+          this._axisMax,
+          this._numPoints,
+        );
         pkStr = lerpF32(this._emaPeakDisplay, li, dbFloor).toFixed(1);
         rmStr = lerpF32(this._emaRms, li, dbFloor).toFixed(1);
       }

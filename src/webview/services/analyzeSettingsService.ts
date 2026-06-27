@@ -872,6 +872,37 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
+  private _liveSpectrumMode: "fft" | "cqt" = "fft";
+  public get liveSpectrumMode(): "fft" | "cqt" {
+    return this._liveSpectrumMode;
+  }
+  public set liveSpectrumMode(value: "fft" | "cqt") {
+    const allowed: ("fft" | "cqt")[] = ["fft", "cqt"];
+    this._liveSpectrumMode = allowed.includes(value) ? value : "fft";
+    this.dispatchEvent(
+      new CustomEvent(EventType.AS_UPDATE_LIVE_SPECTRUM_MODE, {
+        detail: { value: this._liveSpectrumMode },
+      }),
+    );
+  }
+
+  private static readonly liveCqtBinsValues = [48, 96, 192, 300] as const;
+  private _liveCqtBins: 48 | 96 | 192 | 300 = 96;
+  public get liveCqtBins(): 48 | 96 | 192 | 300 {
+    return this._liveCqtBins;
+  }
+  public set liveCqtBins(value: number) {
+    const valid = AnalyzeSettingsService.liveCqtBinsValues.includes(
+      value as 48 | 96 | 192 | 300,
+    );
+    this._liveCqtBins = valid ? (value as 48 | 96 | 192 | 300) : 96;
+    this.dispatchEvent(
+      new CustomEvent(EventType.AS_UPDATE_LIVE_CQT_BINS, {
+        detail: { value: this._liveCqtBins },
+      }),
+    );
+  }
+
   private _liveMonitoringMode: LiveMonitoringMode = "lr";
   public get liveMonitoringMode(): LiveMonitoringMode {
     return this._liveMonitoringMode;
@@ -1202,6 +1233,14 @@ export default class AnalyzeSettingsService extends Service {
       setting.liveSpectrumTiltDbPerOct =
         defaultSetting.liveSpectrumTiltDbPerOct;
     }
+    if (defaultSetting.liveSpectrumMode !== undefined) {
+      setting.liveSpectrumMode = defaultSetting.liveSpectrumMode as
+        | "fft"
+        | "cqt";
+    }
+    if (defaultSetting.liveCqtBins !== undefined) {
+      setting.liveCqtBins = defaultSetting.liveCqtBins as number;
+    }
     if (defaultSetting.liveMonitoringMode !== undefined) {
       setting.liveMonitoringMode = defaultSetting.liveMonitoringMode;
     }
@@ -1359,6 +1398,8 @@ export default class AnalyzeSettingsService extends Service {
       livePolarSampleFillBrightnessPct: this.livePolarSampleFillBrightnessPct,
       liveSoundFieldMode: this.liveSoundFieldMode,
       liveSpectrumTiltDbPerOct: this.liveSpectrumTiltDbPerOct,
+      liveSpectrumMode: this.liveSpectrumMode,
+      liveCqtBins: this.liveCqtBins,
       liveMonitoringMode: this.liveMonitoringMode,
       monitorBandEdgesHz: [...this._monitorBandEdgesHz],
       monitorBandSoloMask: this._monitorBandSoloMask,

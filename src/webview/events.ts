@@ -77,6 +77,11 @@ export class EventType {
     "as-update-live-spectrum-tilt";
   public static readonly AS_UPDATE_LIVE_SPECTRUM_PEAK_HOLD =
     "as-update-live-spectrum-peak-hold";
+  /** `detail: { value: "fft" | "cqt" }` — live spectrum analysis mode. */
+  public static readonly AS_UPDATE_LIVE_SPECTRUM_MODE =
+    "as-update-live-spectrum-mode";
+  /** `detail: { value: number }` — CQT bin count (48/96/192/300). */
+  public static readonly AS_UPDATE_LIVE_CQT_BINS = "as-update-live-cqt-bins";
   public static readonly AS_UPDATE_LIVE_MONITORING_MODE =
     "as-update-live-monitoring-mode";
   /** `detail: { value: readonly number[] }` — ascending Hz edges `[e0…e5]`, bands are `[eᵢ,eᵢ₊₁]`. */
