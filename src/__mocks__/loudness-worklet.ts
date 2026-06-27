@@ -16,6 +16,9 @@ export interface LoudnessSnapshot {
 export class LoudnessWorkletNode {
   port = { onmessage: null as ((e: MessageEvent) => void) | null };
   constructor(_ctx: BaseAudioContext, _opts?: unknown) {}
+  connect(destination?: unknown) {
+    return destination;
+  }
   disconnect() {}
   static async loadModule(_ctx: BaseAudioContext): Promise<void> {}
 }

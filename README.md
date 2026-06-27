@@ -31,6 +31,11 @@
 
 ---
 
+## What's new in v0.4.0
+
+- **CQT spectrum analyzer** — a PAZ-style Constant-Q spectrum mode in the Live Spec pane: variable-Q psychoacoustic bands (Q≈3.85–6.97 below 250 Hz, ≈10 above), left-edge rendering, low-freq trapezoids + smooth highs, and a max-hold Peak Hold envelope (double-click to clear)
+- **Deep dive** — read the story behind it: [English](doc/blog/cqt-spectrum-analyzer.en.md) · [中文](doc/blog/cqt-spectrum-analyzer.md) — how we reverse-engineered PAZ Analyzer's rendering and adapted it to the webview
+
 ## What's new in v0.3.0
 
 - **Headphone curve correction** — AutoEq PEQ compensation in the Transport FAB Monitor panel; search models, visualize curves, bypass or apply in real time
@@ -468,6 +473,7 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [x] Edit & Export panel surfaces + ear-eq segmented controls (channels, listen, destination)
 - [x] Loudness multi-strip layout — LUFS + F0 (PitchYinFFT) + Onset flux (Essentia)
 - [x] Monitoring curve for flat frequency response (AutoEq PEQ, live playback)
+- [x] CQT spectrum analyzer (PAZ-style variable-Q, left-edge rendering, Peak Hold) — deep dive: [English](doc/blog/cqt-spectrum-analyzer.en.md) · [中文](doc/blog/cqt-spectrum-analyzer.md)
 
 ### Planned
 

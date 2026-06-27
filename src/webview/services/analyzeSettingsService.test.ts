@@ -654,12 +654,12 @@ describe("analyzeSettingsService", () => {
     expect(as.toCachedDefaults().showLevelMeter).toBe(true);
   });
 
-  test("hearingProtection defaults off with +6 dBFS peak limit", () => {
+  test("hearingProtection defaults on with +6 dBFS peak limit", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    expect(as.hearingProtectionEnabled).toBe(false);
+    expect(as.hearingProtectionEnabled).toBe(true);
     expect(as.hearingProtectionPeakDbFs).toBe(6);
   });
 
@@ -753,16 +753,16 @@ describe("analyzeSettingsService", () => {
     expect(as.toCachedDefaults().liveAnalysisFftSize).toBe(4096);
   });
 
-  test("live release defaults to 8 dB/s", () => {
+  test("live release defaults to 15 dB/s", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    expect(as.liveSpectrumReleaseDbPerSec).toBe(8);
-    expect(as.livePolarFieldReleaseDbPerSec).toBe(8);
-    expect(as.liveLevelMeterReleaseDbPerSec).toBe(8);
+    expect(as.liveSpectrumReleaseDbPerSec).toBe(15);
+    expect(as.livePolarFieldReleaseDbPerSec).toBe(15);
+    expect(as.liveLevelMeterReleaseDbPerSec).toBe(15);
     expect(as.livePolarLevelGatePct).toBe(28);
-    expect(as.livePolarSampleRadiusGamma).toBe(1);
+    expect(as.livePolarSampleRadiusGamma).toBe(0.5);
     expect(as.livePolarSampleFillBrightnessPct).toBe(10);
   });
 
@@ -859,12 +859,12 @@ describe("analyzeSettingsService", () => {
     expect(detail.value).toBe(1);
   });
 
-  test("liveSoundFieldMode defaults to polarLevel", () => {
+  test("liveSoundFieldMode defaults to polarSample", () => {
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    expect(as.liveSoundFieldMode).toBe("polarLevel");
+    expect(as.liveSoundFieldMode).toBe("polarSample");
   });
 
   test("liveSpectrumTiltDbPerOct should be 0 by default", () => {

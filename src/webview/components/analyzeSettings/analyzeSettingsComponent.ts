@@ -186,13 +186,12 @@ export default class AnalyzeSettingsComponent extends Component {
               </div>
             </div>
             <div class="panelRow">
-              <span class="panelRow__label">CQT bins</span>
+              <span class="panelRow__label">CQT LF res</span>
               <div class="panelRow__control">
-                <select class="js-analyzeSetting-liveCqtBins">
-                  <option value="48">48</option>
-                  <option value="96">96</option>
-                  <option value="192">192</option>
-                  <option value="300">300</option>
+                <select class="js-analyzeSetting-liveCqtLfRes">
+                  <option value="40">40 Hz</option>
+                  <option value="20">20 Hz</option>
+                  <option value="10">10 Hz</option>
                 </select>
               </div>
             </div>
@@ -866,22 +865,18 @@ export default class AnalyzeSettingsComponent extends Component {
       liveSpectrumModeSelect.value = String(e.detail.value);
     }) as EventListener);
 
-    // CQT bins
-    const liveCqtBinsSelect = <HTMLSelectElement>(
-      this._componentRoot.querySelector(".js-analyzeSetting-liveCqtBins")
+    // CQT LF resolution
+    const liveCqtLfResSelect = <HTMLSelectElement>(
+      this._componentRoot.querySelector(".js-analyzeSetting-liveCqtLfRes")
     );
-    liveCqtBinsSelect.value = String(settings.liveCqtBins);
-    this._addEventlistener(liveCqtBinsSelect, EventType.CHANGE, () => {
-      settings.liveCqtBins = Number(liveCqtBinsSelect.value) as
-        | 48
-        | 96
-        | 192
-        | 300;
+    liveCqtLfResSelect.value = String(settings.liveCqtLfRes);
+    this._addEventlistener(liveCqtLfResSelect, EventType.CHANGE, () => {
+      settings.liveCqtLfRes = Number(liveCqtLfResSelect.value) as 40 | 20 | 10;
     });
-    this._addEventlistener(settings, EventType.AS_UPDATE_LIVE_CQT_BINS, ((
+    this._addEventlistener(settings, EventType.AS_UPDATE_LIVE_CQT_LF_RES, ((
       e: CustomEvent,
     ) => {
-      liveCqtBinsSelect.value = String(e.detail.value);
+      liveCqtLfResSelect.value = String(e.detail.value);
     }) as EventListener);
   }
 

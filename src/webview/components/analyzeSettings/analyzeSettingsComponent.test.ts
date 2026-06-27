@@ -415,8 +415,8 @@ describe("analyzeSettingsComponent", () => {
       const label = document.querySelector(
         ".js-analyzeSetting-liveSpectrumReleaseDbPerSecLabel",
       );
-      expect(range.value).toBe("8");
-      expect(label?.textContent).toBe("8.0 dB/s");
+      expect(range.value).toBe("15");
+      expect(label?.textContent).toBe("15.0 dB/s");
       range.value = "12";
       range.dispatchEvent(new Event(EventType.INPUT));
       expect(analyzeSettingsService.liveSpectrumReleaseDbPerSec).toBe(12);

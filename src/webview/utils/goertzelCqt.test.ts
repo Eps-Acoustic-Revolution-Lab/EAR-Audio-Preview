@@ -1,4 +1,12 @@
-import { buildCqtCache, cqtCacheValid, goertzelCqt } from "./goertzelCqt";
+import {
+  buildCqtCache,
+  cqtCacheValid,
+  goertzelCqt,
+  buildPazBandLayout,
+  buildCqtCacheFromLayout,
+  pazCacheValid,
+  CQT_AXIS_START_HZ,
+} from "./goertzelCqt";
 import type { CqtConfig } from "./goertzelCqt";
 
 const baseCfg: CqtConfig = {
@@ -119,5 +127,103 @@ describe("goertzelCqt", () => {
     for (let k = 0; k < baseCfg.numBins; k++) {
       expect(outDb[k]).toBeLessThan(-200);
     }
+  });
+});
+
+describe("buildPazBandLayout", () => {
+  test("40 Hz LF res produces expected bin count for 44100 Hz", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    expect(layout.numBins).toBeGreaterThanOrEqual(50);
+    expect(layout.numBins).toBeLessThanOrEqual(60);
+    expect(layout.freqs[0]).toBeCloseTo(40, 0);
+    expect(layout.freqs[layout.numBins - 1]).toBeCloseTo(22050, -1);
+    expect(layout.qPerBin[0]).toBeCloseTo(3.85, 1);
+    expect(layout.qPerBin[layout.numBins - 1]).toBeCloseTo(10, 0);
+    expect(layout.leftEdges.length).toBe(layout.numBins);
+  });
+
+  test("leftEdges[0] equals CQT_AXIS_START_HZ (6)", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    expect(layout.leftEdges[0]).toBe(CQT_AXIS_START_HZ);
+  });
+
+  test("leftEdges[k] = sqrt(freqs[k-1] * freqs[k]) for k > 0", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    for (let k = 1; k < layout.numBins; k++) {
+      const expected = Math.sqrt(layout.freqs[k - 1] * layout.freqs[k]);
+      expect(layout.leftEdges[k]).toBeCloseTo(expected, 6);
+    }
+  });
+
+  test("leftEdges are monotonically increasing for all LF res values", () => {
+    for (const lfRes of [40, 20, 10]) {
+      const layout = buildPazBandLayout(lfRes, 22050);
+      for (let k = 1; k < layout.numBins; k++) {
+        expect(layout.leftEdges[k]).toBeGreaterThan(layout.leftEdges[k - 1]);
+      }
+    }
+  });
+
+  test("10 Hz LF res produces more bins than 40 Hz", () => {
+    const lo = buildPazBandLayout(40, 22050);
+    const hi = buildPazBandLayout(10, 22050);
+    expect(hi.numBins).toBeGreaterThan(lo.numBins);
+    expect(hi.freqs[0]).toBeCloseTo(10, 0);
+  });
+
+  test("frequencies are monotonically increasing across crossover", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    for (let k = 1; k < layout.numBins; k++) {
+      expect(layout.freqs[k]).toBeGreaterThan(layout.freqs[k - 1]);
+    }
+  });
+});
+
+describe("buildCqtCacheFromLayout", () => {
+  test("produces valid cache with variable window lengths", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    const cache = buildCqtCacheFromLayout(layout, 44100, 32768);
+    expect(cache.windowLengths.length).toBe(layout.numBins);
+    const lfWin = cache.windowLengths[0];
+    const hfWin = cache.windowLengths[layout.numBins - 1];
+    expect(lfWin).toBeGreaterThan(hfWin);
+  });
+
+  test("Goertzel with PAZ layout detects 440 Hz sine", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    const cache = buildCqtCacheFromLayout(layout, 44100, 32768);
+    const buf = new Float32Array(32768);
+    for (let i = 0; i < buf.length; i++) {
+      buf[i] = Math.sin((2 * Math.PI * 440 * i) / 44100);
+    }
+    const outDb = new Float32Array(layout.numBins);
+    goertzelCqt(buf, cache, outDb);
+    let peakIdx = 0;
+    for (let k = 1; k < layout.numBins; k++) {
+      if (outDb[k] > outDb[peakIdx]) {
+        peakIdx = k;
+      }
+    }
+    expect(layout.freqs[peakIdx]).toBeGreaterThan(400);
+    expect(layout.freqs[peakIdx]).toBeLessThan(480);
+  });
+});
+
+describe("pazCacheValid", () => {
+  test("returns true for matching layout and params", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    const cache = buildCqtCacheFromLayout(layout, 44100, 32768);
+    expect(pazCacheValid(cache, layout, 44100, 32768)).toBe(true);
+  });
+
+  test("returns false when sampleRate changes", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    const cache = buildCqtCacheFromLayout(layout, 44100, 32768);
+    expect(pazCacheValid(cache, layout, 48000, 32768)).toBe(false);
+  });
+
+  test("returns false for null cache", () => {
+    const layout = buildPazBandLayout(40, 22050);
+    expect(pazCacheValid(null, layout, 44100, 32768)).toBe(false);
   });
 });

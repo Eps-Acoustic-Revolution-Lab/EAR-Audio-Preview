@@ -102,8 +102,8 @@ describe("stereoPolarField", () => {
     expect(polarSampleDisplayRadius(0.5, 0.5)).toBeGreaterThan(0.5);
   });
 
-  test("polarSampleDisplayRadius gamma above 1 compresses radius", () => {
-    expect(polarSampleDisplayRadius(0.9, 1.5)).toBeLessThan(0.9);
+  test("polarSampleDisplayRadius gamma below 1 expands radius", () => {
+    expect(polarSampleDisplayRadius(0.9, 0.5)).toBeGreaterThan(0.9);
   });
 
   test("polarSampleFillAlpha boosts alpha by brightness pct", () => {

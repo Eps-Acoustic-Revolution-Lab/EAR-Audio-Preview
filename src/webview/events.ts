@@ -80,8 +80,9 @@ export class EventType {
   /** `detail: { value: "fft" | "cqt" }` — live spectrum analysis mode. */
   public static readonly AS_UPDATE_LIVE_SPECTRUM_MODE =
     "as-update-live-spectrum-mode";
-  /** `detail: { value: number }` — CQT bin count (48/96/192/300). */
-  public static readonly AS_UPDATE_LIVE_CQT_BINS = "as-update-live-cqt-bins";
+  /** `detail: { value: 40 | 20 | 10 }` — CQT low-frequency resolution (Hz). */
+  public static readonly AS_UPDATE_LIVE_CQT_LF_RES =
+    "as-update-live-cqt-lf-res";
   public static readonly AS_UPDATE_LIVE_MONITORING_MODE =
     "as-update-live-monitoring-mode";
   /** `detail: { value: readonly number[] }` — ascending Hz edges `[e0…e5]`, bands are `[eᵢ,eᵢ₊₁]`. */

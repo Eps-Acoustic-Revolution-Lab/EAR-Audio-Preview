@@ -4,6 +4,27 @@ All notable changes to **EAR Audio Preview** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.4.0] - 2026-06-28
+
+### Added
+
+- **CQT spectrum analyzer (PAZ-style)** — Constant-Q live spectrum in the Live Spec pane, reverse-engineered from Waves PAZ Analyzer. Per-bin Goertzel DFT with a variable-Q psychoacoustic model (Q ≈ 3.85–6.97 below 250 Hz, ≈ 10 above) so low bands stay readable and high bands stay smooth.
+- **Left-edge rendering** — each band is drawn at its geometric-mean left edge `sqrt(center[k-1] × center[k])` with straight-line connections; the axis is pinned to 6 Hz and the last band extends to Nyquist. This reproduces PAZ's flat-top-at-low / smooth-at-high curve shape and puts peaks where PAZ puts them.
+- **Peak Hold** — max-hold envelope over the live curve with a configurable hold time; double-click the spectrum to reset.
+- **Deep-dive blog** — bilingual write-up of the reverse-engineering work: [English](doc/blog/cqt-spectrum-analyzer.en.md) · [中文](doc/blog/cqt-spectrum-analyzer.md), linked from the README.
+- **Knowledge base** — `doc/knowledge-base/paz-spectrum-rendering.md` documenting the CQT model, left-edge math, and axis conventions.
+
+### Changed
+
+- **Setting `liveCqtBins` → `liveCqtLfRes`** — the CQT control now picks low-frequency resolution (40 / 20 / 10 Hz, default 40) instead of a fixed bin count. Lower values add more low-end detail at higher CPU cost.
+- **Live spectrum release default** 8 → 15 dB/s — faster decay reads better on music; the old 35% fallback path was dropped.
+- **Hearing protection now defaults on** — playback starts with the peak-dBFS mute guard active.
+- **Sound field defaults** — default mode is now `polarSample`; polar sample radius gamma default 1 → 0.5 (range tightened to 0.1–1.0).
+
+### Notes
+
+- The CQT analyzer runs live only; STFT/offline spectrogram is unchanged.
+
 ## [0.3.0] - 2026-06-18
 
 ### Added

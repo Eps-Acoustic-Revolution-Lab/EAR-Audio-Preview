@@ -654,7 +654,7 @@ export default class AnalyzeSettingsService extends Service {
     return Math.round(Math.max(0, Math.min(100, 100 * t)));
   }
 
-  private _liveSpectrumReleaseDbPerSec: number = liveReleaseDbpsDefault;
+  private _liveSpectrumReleaseDbPerSec: number = 15;
   public get liveSpectrumReleaseDbPerSec(): number {
     return this._liveSpectrumReleaseDbPerSec;
   }
@@ -680,7 +680,7 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private _livePolarFieldReleaseDbPerSec: number = liveReleaseDbpsDefault;
+  private _livePolarFieldReleaseDbPerSec: number = 15;
   public get livePolarFieldReleaseDbPerSec(): number {
     return this._livePolarFieldReleaseDbPerSec;
   }
@@ -710,7 +710,7 @@ export default class AnalyzeSettingsService extends Service {
   public static readonly HEARING_PROTECTION_PEAK_DBFS_MIN = -12;
   public static readonly HEARING_PROTECTION_PEAK_DBFS_MAX = 12;
 
-  private _hearingProtectionEnabled: boolean = false;
+  private _hearingProtectionEnabled: boolean = true;
   public get hearingProtectionEnabled(): boolean {
     return this._hearingProtectionEnabled;
   }
@@ -760,7 +760,7 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private _livePolarSampleRadiusGamma: number = 1;
+  private _livePolarSampleRadiusGamma: number = 0.5;
   public get livePolarSampleRadiusGamma(): number {
     return this._livePolarSampleRadiusGamma;
   }
@@ -839,7 +839,7 @@ export default class AnalyzeSettingsService extends Service {
   }
 
   private _liveSoundFieldMode: "polarSample" | "polarLevel" | "lissajous" =
-    "polarLevel";
+    "polarSample";
   public get liveSoundFieldMode(): "polarSample" | "polarLevel" | "lissajous" {
     return this._liveSoundFieldMode;
   }
@@ -847,7 +847,7 @@ export default class AnalyzeSettingsService extends Service {
     value: "polarSample" | "polarLevel" | "lissajous",
   ) {
     const allowed = ["polarSample", "polarLevel", "lissajous"] as const;
-    this._liveSoundFieldMode = allowed.includes(value) ? value : "polarLevel";
+    this._liveSoundFieldMode = allowed.includes(value) ? value : "polarSample";
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_LIVE_SOUND_FIELD_MODE, {
         detail: { value: this._liveSoundFieldMode },
@@ -886,19 +886,19 @@ export default class AnalyzeSettingsService extends Service {
     );
   }
 
-  private static readonly liveCqtBinsValues = [48, 96, 192, 300] as const;
-  private _liveCqtBins: 48 | 96 | 192 | 300 = 96;
-  public get liveCqtBins(): 48 | 96 | 192 | 300 {
-    return this._liveCqtBins;
+  private static readonly _liveCqtLfResValues = [40, 20, 10] as const;
+  private _liveCqtLfRes: 40 | 20 | 10 = 40;
+  public get liveCqtLfRes(): 40 | 20 | 10 {
+    return this._liveCqtLfRes;
   }
-  public set liveCqtBins(value: number) {
-    const valid = AnalyzeSettingsService.liveCqtBinsValues.includes(
-      value as 48 | 96 | 192 | 300,
+  public set liveCqtLfRes(value: number) {
+    const valid = AnalyzeSettingsService._liveCqtLfResValues.includes(
+      value as 40 | 20 | 10,
     );
-    this._liveCqtBins = valid ? (value as 48 | 96 | 192 | 300) : 96;
+    this._liveCqtLfRes = valid ? (value as 40 | 20 | 10) : 40;
     this.dispatchEvent(
-      new CustomEvent(EventType.AS_UPDATE_LIVE_CQT_BINS, {
-        detail: { value: this._liveCqtBins },
+      new CustomEvent(EventType.AS_UPDATE_LIVE_CQT_LF_RES, {
+        detail: { value: this._liveCqtLfRes },
       }),
     );
   }
@@ -1205,7 +1205,7 @@ export default class AnalyzeSettingsService extends Service {
       defaultSetting.liveLevelMeterSmoothingPct ?? legacySmooth,
     );
     setting.hearingProtectionEnabled =
-      defaultSetting.hearingProtectionEnabled === true;
+      defaultSetting.hearingProtectionEnabled !== false;
     setting.hearingProtectionPeakDbFs = getValueInRange(
       defaultSetting.hearingProtectionPeakDbFs ??
         AnalyzeSettingsService.HEARING_PROTECTION_PEAK_DBFS_DEFAULT,
@@ -1220,7 +1220,7 @@ export default class AnalyzeSettingsService extends Service {
       28,
     );
     setting.livePolarSampleRadiusGamma = clampPolarSampleRadiusGamma(
-      defaultSetting.livePolarSampleRadiusGamma ?? 1,
+      defaultSetting.livePolarSampleRadiusGamma ?? 0.5,
     );
     setting.livePolarSampleFillBrightnessPct =
       clampPolarSampleFillBrightnessPct(
@@ -1238,8 +1238,8 @@ export default class AnalyzeSettingsService extends Service {
         | "fft"
         | "cqt";
     }
-    if (defaultSetting.liveCqtBins !== undefined) {
-      setting.liveCqtBins = defaultSetting.liveCqtBins as number;
+    if (defaultSetting.liveCqtLfRes !== undefined) {
+      setting.liveCqtLfRes = defaultSetting.liveCqtLfRes as number;
     }
     if (defaultSetting.liveMonitoringMode !== undefined) {
       setting.liveMonitoringMode = defaultSetting.liveMonitoringMode;
@@ -1399,7 +1399,7 @@ export default class AnalyzeSettingsService extends Service {
       liveSoundFieldMode: this.liveSoundFieldMode,
       liveSpectrumTiltDbPerOct: this.liveSpectrumTiltDbPerOct,
       liveSpectrumMode: this.liveSpectrumMode,
-      liveCqtBins: this.liveCqtBins,
+      liveCqtLfRes: this.liveCqtLfRes,
       liveMonitoringMode: this.liveMonitoringMode,
       monitorBandEdgesHz: [...this._monitorBandEdgesHz],
       monitorBandSoloMask: this._monitorBandSoloMask,

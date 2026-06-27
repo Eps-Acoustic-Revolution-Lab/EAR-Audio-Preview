@@ -205,7 +205,7 @@ export interface AnalyzeDefault {
    */
   liveAnalysisVisualSmoothingPct?: number;
 
-  /** Live spectrum peak/RMS release (dB/s). default: 8 */
+  /** Live spectrum peak/RMS release (dB/s). default: 15 */
   liveSpectrumReleaseDbPerSec?: number;
 
   /**
@@ -214,7 +214,7 @@ export interface AnalyzeDefault {
    */
   liveSpectrumPeakHoldSec?: number;
 
-  /** Sound-field polar / Lissajous trail release (dB/s). default: 8 */
+  /** Sound-field polar / Lissajous trail release (dB/s). default: 15 */
   livePolarFieldReleaseDbPerSec?: number;
 
   /** Level meter RMS release (dB/s). default: 8 */
@@ -222,7 +222,7 @@ export interface AnalyzeDefault {
 
   /**
    * Mute playback when level-meter sample peak exceeds
-   * {@link hearingProtectionPeakDbFs}. default: false
+   * {@link hearingProtectionPeakDbFs}. default: true
    */
   hearingProtectionEnabled?: boolean;
 
@@ -241,13 +241,13 @@ export interface AnalyzeDefault {
   /** Polar Level directional gate (% of peak, 0 = off). default: 28 */
   livePolarLevelGatePct?: number;
 
-  /** Polar Sample radial gamma (0.5–2, 1 = linear). default: 1 */
+  /** Polar Sample radial gamma (0.1–1, 0.5 = default). default: 0.5 */
   livePolarSampleRadiusGamma?: number;
 
   /** Polar Sample scatter fill brightness boost (%). default: 10 */
   livePolarSampleFillBrightnessPct?: number;
 
-  /** Sound-field vectorscope mode (Insight 2–style). default: polarLevel */
+  /** Sound-field vectorscope mode (Insight 2–style). default: polarSample */
   liveSoundFieldMode?: "polarSample" | "polarLevel" | "lissajous";
 
   /**
@@ -263,8 +263,8 @@ export interface AnalyzeDefault {
    */
   liveSpectrumMode?: "fft" | "cqt";
 
-  /** Number of frequency bins for CQT mode. 48 | 96 | 192 | 300. default: 96 */
-  liveCqtBins?: 48 | 96 | 192 | 300;
+  /** CQT low-frequency resolution (Hz). 40 | 20 | 10. default: 40 */
+  liveCqtLfRes?: 40 | 20 | 10;
 
   /**
    * Live monitoring matrix: stereo path for headphones + live meters.

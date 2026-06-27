@@ -2,7 +2,7 @@
 
 export const liveReleaseDbpsMin = 0.5;
 export const liveReleaseDbpsMax = 36;
-export const liveReleaseDbpsDefault = 8;
+export const liveReleaseDbpsDefault = 15;
 export const liveFrameRate = 60;
 
 export function clampReleaseDbPerSec(value: number): number {
@@ -31,12 +31,14 @@ export function migrateSmoothingPctToReleaseDbPerSec(pct: number): number {
 export function resolveReleaseDbPerSec(
   releaseDbPerSec: number | undefined,
   legacyPct: number | undefined,
-  fallbackPct = 35,
 ): number {
   if (releaseDbPerSec !== undefined && Number.isFinite(releaseDbPerSec)) {
     return clampReleaseDbPerSec(releaseDbPerSec);
   }
-  return migrateSmoothingPctToReleaseDbPerSec(legacyPct ?? fallbackPct);
+  if (legacyPct !== undefined) {
+    return migrateSmoothingPctToReleaseDbPerSec(legacyPct);
+  }
+  return liveReleaseDbpsDefault;
 }
 
 /** EMA coefficient per frame for amplitude ballistics at given release rate. */

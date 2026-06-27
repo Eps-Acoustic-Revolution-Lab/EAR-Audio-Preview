@@ -159,12 +159,15 @@ export function fftSpectrumFreqTicksForSr(sr: number): number[] {
   return ticks;
 }
 
-/** CQT mode ticks: ISO 266 octave centers + sr/2, bounded to [8, nyquist]. */
-export function cqtSpectrumFreqTicksForSr(sr: number): number[] {
+/** CQT mode ticks: ISO 266 octave centers + sr/2, bounded to [lfResHz, nyquist]. */
+export function cqtSpectrumFreqTicksForSr(
+  sr: number,
+  lfResHz: number = 8,
+): number[] {
   const nyquist = sr / 2;
   const base = [8, 16, 31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-  const ticks = base.filter((f) => f <= nyquist);
-  if (ticks[ticks.length - 1] !== nyquist) {
+  const ticks = base.filter((f) => f >= lfResHz && f <= nyquist);
+  if (ticks.length === 0 || ticks[ticks.length - 1] !== nyquist) {
     ticks.push(nyquist);
   }
   return ticks;

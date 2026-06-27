@@ -160,9 +160,9 @@ export function collectPolarSamplePoints(
   }
 }
 
-export const polarSampleRadiusGammaMin = 0.5;
-export const polarSampleRadiusGammaMax = 2;
-export const polarSampleRadiusGammaDefault = 1;
+export const polarSampleRadiusGammaMin = 0.1;
+export const polarSampleRadiusGammaMax = 1;
+export const polarSampleRadiusGammaDefault = 0.5;
 
 export const polarSampleFillBrightnessPctMin = 0;
 export const polarSampleFillBrightnessPctMax = 50;
