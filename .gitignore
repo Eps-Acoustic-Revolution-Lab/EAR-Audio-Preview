@@ -5,6 +5,7 @@
 .vscode-test
 .cursor
 .claude
+.qoder
 docs/*
 CLAUDE.md
 .DS_Store

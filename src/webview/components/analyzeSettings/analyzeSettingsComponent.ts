@@ -272,12 +272,6 @@ export default class AnalyzeSettingsComponent extends Component {
               </div>
             </div>
             <div class="panelRow">
-              <span class="panelRow__label">Show level meter</span>
-              <div class="panelRow__control">
-                <input class="js-analyzeSetting-showLevelMeter" type="checkbox">
-              </div>
-            </div>
-            <div class="panelRow">
               <span class="panelRow__label">Level meter release</span>
               <div class="panelRow__control panelRow__control--range">
                 <input class="js-analyzeSetting-liveLevelMeterReleaseDbPerSec" type="range" min="${liveReleaseDbpsMin}" max="${liveReleaseDbpsMax}" step="0.5">
@@ -791,21 +785,6 @@ export default class AnalyzeSettingsComponent extends Component {
         },
       );
     }
-    const showLevelMeterInput = <HTMLInputElement>(
-      this._componentRoot.querySelector(".js-analyzeSetting-showLevelMeter")
-    );
-    showLevelMeterInput.checked = settings.showLevelMeter;
-    this._addEventlistener(showLevelMeterInput, EventType.CHANGE, () => {
-      settings.showLevelMeter = showLevelMeterInput.checked;
-    });
-    this._addEventlistener(
-      settings,
-      EventType.AS_UPDATE_SHOW_LEVEL_METER,
-      (e: CustomEventInit<{ value: boolean }>) => {
-        showLevelMeterInput.checked = e.detail.value;
-      },
-    );
-
     wireReleaseSlider(
       ".js-analyzeSetting-liveLevelMeterReleaseDbPerSec",
       ".js-analyzeSetting-liveLevelMeterReleaseDbPerSecLabel",

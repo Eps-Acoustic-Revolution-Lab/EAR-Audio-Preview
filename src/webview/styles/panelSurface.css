@@ -2,9 +2,9 @@
 
 .panelSurface__title {
   margin: 0 0 1rem;
-  font-size: 1.5rem;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
 }
 
 .panelGroup {
@@ -17,11 +17,11 @@
 
 .panelGroup__title {
   margin: 0 0 0.75rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
 }
 
 .panelGroup__items {
@@ -35,12 +35,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
-  background: color-mix(
-    in srgb,
-    var(--vscode-input-background) 30%,
-    transparent
-  );
-  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface-0) 45%, transparent);
+  border-radius: var(--r-2);
 }
 
 .panelRow--stacked {
@@ -52,8 +48,8 @@
 .panelRow__label {
   flex: 0 0 38%;
   min-width: 7rem;
-  font-size: 0.875rem;
-  color: var(--vscode-foreground);
+  font-size: var(--text-md);
+  color: var(--text-primary);
   line-height: 1.4;
 }
 
@@ -69,7 +65,7 @@
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.35rem;
-  font-size: 0.875rem;
+  font-size: var(--text-md);
 }
 
 .panelRow__control--range {
@@ -81,10 +77,45 @@
   min-width: 4rem;
 }
 
+/* Recessed track slider (settings rows) */
+.panelRow input[type="range"] {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  padding: 0;
+  border-radius: var(--r-full);
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  box-shadow: var(--well-inset);
+  cursor: pointer;
+}
+
+.panelRow input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  /* center the 12px thumb on the 4px track (webkit tops-aligns by default) */
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid var(--edge-line);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+}
+
+.panelRow input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid var(--edge-line);
+}
+
 .panelRow__value {
   flex-shrink: 0;
-  font-size: 0.8125rem;
-  color: var(--vscode-descriptionForeground);
+  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
   min-width: 3.5rem;
   text-align: right;
@@ -114,14 +145,14 @@
 .panelRow__sep {
   flex-shrink: 0;
   white-space: nowrap;
-  font-size: 0.8125rem;
-  color: var(--vscode-descriptionForeground);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 .panelRow__hint {
   margin: 0;
-  font-size: 0.8125rem;
-  color: var(--vscode-descriptionForeground);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -129,12 +160,19 @@
 .panelRow input[type="text"],
 .panelRow select {
   padding: 0.25em 0.5em;
-  font-size: 0.875rem;
-  background: var(--vscode-input-background);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  color: var(--vscode-foreground);
+  font-size: var(--text-sm);
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow: var(--well-inset);
+  color: var(--text-primary);
   box-sizing: border-box;
+}
+
+.panelRow input[type="number"]:focus,
+.panelRow input[type="text"]:focus,
+.panelRow select:focus {
+  border-color: var(--accent);
 }
 
 .panelRow input[type="number"],
@@ -167,20 +205,24 @@
 
 .panelAction {
   padding: 0.35rem 0.75rem;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   cursor: pointer;
-  border-radius: 4px;
-  border: 1px solid var(--vscode-button-border, var(--vscode-panel-border));
-  background: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
+  border-radius: var(--r-2);
+  border: 1px solid var(--edge-line);
+  background: var(--surface-2);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+  color: var(--text-primary);
+  transition:
+    background var(--dur-1) var(--ease-swift),
+    color var(--dur-1) var(--ease-swift);
 }
 
 .panelAction:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
+  background: var(--surface-3);
 }
 
 .panelAction:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid var(--accent);
   outline-offset: 1px;
 }
 

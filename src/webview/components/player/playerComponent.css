@@ -39,16 +39,18 @@
   transform: translateY(-50%);
   height: 4px;
   z-index: 1;
-  background: var(--knob-track-bg, #222222);
-  border-radius: 2px;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-full);
+  box-shadow: var(--well-inset);
   overflow: hidden;
 }
 
 .progressFill {
   pointer-events: none;
-  background: var(--knob-accent, #00c3ff);
+  background: var(--accent);
   height: 100%;
-  opacity: 0.85;
-  border-radius: 2px;
+  opacity: 0.9;
+  border-radius: var(--r-full);
   transition: transform 0.05s linear;
 }

@@ -164,7 +164,6 @@ export default class TransportFabComponent extends Component {
         step: 1,
         compact: true,
         centerMode: "playPause",
-        color: "#00c3ff",
         warnColor: "#f06464",
         warnThreshold: KNOB_VOLUME_UNITY,
         externalPointer: true,

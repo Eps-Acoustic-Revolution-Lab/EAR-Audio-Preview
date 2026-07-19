@@ -17,11 +17,7 @@
 .keyboardShortcutsOverlay__backdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(
-    in srgb,
-    var(--vscode-editor-background) 60%,
-    transparent
-  );
+  background: var(--backdrop-dim);
   pointer-events: auto;
 }
 
@@ -30,11 +26,10 @@
   width: min(90vw, 600px);
   max-height: 80vh;
   padding: 2rem;
-  background: var(--vscode-editorWidget-background);
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px
-    color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-modal);
   pointer-events: auto;
   overflow-y: auto;
 }
@@ -54,9 +49,9 @@
 
 .keyboardShortcutsOverlay__title {
   margin: 0 0 1rem;
-  font-size: 1.5rem;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
 }
 
 .keyboardShortcutsOverlay__grid {
@@ -68,11 +63,11 @@
 
 .keyboardShortcutsGroup__title {
   margin: 0 0 0.75rem;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-faint);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
 }
 
 .keyboardShortcutsGroup__items {
@@ -86,38 +81,43 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
-  background: color-mix(
-    in srgb,
-    var(--vscode-input-background) 30%,
-    transparent
-  );
-  border-radius: 4px;
+  background: color-mix(in srgb, var(--surface-0) 30%, transparent);
+  border-radius: var(--r-2);
 }
 
 .keyboardShortcutsItem__keys {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
   min-width: 120px;
+  max-width: 45%;
   flex-shrink: 0;
+}
+
+.keyboardShortcutsItem__sep {
+  font-size: 0.75em;
+  color: var(--text-faint);
+  line-height: 1;
 }
 
 .keyboardShortcutsKey {
   display: inline-block;
   padding: 0.2em 0.6em;
   font-size: 0.85em;
-  font-family: var(--vscode-editor-font-family), monospace;
-  background: var(--vscode-input-background);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
+  font-family: var(--font-mono);
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-1);
   white-space: nowrap;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
 }
 
 .keyboardShortcutsItem__description {
   flex: 1;
+  min-width: 0;
   font-size: 0.875rem;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
   line-height: 1.4;
 }
 

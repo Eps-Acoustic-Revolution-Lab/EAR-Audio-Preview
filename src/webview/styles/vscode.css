@@ -45,19 +45,23 @@ code {
 }
 
 button {
-  border: none;
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
   width: 100%;
   text-align: center;
   outline: 1px solid transparent;
   outline-offset: 2px !important;
-  color: var(--vscode-button-foreground);
-  background: var(--vscode-button-background);
+  color: var(--text-primary);
+  background: var(--surface-2);
+  transition:
+    background var(--dur-1) var(--ease-swift),
+    color var(--dur-1) var(--ease-swift);
 }
 
 button:hover {
   cursor: pointer;
-  background: var(--vscode-button-hoverBackground);
+  background: var(--surface-3);
 }
 
 button:focus {
@@ -65,34 +69,73 @@ button:focus {
 }
 
 button.secondary {
-  color: var(--vscode-button-secondaryForeground);
-  background: var(--vscode-button-secondaryBackground);
+  color: var(--text-primary);
+  background: var(--surface-1);
 }
 
 button.secondary:hover {
-  background: var(--vscode-button-secondaryHoverBackground);
+  background: var(--surface-3);
 }
 
-input:not([type="checkbox"]),
+input:not([type="checkbox"]):not([type="range"]),
 textarea {
   box-sizing: border-box;
-  border: solid 1px var(--vscode-foreground);
+  border: solid 1px var(--edge-line);
+  border-radius: var(--r-2);
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-  color: var(--vscode-input-foreground);
-  outline-color: var(--vscode-input-border);
-  background-color: var(--vscode-input-background);
+  color: var(--text-primary);
+  outline-color: var(--accent);
+  background-color: var(--surface-0);
+  box-shadow: var(--well-inset);
 }
 
 select {
-  border: solid 1px var(--vscode-foreground);
+  border: solid 1px var(--edge-line);
+  border-radius: var(--r-2);
   font-family: var(--vscode-font-family);
-  color: var(--vscode-input-foreground);
-  outline-color: var(--vscode-input-border);
-  background-color: var(--vscode-input-background);
+  color: var(--text-primary);
+  outline-color: var(--accent);
+  background-color: var(--surface-0);
+  box-shadow: var(--well-inset);
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  box-sizing: border-box;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-1);
+  box-shadow: var(--well-inset);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"]:hover:not(:checked) {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--edge-line));
+}
+
+input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M1 4.2 3.8 7 9 1.2' fill='none' stroke='%23111111' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px 7px;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--vscode-input-placeholderForeground);
+  color: var(--text-faint);
 }

@@ -50,8 +50,8 @@ export default class LevelMeterComponent extends Component {
   private _canvasR: HTMLCanvasElement;
   private _clipLedL: HTMLElement;
   private _clipLedR: HTMLElement;
-  private _readoutL: HTMLElement;
-  private _readoutR: HTMLElement;
+  private _numsL: HTMLElement;
+  private _numsR: HTMLElement;
   private _labelL: HTMLElement;
   private _labelR: HTMLElement;
 
@@ -97,28 +97,33 @@ export default class LevelMeterComponent extends Component {
     containerEl.innerHTML = `
       <div class="levelMeterComponent" id="levelMeterInner"
         title="Right-click: toggle L–R / M–S columns (when not in Solo M/S). Solo M or S switches to M–S automatically.">
-        <div class="levelMeter__channel">
-          <div class="levelMeter__clipLed" id="clipLedL" title="Click to clear clip"></div>
-          <div class="levelMeter__canvasWrap js-meterWrapL">
-            <canvas class="levelMeter__canvas"></canvas>
-            <div class="levelMeter__readoutOverlay js-meterReadoutL" aria-live="polite">
-              <span class="levelMeter__readoutCh js-meterLabelL">L</span><br>
-              <span class="levelMeter__readoutNums">RMS —<br>Peak —</span>
+        <div class="levelMeter__main">
+          <div class="levelMeter__channel">
+            <div class="levelMeter__clipLed" id="clipLedL" title="Click to clear clip"></div>
+            <div class="levelMeter__canvasWrap js-meterWrapL">
+              <canvas class="levelMeter__canvas"></canvas>
             </div>
           </div>
-        </div>
-        <div class="levelMeter__channel">
-          <div class="levelMeter__clipLed" id="clipLedR" title="Click to clear clip"></div>
-          <div class="levelMeter__canvasWrap js-meterWrapR">
-            <canvas class="levelMeter__canvas"></canvas>
-            <div class="levelMeter__readoutOverlay js-meterReadoutR" aria-live="polite">
-              <span class="levelMeter__readoutCh js-meterLabelR">R</span><br>
-              <span class="levelMeter__readoutNums">RMS —<br>Peak —</span>
+          <div class="levelMeter__channel">
+            <div class="levelMeter__clipLed" id="clipLedR" title="Click to clear clip"></div>
+            <div class="levelMeter__canvasWrap js-meterWrapR">
+              <canvas class="levelMeter__canvas"></canvas>
             </div>
           </div>
+          <div class="levelMeter__scaleCol" aria-hidden="true">
+            ${ticks.map((db) => `<div class="levelMeter__tick" data-db="${db}"><span>${db > 0 ? `+${db}` : String(db)}</span></div>`).join("")}
+          </div>
         </div>
-        <div class="levelMeter__scaleCol" aria-hidden="true">
-          ${ticks.map((db) => `<div class="levelMeter__tick" data-db="${db}"><span>${db > 0 ? `+${db}` : String(db)}</span></div>`).join("")}
+        <div class="levelMeter__footer">
+          <div class="levelMeter__footerCh">
+            <span class="levelMeter__footerLabel js-meterLabelL">L</span>
+            <span class="levelMeter__footerNums js-meterNumsL" aria-live="polite">R —<br>P —</span>
+          </div>
+          <div class="levelMeter__footerCh">
+            <span class="levelMeter__footerLabel js-meterLabelR">R</span>
+            <span class="levelMeter__footerNums js-meterNumsR" aria-live="polite">R —<br>P —</span>
+          </div>
+          <div class="levelMeter__footerScale" aria-hidden="true"></div>
         </div>
       </div>`;
 
@@ -129,8 +134,8 @@ export default class LevelMeterComponent extends Component {
     this._canvasR = this._wrapR.querySelector("canvas");
     this._clipLedL = containerEl.querySelector("#clipLedL");
     this._clipLedR = containerEl.querySelector("#clipLedR");
-    this._readoutL = containerEl.querySelector(".js-meterReadoutL");
-    this._readoutR = containerEl.querySelector(".js-meterReadoutR");
+    this._numsL = containerEl.querySelector(".js-meterNumsL");
+    this._numsR = containerEl.querySelector(".js-meterNumsR");
     this._labelL = containerEl.querySelector(".js-meterLabelL");
     this._labelR = containerEl.querySelector(".js-meterLabelR");
 
@@ -282,16 +287,12 @@ export default class LevelMeterComponent extends Component {
     this._updateChannel(srcLeft, this._stateL, this._clipLedL, decay);
     this._updateChannel(srcRight, this._stateR, this._clipLedR, decay);
 
-    const numsL = this._readoutL.querySelector(".levelMeter__readoutNums");
-    const numsR = this._readoutR.querySelector(".levelMeter__readoutNums");
-    if (numsL && numsR) {
-      numsL.innerHTML =
-        `RMS ${formatDb(this._stateL.smoothedRms)}<br>` +
-        `Peak ${formatDb(this._stateL.peakDb)}`;
-      numsR.innerHTML =
-        `RMS ${formatDb(this._stateR.smoothedRms)}<br>` +
-        `Peak ${formatDb(this._stateR.peakDb)}`;
-    }
+    this._numsL.innerHTML =
+      `R ${formatDb(this._stateL.smoothedRms)}<br>` +
+      `P ${formatDb(this._stateL.peakDb)}`;
+    this._numsR.innerHTML =
+      `R ${formatDb(this._stateR.smoothedRms)}<br>` +
+      `P ${formatDb(this._stateR.peakDb)}`;
 
     this._draw(this._canvasL, this._wrapL, this._stateL);
     this._draw(this._canvasR, this._wrapR, this._stateR);
@@ -398,6 +399,14 @@ export default class LevelMeterComponent extends Component {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, peakY, barW, h - peakY);
 
+    /* Machined sheen across the bar (left light-catch → right shade). */
+    const sheen = ctx.createLinearGradient(0, 0, barW, 0);
+    sheen.addColorStop(0, "rgba(255, 255, 255, 0.10)");
+    sheen.addColorStop(0.45, "rgba(255, 255, 255, 0.02)");
+    sheen.addColorStop(1, "rgba(0, 0, 0, 0.12)");
+    ctx.fillStyle = sheen;
+    ctx.fillRect(0, peakY, barW, h - peakY);
+
     const rmsY = dbToY(state.smoothedRms);
     ctx.globalAlpha = 0.45;
     ctx.fillStyle =
@@ -408,6 +417,14 @@ export default class LevelMeterComponent extends Component {
           : "#4caf50";
     ctx.fillRect(0, rmsY, barW, h - rmsY);
     ctx.globalAlpha = 1;
+
+    /* Segmented scale grooves across the bar (instrument bridge feel). */
+    ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+    const grooveH = Math.max(1, Math.round(1 * dpr));
+    for (const db of ticks) {
+      const y = Math.round(dbToY(db));
+      ctx.fillRect(0, y, barW, grooveH);
+    }
 
     const holdY = Math.round(dbToY(state.peakHold));
     ctx.strokeStyle = "#ffffff";
@@ -433,20 +450,25 @@ export default class LevelMeterComponent extends Component {
     }
   }
 
+  /* Align DOM scale ticks with the canvas groove lines: the canvas bed is
+     shorter than the scale column (clip LED row above), so positions must
+     derive from the wrap geometry, not the column height. */
   private _layoutScaleTicks() {
     const col = this._inner.querySelector(".levelMeter__scaleCol");
     if (!col) {
       return;
     }
-    const ch = col.clientHeight;
-    if (ch < 10) {
+    const colRect = col.getBoundingClientRect();
+    const wrapRect = this._wrapL.getBoundingClientRect();
+    const innerTop = wrapRect.top - colRect.top + this._wrapL.clientTop;
+    const innerH = this._wrapL.clientHeight;
+    if (innerH < 10) {
       return;
     }
-    const dbToPct = (db: number) => 100 * (1 - dbToNorm(db));
     for (const el of col.querySelectorAll<HTMLElement>(".levelMeter__tick")) {
       const db = Number(el.dataset.db);
-      const pct = dbToPct(db);
-      el.style.top = `${pct}%`;
+      const pct = 1 - dbToNorm(db);
+      el.style.top = `${innerTop + pct * innerH}px`;
     }
   }
 

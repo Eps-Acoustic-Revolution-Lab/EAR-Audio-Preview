@@ -60,6 +60,14 @@ export interface KnobOptions {
 const PLAY_ICON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`;
 const PAUSE_ICON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>`;
 
+/** Resolve the theme accent token so knob arcs follow --accent (fallback: ink-green). */
+function resolveAccentColor(): string {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue("--accent")
+    .trim();
+  return value || "#5cc248";
+}
+
 export default class KnobComponent extends Component {
   private _root: HTMLElement;
   private _hit: HTMLElement;
@@ -105,7 +113,7 @@ export default class KnobComponent extends Component {
     this._min = options.min ?? 0;
     this._max = options.max ?? 100;
     this._step = options.step ?? 1;
-    this._color = options.color ?? "#00c3ff";
+    this._color = options.color ?? resolveAccentColor();
     this._warnColor = options.warnColor ?? "#f06464";
     this._warnThreshold = options.warnThreshold ?? Number.POSITIVE_INFINITY;
     this._size = options.size ?? 56;
@@ -250,9 +258,6 @@ export default class KnobComponent extends Component {
     path.setAttribute("d", getArcPath(cx, cy, radius, toAngle, fromAngle));
     path.style.stroke = color;
     path.style.opacity = this._isDragging ? "1" : "0.85";
-    path.style.filter = this._isDragging
-      ? "drop-shadow(0px 0px 4px currentColor)"
-      : "drop-shadow(0px 0px 2px currentColor)";
     path.style.display = "";
   }
 

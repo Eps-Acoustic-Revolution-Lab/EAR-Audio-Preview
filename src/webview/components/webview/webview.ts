@@ -159,6 +159,19 @@ export default class WebView extends Component {
           </div>
           <button
             type="button"
+            class="workspaceChrome__meterToggle js-toggleLevelMeter"
+            aria-pressed="false"
+            aria-label="Toggle level meter"
+            title="Level meter"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <rect x="4" y="10" width="4" height="10" rx="1"/>
+              <rect x="10" y="4" width="4" height="16" rx="1"/>
+              <rect x="16" y="13" width="4" height="7" rx="1"/>
+            </svg>
+          </button>
+          <button
+            type="button"
             class="workspaceChrome__settingsBtn js-openSettings"
             aria-label="Pane settings"
             aria-haspopup="dialog"
@@ -688,6 +701,25 @@ export default class WebView extends Component {
         meterColumnResizeHandle.hidden = !analyzeSettingsService.showLevelMeter;
       }
     };
+    const meterToggleBtn = document.querySelector(
+      ".js-toggleLevelMeter",
+    ) as HTMLButtonElement;
+    const syncMeterToggle = () => {
+      const on = analyzeSettingsService.showLevelMeter;
+      meterToggleBtn.classList.toggle("workspaceChrome__meterToggle--on", on);
+      meterToggleBtn.setAttribute("aria-pressed", String(on));
+    };
+    this._addEventlistener(meterToggleBtn, EventType.CLICK, () => {
+      analyzeSettingsService.showLevelMeter =
+        !analyzeSettingsService.showLevelMeter;
+    });
+    this._addEventlistener(
+      analyzeSettingsService,
+      EventType.AS_UPDATE_SHOW_LEVEL_METER,
+      syncMeterToggle,
+    );
+    syncMeterToggle();
+
     this._addEventlistener(
       analyzeSettingsService,
       EventType.AS_UPDATE_SHOW_LEVEL_METER,

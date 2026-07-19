@@ -17,11 +17,7 @@
 .curveCorrectionOverlay__backdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(
-    in srgb,
-    var(--vscode-editor-background) 60%,
-    transparent
-  );
+  background: var(--backdrop-dim);
   pointer-events: auto;
 }
 
@@ -32,11 +28,10 @@
   display: flex;
   flex-direction: column;
   padding: 1.25rem 1.5rem;
-  background: var(--vscode-editorWidget-background);
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px
-    color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-modal);
   pointer-events: auto;
   overflow: hidden;
   opacity: 0;
@@ -61,17 +56,18 @@
 
 .curveCorrectionOverlay__title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 15px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .curveCorrectionOverlay__close {
   width: 2rem;
   height: 2rem;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--r-2);
   background: transparent;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
   font-size: 1.25rem;
   cursor: pointer;
 }
@@ -93,22 +89,20 @@
   padding: 0.35rem 0.5rem;
   font-size: 0.875rem;
   line-height: 1.4;
-  background: var(--vscode-input-background);
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  color: var(--vscode-foreground);
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow: var(--well-inset);
+  color: var(--text-primary);
 }
 
 .curveCorrectionOverlay__search:focus {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid var(--accent);
   outline-offset: -1px;
 }
 
 .curveCorrectionOverlay__search::placeholder {
-  color: var(
-    --vscode-input-placeholderForeground,
-    var(--vscode-descriptionForeground)
-  );
+  color: var(--text-faint);
 }
 
 .curveCorrectionOverlay__importRow {
@@ -123,7 +117,7 @@
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--vscode-textLink-foreground, var(--vscode-foreground));
+  color: var(--accent-strong);
   font-size: 0.8125rem;
   font-family: inherit;
   line-height: 1.4;
@@ -133,11 +127,11 @@
 
 .curveCorrectionOverlay__import:hover {
   background: transparent;
-  color: var(--vscode-textLink-activeForeground, var(--vscode-foreground));
+  color: var(--text-primary);
 }
 
 .curveCorrectionOverlay__import:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -152,14 +146,10 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
-  background: var(
-    --vscode-dropdown-background,
-    var(--vscode-editorWidget-background)
-  );
-  box-shadow: 0 4px 12px
-    color-mix(in srgb, var(--vscode-widget-shadow) 45%, transparent);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-popover);
 }
 
 .curveCorrectionOverlay__list.curveCorrectionOverlay__list--collapsed {
@@ -174,16 +164,12 @@
   padding: 0.35rem 0.5rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
 }
 
 .curveCorrectionOverlay__listItem:hover,
 .curveCorrectionOverlay__listItem--active {
-  background: color-mix(
-    in srgb,
-    var(--vscode-list-hoverBackground, #2a2d2e) 80%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--surface-3) 80%, transparent);
 }
 
 .curveCorrectionOverlay__badge {
@@ -193,9 +179,9 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  border-radius: 3px;
-  color: var(--vscode-badge-foreground, #fff);
-  background: var(--vscode-badge-background, #4d4d4d);
+  border-radius: var(--r-1);
+  color: var(--text-primary);
+  background: var(--surface-3);
 }
 
 .curveCorrectionOverlay__canvas {
@@ -203,8 +189,8 @@
   width: 100%;
   height: 200px;
   margin: 0.5rem 0;
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 4px;
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
   background: #0f0f0f;
   cursor: crosshair;
 }
@@ -219,10 +205,10 @@
 .curveCorrectionOverlay__status {
   margin: 0.35rem 0 0;
   font-size: 0.8125rem;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-secondary);
   min-height: 1.2em;
 }
 
 .curveCorrectionOverlay__status--error {
-  color: var(--vscode-errorForeground, #f48771);
+  color: var(--signal-red);
 }

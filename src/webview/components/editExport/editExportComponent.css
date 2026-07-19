@@ -13,10 +13,10 @@
 .editExport__waveMount {
   position: relative;
   min-height: 120px;
-  border-radius: var(--pill-radius, 10px);
+  border-radius: var(--r-2);
   overflow: hidden;
-  border: 1px solid var(--vscode-panel-border, #444);
-  background: var(--vscode-editor-background, #1e1e1e);
+  border: 1px solid var(--edge-line);
+  background: var(--surface-1);
 }
 
 .editExport__waveMount .canvasBox {
@@ -49,7 +49,7 @@
 .editExport__status {
   min-height: 1.2em;
   font-size: 0.8125rem;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-secondary);
 }
 
 .editExport__status--busy {

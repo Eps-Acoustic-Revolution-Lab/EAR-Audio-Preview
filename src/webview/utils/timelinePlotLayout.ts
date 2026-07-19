@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-/** Horizontal plot insets for timeline strips (time axis uses full width; Y labels overlay inside). */
+/* Horizontal plot insets for timeline strips (time axis uses full width; Y labels overlay inside).
+   Right pad is 0 so every timeline panel (waveBand / spectrogram / loudness
+   strips) shares the same full-width plot edges and playheads stay aligned. */
 export const TIMELINE_PLOT_PAD_LEFT = 0;
-export const TIMELINE_PLOT_PAD_RIGHT = 8;
+export const TIMELINE_PLOT_PAD_RIGHT = 0;
 
 /** Inset for Y-axis tick labels drawn inside the plot (left overlay). */
 export const STRIP_Y_LABEL_INSET = 6;

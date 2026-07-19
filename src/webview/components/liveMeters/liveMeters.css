@@ -62,8 +62,8 @@
   gap: 4px;
   padding: 2px 8px 2px 6px;
   min-height: 28px;
-  border-bottom: 1px solid var(--vscode-panel-border, #444);
-  background: var(--vscode-sideBar-background, #252526);
+  border-bottom: 1px solid var(--edge-line);
+  background: var(--surface-2);
   overflow: hidden;
 }
 
@@ -78,18 +78,17 @@
   min-width: 0;
   flex: 0 0 auto;
   box-sizing: border-box;
-  padding: 5px 11px;
+  padding: 7px 11px 3px;
   border: 1px solid transparent;
-  border-radius: var(--pill-radius, 10px);
+  border-radius: var(--r-2);
   background: transparent;
-  color: var(--ear-eq-toggle-inactive, #444444);
+  color: var(--text-faint);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: color var(--ear-eq-motion-fast, 0.28s)
-    var(--ear-eq-ease-out, ease);
+  transition: color var(--dur-1) var(--ease-swift);
 }
 
 .workspaceChrome__tabs {
@@ -103,8 +102,8 @@
   min-width: 0;
 }
 
-.workspaceChrome__settingsBtn {
-  /* Override vscode.css `button { width: 100% }` */
+/* Level-meter visibility toggle (left of the settings gear) */
+.workspaceChrome__meterToggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -115,9 +114,49 @@
   padding: 0 6px;
   margin-left: auto;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: var(--r-2);
   background: transparent;
-  color: var(--vscode-foreground);
+  color: var(--text-faint);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    color var(--dur-1) var(--ease-swift),
+    background var(--dur-1) var(--ease-swift),
+    border-color var(--dur-1) var(--ease-swift);
+}
+
+.workspaceChrome__meterToggle:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+.workspaceChrome__meterToggle--on,
+.workspaceChrome__meterToggle--on:hover {
+  color: var(--accent-strong);
+  background: var(--accent-dim);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.workspaceChrome__meterToggle:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.workspaceChrome__settingsBtn {
+  /* Override vscode.css `button { width: 100% }` */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  margin-left: 4px;
+  border: 1px solid transparent;
+  border-radius: var(--r-2);
+  background: transparent;
+  color: var(--text-primary);
   cursor: pointer;
   text-align: center;
 }
@@ -128,11 +167,11 @@
 }
 
 .workspaceChrome__settingsBtn:hover {
-  background: var(--vscode-list-hoverBackground);
+  background: var(--surface-3);
 }
 
 .workspaceChrome__settingsBtn:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid var(--accent);
   outline-offset: -1px;
 }
 
@@ -158,9 +197,12 @@ html[data-workspace-pane="edit"] #graphDeck {
   flex-direction: column;
   min-width: 0;
   overflow: visible;
-  border: 1px solid var(--vscode-panel-border, #444);
+  border: 1px solid var(--edge-line);
   border-radius: 4px;
-  background: var(--vscode-editor-background, #1e1e1e);
+  background: var(--surface-1);
+  box-shadow:
+    inset 0 1px 0 var(--edge-hi),
+    inset 0 -1px 0 var(--edge-lo);
 }
 
 .graphDeck__pane--stft {
@@ -261,7 +303,7 @@ html[data-workspace-pane="loudness"] #graphDeck {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   text-align: center;
 }
@@ -277,20 +319,14 @@ html[data-workspace-pane="loudness"] #graphDeck {
   display: none !important;
 }
 
-/* Waveform and loudness strips share full-width time plot (Y labels overlay inside strips). */
-html[data-workspace-pane="loudness"] .waveBand .canvasBox {
-  --timeline-pad-left: 0px;
-  --timeline-pad-right: 8px;
-}
-
 button.workspacePane__tab:hover,
 button.workspacePane__tab:focus {
-  color: var(--ear-eq-toggle-active, #ffffff);
+  color: var(--text-primary);
   background: transparent;
 }
 
 .workspacePane__tab--active {
-  color: var(--ear-eq-toggle-active, #ffffff);
+  color: var(--text-primary);
   background: transparent;
   border-color: transparent;
 }
@@ -314,17 +350,23 @@ button.workspacePane__tab:focus {
 .workspacePane__hint {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-secondary);
 }
 
 .workspacePane__cta {
   padding: 0.35rem 0.65rem;
   font-size: 0.8rem;
   cursor: pointer;
-  border-radius: 3px;
-  border: 1px solid var(--vscode-button-border, var(--vscode-panel-border));
-  background: var(--vscode-button-secondaryBackground);
-  color: var(--vscode-button-secondaryForeground);
+  border-radius: var(--r-2);
+  border: 1px solid var(--edge-line);
+  background: var(--surface-2);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+  color: var(--text-primary);
+  transition: background var(--dur-1) var(--ease-swift);
+}
+
+.workspacePane__cta:hover {
+  background: var(--surface-3);
 }
 
 .workspacePane__graph {
@@ -344,8 +386,8 @@ button.workspacePane__tab:focus {
   flex: 0 0 auto;
   min-height: 0;
   overflow: visible;
-  border-top: 1px solid var(--vscode-panel-border, #444);
-  border-bottom: 1px solid var(--vscode-panel-border, #444);
+  border-top: 1px solid var(--edge-line);
+  border-bottom: 1px solid var(--edge-line);
   padding: 6px 2px 2px;
 }
 
@@ -367,7 +409,7 @@ button.workspacePane__tab:focus {
 }
 
 .waveBand__resizeHandle:hover {
-  background: color-mix(in srgb, var(--vscode-focusBorder) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .waveBand__channel {
@@ -383,7 +425,9 @@ button.workspacePane__tab:focus {
   overflow: hidden;
   width: var(--meter-col-width);
   min-width: 0;
-  background: var(--meter-bg);
+  background: var(--surface-1);
+  border-left: 1px solid var(--edge-line);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
 }
 
 .meterColumnResizeHandle {
@@ -394,7 +438,7 @@ button.workspacePane__tab:focus {
 }
 
 .meterColumnResizeHandle:hover {
-  background: color-mix(in srgb, var(--vscode-focusBorder) 40%, transparent);
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 .meterColumnResizeHandle[hidden] {
@@ -404,12 +448,20 @@ button.workspacePane__tab:focus {
 /* ── Level meter component ────────────────────────────────────────────────── */
 .levelMeterComponent {
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  flex-direction: column;
   height: 100%;
   padding: 2px;
   gap: 2px;
   box-sizing: border-box;
+}
+
+.levelMeter__main {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 2px;
 }
 
 .levelMeter__channel {
@@ -421,36 +473,54 @@ button.workspacePane__tab:focus {
   min-height: 0;
 }
 
-.levelMeter__readoutOverlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 3px;
-  padding: 2px 1px;
-  text-align: center;
-  pointer-events: none;
-  z-index: 2;
+/* Bottom readout deck: fills the unused space under the meter beds. */
+.levelMeter__footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 2px;
+}
+
+.levelMeter__footerCh {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 3px 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-1);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+  box-sizing: border-box;
+}
+
+.levelMeter__footerLabel {
+  flex-shrink: 0;
   font-size: 8px;
+  font-weight: 700;
   line-height: 1.2;
-  font-family: var(--vscode-editor-font-family, monospace);
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow:
-    0 0 3px rgba(0, 0, 0, 0.9),
-    0 1px 2px rgba(0, 0, 0, 0.85);
+  letter-spacing: 0.02em;
+  color: var(--text-faint);
+}
+
+.levelMeter__footerNums {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1.25;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.levelMeter__readoutCh {
-  font-weight: 700;
-  font-size: 9px;
-  letter-spacing: 0.02em;
-}
-
-.levelMeter__readoutNums {
-  font-variant-numeric: tabular-nums;
-  opacity: 0.98;
+/* Keeps footer columns aligned with the scale column above. */
+.levelMeter__footerScale {
+  flex: 0 0 22px;
+  width: 22px;
 }
 
 .levelMeter__scaleCol {
@@ -458,7 +528,7 @@ button.workspacePane__tab:focus {
   width: 22px;
   flex: 0 0 22px;
   min-height: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid var(--hairline);
 }
 
 .levelMeter__tick {
@@ -473,12 +543,13 @@ button.workspacePane__tab:focus {
   position: absolute;
   right: 1px;
   font-size: 8px;
-  font-family: var(--vscode-editor-font-family, monospace);
+  font-family: var(--font-mono);
   color: var(--meter-scale-color);
   transform: translateY(-50%);
 }
 
-/* Wrapper gives the canvas a definite flex box to measure; canvas fills it. */
+/* Wrapper gives the canvas a definite flex box to measure; canvas fills it.
+   Recessed well: the transparent canvas lets the inset bed show through. */
 .levelMeter__canvasWrap {
   flex: 1 1 0;
   min-width: 0;
@@ -486,6 +557,10 @@ button.workspacePane__tab:focus {
   position: relative;
   align-self: stretch;
   width: 100%;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-1);
+  box-shadow: var(--well-inset);
 }
 
 .levelMeter__canvas {
@@ -499,6 +574,7 @@ button.workspacePane__tab:focus {
   height: 8px;
   border-radius: 50%;
   background: var(--meter-clip-clear-color);
+  border: 1px solid var(--edge-line);
   margin: 0 auto 2px;
   cursor: pointer;
   flex-shrink: 0;
@@ -514,7 +590,7 @@ button.workspacePane__tab:focus {
   pointer-events: none;
   z-index: 3;
   font-size: 8px;
-  font-family: var(--vscode-editor-font-family, monospace);
+  font-family: var(--font-mono);
   color: var(--meter-clip-color);
   text-align: center;
   font-variant-numeric: tabular-nums;
@@ -557,7 +633,7 @@ button.workspacePane__tab:focus {
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  background: var(--vscode-editorWidget-background, #252526);
+  background: var(--surface-2);
 }
 
 /* Square plot; side = min(pane width, pane height). */
@@ -594,24 +670,24 @@ button.workspacePane__tab:focus {
 
 .liveAnalysis__gonioColHandle {
   flex: 0 0 4px;
-  background: var(--vscode-sash-hoverBorder, rgba(255, 255, 255, 0.1));
+  background: var(--hairline);
   cursor: ew-resize;
   z-index: 1;
   transition: background 0.15s;
 }
 .liveAnalysis__gonioColHandle:hover {
-  background: var(--vscode-focusBorder, rgba(0, 120, 212, 0.7));
+  background: var(--accent);
 }
 
 .liveAnalysis__resizeHandle {
   flex: 0 0 4px;
-  background: var(--vscode-sash-hoverBorder, rgba(255, 255, 255, 0.1));
+  background: var(--hairline);
   cursor: ns-resize;
   z-index: 1;
   transition: background 0.15s;
 }
 .liveAnalysis__resizeHandle:hover {
-  background: var(--vscode-focusBorder, rgba(0, 120, 212, 0.7));
+  background: var(--accent);
 }
 
 .liveAnalysis__spectrum {
@@ -631,7 +707,7 @@ button.workspacePane__tab:focus {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: var(--vscode-editor-background, #1e1e1e);
+  background: var(--surface-1);
   display: flex;
   flex-direction: column;
 }
@@ -664,7 +740,7 @@ button.workspacePane__tab:focus {
   left: 5px;
   z-index: 2;
   font-size: 9px;
-  font-family: var(--vscode-editor-font-family, monospace);
+  font-family: var(--font-mono);
   color: rgba(255, 255, 255, 0.35);
   pointer-events: none;
   letter-spacing: 0.04em;
@@ -698,7 +774,7 @@ button.workspacePane__tab:focus {
   position: fixed;
   z-index: 4;
   pointer-events: none;
-  font-family: var(--vscode-editor-font-family, monospace);
+  font-family: var(--font-mono);
   font-size: 10px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.95);
@@ -730,7 +806,7 @@ button.workspacePane__tab:focus {
   position: fixed;
   z-index: 4;
   pointer-events: none;
-  font-family: var(--vscode-editor-font-family, monospace);
+  font-family: var(--font-mono);
   font-size: 10px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.95);
@@ -757,7 +833,7 @@ button.workspacePane__tab:focus {
   flex-wrap: wrap;
   padding: 0;
   font-size: 11px;
-  color: var(--vscode-descriptionForeground, rgba(255, 255, 255, 0.7));
+  color: var(--text-secondary);
   width: 100%;
   min-width: 0;
 }
@@ -776,7 +852,7 @@ button.workspacePane__tab:focus {
   font-size: var(--text-xs, 10px);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #666666;
+  color: var(--text-faint);
 }
 
 .liveMonitoringBar__bands {
@@ -790,8 +866,7 @@ button.workspacePane__tab:focus {
   flex-basis: 100%;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid
-    color-mix(in srgb, var(--vscode-panel-border, #444) 55%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--edge-line) 55%, transparent);
 }
 
 .eqMonitorStrip {
@@ -827,10 +902,10 @@ button.workspacePane__tab:focus {
 .eqMonitorStrip__meta {
   flex-basis: 100%;
   font-size: var(--text-xs, 10px);
-  color: var(--vscode-descriptionForeground, #888);
+  color: var(--text-secondary);
   padding-left: 2px;
 }
 
 #liveMetersRight {
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px + 52px + 8px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
 }

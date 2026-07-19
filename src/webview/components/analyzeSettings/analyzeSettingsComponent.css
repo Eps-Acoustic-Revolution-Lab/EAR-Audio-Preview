@@ -6,8 +6,8 @@
 
 .analyzeSetting__canvas {
   width: 100%;
-  border: 1px solid var(--vscode-input-border);
-  border-radius: 4px;
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
   display: block;
 }
 

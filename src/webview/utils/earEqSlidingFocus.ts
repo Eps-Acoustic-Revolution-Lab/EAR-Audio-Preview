@@ -1,4 +1,4 @@
-/** Position a liquid-glass focus element behind the active item in a strip. */
+/** Position a solid focus slider behind the active item in a strip. */
 export function updateEarEqSlidingFocus(
   strip: HTMLElement,
   focus: HTMLElement,

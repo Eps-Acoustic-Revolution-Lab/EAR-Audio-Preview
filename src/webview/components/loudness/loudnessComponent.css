@@ -30,20 +30,16 @@
   min-width: 24px;
   min-height: 22px;
   line-height: 1;
-  border: 1px solid var(--vscode-panel-border, rgba(255, 255, 255, 0.2));
-  border-radius: 4px;
-  background: var(--vscode-editorWidget-background, rgba(0, 0, 0, 0.55));
-  color: var(--vscode-foreground);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  background: var(--surface-2);
+  color: var(--text-primary);
   cursor: pointer;
   font-family: inherit;
 }
 
 .loudnessHost__expandBtn:hover {
-  background: color-mix(
-    in srgb,
-    var(--vscode-list-hoverBackground) 70%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--surface-3) 70%, transparent);
 }
 
 .loudnessHost__overlay {
@@ -52,7 +48,7 @@
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  background: var(--vscode-editor-background, #1e1e1e);
+  background: var(--surface-1);
   padding: 4px;
   box-sizing: border-box;
 }
@@ -73,7 +69,7 @@
   min-height: 0;
   flex: 1 1 auto;
   overflow: hidden;
-  background: var(--vscode-editor-background, #1e1e1e);
+  background: var(--surface-1);
 }
 
 .loudnessComponent--fullscreenMount {
@@ -90,10 +86,11 @@
   flex-wrap: wrap;
   gap: 8px 16px;
   padding: 8px 12px;
-  border-bottom: 1px solid var(--vscode-panel-border, #444);
-  font-family: var(--vscode-editor-font-family, monospace);
-  font-size: 11px;
-  color: var(--vscode-foreground);
+  border-bottom: 1px solid var(--edge-line);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
 }
 
 .loudnessComponent__metric {
@@ -103,11 +100,11 @@
 }
 
 .loudnessComponent__metricLabel {
-  color: var(--vscode-descriptionForeground);
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  font-size: 9px;
+  font-size: var(--text-micro);
 }
 
 .loudnessComponent__metricValue {
@@ -116,8 +113,8 @@
 
 .loudnessComponent__status {
   padding: 8px 12px;
-  font-size: 11px;
-  color: var(--vscode-descriptionForeground);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 .loudnessComponent__strips {
@@ -128,6 +125,9 @@
   position: relative;
   overflow: hidden;
   cursor: crosshair;
+  /* align the strips' plot edges with the waveBand plot edges above
+     (pane border 1px + this 2px margin = 3px, same as waveBand). */
+  margin: 0 2px;
 }
 
 .loudnessComponent__strip {
@@ -135,7 +135,7 @@
   flex-direction: column;
   flex: 1 1 0;
   min-height: 72px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--hairline);
 }
 
 .loudnessComponent__strip--lufs {
@@ -149,8 +149,8 @@
   z-index: 3;
   pointer-events: none;
   user-select: none;
-  font-family: var(--vscode-editor-font-family, monospace);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -167,9 +167,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--vscode-editor-font-family, monospace);
-  font-size: 10px;
-  color: var(--vscode-descriptionForeground);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
   pointer-events: none;
 }
 
@@ -196,8 +196,6 @@
   width: 100%;
   position: relative;
   overflow: hidden;
-  --timeline-pad-left: 0px;
-  --timeline-pad-right: 8px;
 }
 
 .loudnessComponent__strip--lufs .loudnessComponent__canvasWrap {
@@ -217,8 +215,8 @@
   right: 8px;
   z-index: 2;
   pointer-events: none;
-  font-family: var(--vscode-editor-font-family, monospace);
-  font-size: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
   color: rgba(255, 255, 255, 0.65);
   text-align: right;
   line-height: 1.4;
@@ -274,13 +272,11 @@
   white-space: nowrap;
   padding: 2px 4px;
   border-radius: 2px;
-  font-family: var(--vscode-editor-font-family, monospace);
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.95);
   background: rgba(0, 0, 0, 0.45);
-  text-shadow:
-    0 0 3px rgba(0, 0, 0, 0.95),
-    0 1px 2px rgba(0, 0, 0, 0.9);
+  /* readout contrast without glow */
 }
 
 .loudnessComponent__selection {

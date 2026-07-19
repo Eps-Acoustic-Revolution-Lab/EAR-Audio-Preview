@@ -13,7 +13,7 @@ export interface EarEqSegmentedControlOptions {
 }
 
 /**
- * Mutually exclusive option strip with sliding liquid-glass focus (workspace tabs pattern).
+ * Mutually exclusive option strip with a solid sliding focus (workspace tabs pattern).
  */
 export default class EarEqSegmentedControl {
   readonly root: HTMLElement;

@@ -17,11 +17,7 @@
 .settingsOverlay__backdrop {
   position: fixed;
   inset: 0;
-  background: color-mix(
-    in srgb,
-    var(--vscode-editor-background) 60%,
-    transparent
-  );
+  background: var(--backdrop-dim);
   pointer-events: auto;
 }
 
@@ -31,11 +27,10 @@
   flex-direction: column;
   width: min(92vw, 680px);
   max-height: 80vh;
-  background: var(--vscode-editorWidget-background);
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 8px;
-  box-shadow: 0 8px 32px
-    color-mix(in srgb, var(--vscode-widget-shadow) 50%, transparent);
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-3);
+  box-shadow: var(--shadow-modal);
   pointer-events: auto;
   overflow: hidden;
 }
@@ -64,9 +59,9 @@
 
 .settingsOverlay__title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
 }
 
 .settingsOverlay__close {
@@ -78,23 +73,20 @@
   height: 1.75rem;
   padding: 0;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--r-2);
   background: transparent;
-  color: var(--vscode-foreground);
+  color: var(--text-primary);
   font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .settingsOverlay__close:hover {
-  background: var(
-    --vscode-toolbar-hoverBackground,
-    var(--vscode-list-hoverBackground)
-  );
+  background: var(--surface-3);
 }
 
 .settingsOverlay__close:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid var(--accent);
   outline-offset: 1px;
 }
 

@@ -1,4 +1,5 @@
 @import "../../styles/earEqTokens.css";
+@import "../../styles/earPrimitives.css";
 
 /* Fill the webview viewport so grid `1fr` / flex `flex:1` rows get real height (graph deck). */
 html {
@@ -74,8 +75,7 @@ body > #root {
   border: 1px solid var(--vscode-panel-border);
   background: var(--vscode-editorWidget-background);
   color: var(--vscode-foreground);
-  box-shadow: 0 2px 8px
-    color-mix(in srgb, var(--vscode-widget-shadow) 40%, transparent);
+  box-shadow: var(--shadow-popover);
   cursor: default;
   z-index: 2;
   overflow: visible;
@@ -109,7 +109,7 @@ body > #root {
 }
 
 .settingsDock__fabRingBar {
-  stroke: var(--vscode-progressBar-background, var(--vscode-button-background));
+  stroke: var(--accent);
 }
 
 .settingsDock__fabPercent {

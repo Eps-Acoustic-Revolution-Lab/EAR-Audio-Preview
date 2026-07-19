@@ -14,7 +14,6 @@ interface ShortcutGroup {
 
 export default class KeyboardShortcutsOverlayComponent extends Component {
   private _overlay: HTMLElement;
-  private _keysPressed = new Set<string>();
   private _isVisible = false;
   private readonly _modKey: string;
 
@@ -51,7 +50,13 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
                 (shortcut) => `
               <div class="keyboardShortcutsItem">
                 <div class="keyboardShortcutsItem__keys">
-                  ${shortcut.keys.map((key) => `<kbd class="keyboardShortcutsKey">${key}</kbd>`).join("")}
+                  ${shortcut.keys
+                    .map((key) =>
+                      key === "+"
+                        ? `<span class="keyboardShortcutsItem__sep">+</span>`
+                        : `<kbd class="keyboardShortcutsKey">${key}</kbd>`,
+                    )
+                    .join("")}
                 </div>
                 <div class="keyboardShortcutsItem__description">${shortcut.description}</div>
               </div>
@@ -144,7 +149,7 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
 
   private _initEventListeners(): void {
     this._addEventlistener(document, EventType.KEY_DOWN, (e: KeyboardEvent) => {
-      if (e.isComposing) {
+      if (e.isComposing || e.repeat) {
         return;
       }
 
@@ -158,19 +163,13 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
 
       if (e.key === "?") {
         e.preventDefault();
-        this._keysPressed.add(e.code);
-        if (!this._isVisible) {
+        if (this._isVisible) {
+          this._hide();
+        } else {
           this._show();
         }
       } else if (e.key === "Escape" && this._isVisible) {
         e.preventDefault();
-        this._hide();
-      }
-    });
-
-    this._addEventlistener(document, EventType.KEY_UP, (e: KeyboardEvent) => {
-      this._keysPressed.delete(e.code);
-      if (this._keysPressed.size === 0 && this._isVisible) {
         this._hide();
       }
     });
@@ -197,7 +196,6 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
 
   private _hide(): void {
     this._isVisible = false;
-    this._keysPressed.clear();
     this._overlay.classList.remove("keyboardShortcutsOverlay--open");
     setTimeout(() => {
       this._overlay.setAttribute("hidden", "");

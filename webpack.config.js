@@ -34,7 +34,10 @@ class ExtractLoudnessWorkletPlugin {
         __dirname,
         "node_modules/essentia.js/dist/essentia-wasm.web.wasm",
       );
-      const essentiaWasmOut = path.join(__dirname, "dist/essentia-wasm.web.wasm");
+      const essentiaWasmOut = path.join(
+        __dirname,
+        "dist/essentia-wasm.web.wasm",
+      );
       if (fs.existsSync(essentiaWasmSrc)) {
         fs.copyFileSync(essentiaWasmSrc, essentiaWasmOut);
       }
@@ -158,6 +161,8 @@ const webExtensionConfig = {
       // for the list of Node.js core module polyfills.
       assert: require.resolve("assert"),
       path: require.resolve("path-browserify"),
+      // autoEqHost prefers Node https but falls back to global fetch here.
+      https: false,
     },
     alias: {
       fs: false,

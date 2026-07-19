@@ -1,9 +1,11 @@
 .analyzerComponent {
-  border: 1px solid var(--vscode-foreground);
+  border: 1px solid var(--edge-line);
 }
 
 .analyzeResultBox {
   position: relative;
-  margin: 0.5em;
+  /* horizontal margins must stay 0: the spectrogram plot edge has to line
+     up with the waveBand plot edge above (shared time ruler). */
+  margin: 0.5em 0;
   display: block;
 }

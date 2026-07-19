@@ -23,7 +23,7 @@
   --knob-face-to: #171719;
   --knob-face-border: #333336;
   --knob-track-bg: #222222;
-  --knob-accent: #00c3ff;
+  --knob-accent: var(--accent);
   --knob-default-size: 56px;
 
   --text-xs: 10px;
@@ -35,20 +35,70 @@
   --ear-eq-motion-fast: 0.28s;
   --ear-eq-motion-medium: 0.38s;
   --ear-eq-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ── Extended control tokens (neutral; mapped onto the existing dark
+     palette — no hue/accent changes) ─────────────────────────────────── */
+  --surface-4: #343438; /* hover step above surface-3 */
+
+  --text-primary: #ffffff;
+  --text-secondary: #aaaaaa;
+  --text-faint: #666666;
+
+  /* Machined-edge light system (neutral black/white only) */
+  --edge-hi: rgba(255, 255, 255, 0.06);
+  --edge-lo: rgba(0, 0, 0, 0.35);
+  --edge-line: #0c0c0e;
+  --hairline: rgba(255, 255, 255, 0.09);
+
+  /* Accent: ink-green family derived from #388D29 — same hue (~111°),
+     raised lightness for dark-surface legibility; strong/dim derived. */
+  --accent: #5cc248;
+  --accent-strong: color-mix(in srgb, var(--accent) 72%, #ffffff);
+  --accent-dim: color-mix(in srgb, var(--accent) 16%, transparent);
+
+  --signal-red: #f44336;
+
+  /* Neutral elevation / inset shadows */
+  --shadow-modal: 0 10px 32px rgba(0, 0, 0, 0.45);
+  --shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --well-inset: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+  --backdrop-dim: rgba(0, 0, 0, 0.55);
+  --selection-shroud: rgba(0, 0, 0, 0.42);
+
+  /* Radius / motion / type scales */
+  --r-1: 3px;
+  --r-2: 6px;
+  --r-3: 10px;
+  --r-full: 9999px;
+
+  --dur-1: 130ms;
+  --dur-2: 220ms;
+  --dur-3: 330ms;
+  --ease-swift: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --text-micro: 9px;
+  --text-md: 13px;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas,
+    monospace;
 }
 
-/* Shared pill (Monitor buttons, etc.) — squircle corners */
+/* Shared pill (Monitor buttons, etc.) — machined tiles.
+   border-box + 2px top padding: optically centers uppercase glyphs. */
 .earEqPill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
+  box-sizing: border-box;
   width: auto !important;
   min-width: 28px;
-  height: 26px;
-  padding: 0 10px !important;
+  height: 28px;
+  padding: 3px 10px 0 !important;
   margin: 0;
-  border-radius: var(--pill-radius-squircle);
+  border-radius: var(--r-2);
   background: var(--pill-bg) !important;
   border: 1px solid var(--pill-border) !important;
   box-shadow: var(--pill-shadow);
@@ -58,7 +108,7 @@
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
-  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+  transition: color var(--dur-1) var(--ease-swift);
 }
 
 .earEqPill:hover {
@@ -66,14 +116,20 @@
 }
 
 .earEqPill--active {
-  color: var(--pill-text-hover) !important;
+  color: var(--accent-strong) !important;
+  background: var(--accent-dim) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--accent) 45%,
+    var(--pill-border)
+  ) !important;
 }
 
 .earEqPill--bypass {
   color: var(--pill-text-hover) !important;
   border-color: color-mix(
     in srgb,
-    var(--knob-accent, #00c3ff) 45%,
+    var(--knob-accent, #5cc248) 45%,
     var(--pill-border)
   ) !important;
 }
@@ -95,7 +151,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   cursor: pointer;
-  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+  transition: color var(--dur-1) var(--ease-swift);
 }
 
 .earEqToggle:hover {
@@ -106,7 +162,7 @@
   color: var(--ear-eq-toggle-active);
 }
 
-/* Liquid-glass sliding focus (workspace tabs, segmented controls) */
+/* Solid sliding focus inside a recessed track (workspace tabs, segments) */
 .earEqSlidingFocus,
 .workspaceChrome__focus {
   position: absolute;
@@ -114,37 +170,36 @@
   left: 0;
   width: 0;
   height: 0;
-  border-radius: var(--pill-radius, 10px);
-  background: color-mix(in srgb, var(--pill-bg, #121214) 72%, #ffffff 8%);
-  border: 1px solid
-    color-mix(in srgb, var(--pill-border, #0c0c0e) 55%, #ffffff 14%);
+  border-radius: calc(var(--r-2, 6px) - 2px);
+  background: var(--surface-3);
+  border: 1px solid var(--edge-line);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #ffffff 8%, transparent),
-    0 4px 14px color-mix(in srgb, #000000 28%, transparent);
-  backdrop-filter: blur(10px) saturate(1.15);
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    inset 0 1px 0 var(--edge-hi),
+    0 1px 2px rgba(0, 0, 0, 0.2);
   opacity: 0;
   pointer-events: none;
   z-index: 0;
   transition:
-    transform var(--ear-eq-motion-medium, 0.38s)
-      var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
-    width var(--ear-eq-motion-medium, 0.38s)
-      var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
-    height var(--ear-eq-motion-medium, 0.38s)
-      var(--ear-eq-ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
-    opacity var(--ear-eq-motion-fast, 0.28s) ease;
-  will-change: transform, width, height;
+    transform var(--dur-2, 220ms)
+      var(--ease-swift, cubic-bezier(0.22, 1, 0.36, 1)),
+    width var(--dur-2, 220ms) var(--ease-swift, cubic-bezier(0.22, 1, 0.36, 1)),
+    opacity var(--dur-1, 130ms) ease;
+  will-change: transform, width;
 }
 
-/* Mutually exclusive option strip (ear-eq pill labels + glass focus) */
+/* Mutually exclusive option strip (recessed track + solid sliding focus) */
 .earEqSegment {
   position: relative;
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   max-width: 100%;
+  padding: 2px;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow: var(--well-inset);
 }
 
 .earEqSegment__option {
@@ -153,32 +208,35 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: auto !important;
   min-width: 28px;
-  height: 26px;
-  padding: 0 10px !important;
+  height: 24px;
+  padding: 3px 10px 0 !important;
   margin: 0;
   border: 1px solid transparent !important;
-  border-radius: var(--pill-radius-squircle);
+  border-radius: calc(var(--r-2) - 2px);
   background: transparent !important;
-  color: var(--pill-text, #aaaaaa) !important;
+  color: var(--text-faint) !important;
   font-size: var(--text-xs, 10px) !important;
   line-height: 1.2;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   cursor: pointer;
   box-shadow: none;
-  transition: color var(--ear-eq-motion-fast) var(--ear-eq-ease-out);
+  transition: color var(--dur-1) var(--ease-swift);
 }
 
 button.earEqSegment__option:hover,
 button.earEqSegment__option:focus {
   background: transparent !important;
-  color: var(--pill-text-hover, #ffffff) !important;
+  color: var(--text-primary) !important;
 }
 
 .earEqSegment__option--active {
-  color: var(--pill-text-hover, #ffffff) !important;
+  color: var(--text-primary) !important;
   background: transparent !important;
 }
 

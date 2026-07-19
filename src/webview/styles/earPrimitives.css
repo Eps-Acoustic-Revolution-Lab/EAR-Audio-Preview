@@ -1,0 +1,199 @@
+/* ==========================================================================
+   EAR Primitives — shared control classes built purely on tokens.
+   Extracted from design-demo (gallery) primitives; no grain overlay.
+   Light/shadow expresses machined edges, never elevation (except modals).
+   ========================================================================== */
+
+/* ── Surfaces ───────────────────────────────────────────────────────────── */
+
+/* Raised panel: matte face + top light-catch + bottom shade */
+.panel {
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-3);
+  box-shadow:
+    inset 0 1px 0 var(--edge-hi),
+    inset 0 -1px 0 var(--edge-lo);
+}
+
+/* Recessed well: meter beds, input fields, segment tracks */
+.well {
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow:
+    var(--well-inset),
+    inset 0 -1px 0 var(--edge-hi);
+}
+
+/* Canvas bed: recessed well that clips its canvas to the well radius */
+.canvasWell {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow: var(--well-inset);
+}
+
+/* ── Micro label (engraved uppercase) ───────────────────────────────────── */
+
+.microLabel {
+  font-size: var(--text-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+}
+
+/* ── Buttons (single secondary definition + one primary) ────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: var(--r-2);
+  background: var(--surface-2);
+  border: 1px solid var(--edge-line);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease-swift),
+    color var(--dur-1) var(--ease-swift);
+}
+
+.btn:hover {
+  background: var(--surface-3);
+}
+
+.btn--primary {
+  background: var(--accent-dim);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--edge-line));
+  color: var(--accent-strong);
+}
+
+.btn--primary:hover {
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────────────── */
+
+.input {
+  height: 26px;
+  padding: 0 8px;
+  background: var(--surface-0);
+  border: 1px solid var(--edge-line);
+  border-radius: var(--r-2);
+  box-shadow: var(--well-inset);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+select.input {
+  padding-right: 4px;
+}
+
+input[type="checkbox"].input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border-radius: var(--r-1);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+input[type="checkbox"].input:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+input[type="checkbox"].input:checked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: none;
+  transform: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'%3E%3Cpath d='M1 4.2 3.8 7 9 1.2' fill='none' stroke='%23111111' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 9px 7px;
+}
+
+input[type="range"].input {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 4px;
+  padding: 0;
+  border-radius: var(--r-full);
+  box-shadow: var(--well-inset);
+  cursor: pointer;
+}
+
+input[type="range"].input::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  /* center the 12px thumb on the 4px track (webkit tops-aligns by default) */
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid var(--edge-line);
+  box-shadow: inset 0 1px 0 var(--edge-hi);
+}
+
+input[type="range"].input::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid var(--edge-line);
+}
+
+/* ── Close button (single definition for all overlays/popovers) ─────────── */
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-2);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background var(--dur-1) var(--ease-swift),
+    color var(--dur-1) var(--ease-swift);
+}
+
+.closeBtn:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}

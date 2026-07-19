@@ -2,7 +2,7 @@
   position: relative;
   padding: 0;
   margin-bottom: 5px;
-  border: 1px solid var(--vscode-foreground);
+  border: 1px solid var(--edge-line);
 }
 
 .mainCanvas {
