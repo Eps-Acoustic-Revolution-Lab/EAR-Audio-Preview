@@ -154,12 +154,19 @@ export interface AnalyzeDefault {
   spectrogramAmplitudeRange: number;
 
   /*
-    Frequency Scale of spectrogram. [0,2]
+    Frequency Scale of spectrogram. [0,3]
     You can choose from values below.
-    0:Linear, 1:Log, 2:Mel
+    0:Linear, 1:Log, 2:Mel, 3:Hybrid (linear–log blend, see frequencyScaleHybridRatio)
     default: 0
   */
   frequencyScale: number;
+
+  /*
+    Hybrid frequency scale blend ratio. [0,1]
+    0 = pure linear, 1 = pure (continuous) log; default: 0.5.
+    Only used when frequencyScale is 3 (Hybrid).
+  */
+  frequencyScaleHybridRatio?: number;
 
   // Number of filter in melFilterBank. [20, 200]
   // default: 40

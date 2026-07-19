@@ -5,6 +5,7 @@ import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService, {
   AnalyzeSettingsProps,
   FftBackend,
+  FrequencyScale,
   WindowType,
 } from "../../services/analyzeSettingsService";
 import {
@@ -125,7 +126,15 @@ export default class AnalyzeSettingsComponent extends Component {
                   <option value="0">Linear</option>
                   <option value="1">Log</option>
                   <option value="2">Mel</option>
+                  <option value="3">Hybrid (linear–log)</option>
                 </select>
+              </div>
+            </div>
+            <div class="panelRow js-hybridRatioRow">
+              <span class="panelRow__label">Hybrid blend</span>
+              <div class="panelRow__control panelRow__control--range">
+                <input class="js-analyzeSetting-hybridRatio" type="range" min="0" max="1" step="0.05">
+                <span class="panelRow__value js-analyzeSetting-hybridRatioLabel"></span>
               </div>
             </div>
             <div class="panelRow">
@@ -461,8 +470,38 @@ export default class AnalyzeSettingsComponent extends Component {
       EventType.AS_UPDATE_FREQUENCY_SCALE,
       (e: CustomEventInit) => {
         frequencyScaleSelect.selectedIndex = e.detail.value;
+        syncHybridRatioUi();
       },
     );
+
+    // hybrid blend ratio (visible only when Frequency scale = Hybrid)
+    const hybridRatioRow = <HTMLElement>(
+      this._componentRoot.querySelector(".js-hybridRatioRow")
+    );
+    const hybridRatioInput = <HTMLInputElement>(
+      this._componentRoot.querySelector(".js-analyzeSetting-hybridRatio")
+    );
+    const hybridRatioLabel = <HTMLElement>(
+      this._componentRoot.querySelector(".js-analyzeSetting-hybridRatioLabel")
+    );
+    const syncHybridRatioUi = () => {
+      const isHybrid = settings.frequencyScale === FrequencyScale.Hybrid;
+      hybridRatioRow.hidden = !isHybrid;
+      hybridRatioInput.value = `${settings.frequencyScaleHybridRatio}`;
+      hybridRatioLabel.textContent =
+        settings.frequencyScaleHybridRatio.toFixed(2);
+    };
+    this._addEventlistener(hybridRatioInput, EventType.INPUT, () => {
+      settings.frequencyScaleHybridRatio = Number(hybridRatioInput.value);
+    });
+    this._addEventlistener(
+      settings,
+      EventType.AS_UPDATE_FREQUENCY_SCALE_HYBRID_RATIO,
+      () => {
+        syncHybridRatioUi();
+      },
+    );
+    syncHybridRatioUi();
 
     // init mel filter num input
     const melFilterNumInput = <HTMLInputElement>(

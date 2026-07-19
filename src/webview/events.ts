@@ -28,6 +28,8 @@ export class EventType {
     "as-update-fft-window-auto";
   public static readonly AS_UPDATE_FREQUENCY_SCALE =
     "as-update-frequency-scale";
+  public static readonly AS_UPDATE_FREQUENCY_SCALE_HYBRID_RATIO =
+    "as-update-frequency-scale-hybrid-ratio";
   public static readonly AS_UPDATE_MEL_FILTER_NUM = "as-update-mel-filter-num";
   public static readonly AS_UPDATE_MIN_FREQUENCY = "as-update-min-frequency";
   public static readonly AS_UPDATE_MAX_FREQUENCY = "as-update-max-frequency";

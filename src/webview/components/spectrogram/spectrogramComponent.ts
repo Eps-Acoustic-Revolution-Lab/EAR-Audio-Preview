@@ -12,7 +12,20 @@ import {
 import {
   hzToPiecewiseEqualSegmentY,
   piecewiseLogAxisBoundaries,
+  hybridHzFromNorm,
+  clampFrequencyScaleHybridRatio,
 } from "../../spectrogramFrequencyLayout";
+
+/** GPU texture/canvas safety caps for the supersampled backing store
+    (desktop WebGL2 implementations expose ≥ 16384; stay conservative). */
+const maxSpectrogramCanvasPx = 8192;
+const maxSpectrogramCanvasHeightPx = 4096;
+
+/** Axis label font size (px in backing pixels) keeps the design ratio of
+    20px per 600px canvas height at any resolution / dpr. */
+function axisFontPx(canvasHeight: number): string {
+  return `${Math.max(8, Math.round((canvasHeight / 600) * 20))}px Arial`;
+}
 
 export default class WaveFormComponent {
   private _analyzeService: AnalyzeService;
@@ -30,16 +43,30 @@ export default class WaveFormComponent {
     const componentRoot = document.querySelector(componentRootSelector);
     this._analyzeService = analyzeService;
 
+    /* The canvases are CSS-stretched to their container (figure.css), so the
+       backing store must outrun the display resolution: supersample by
+       dpr × 1.5 (capped) — zoomed-in regions stay sharp instead of showing
+       stretched canvas pixels, and axis labels render at full fidelity. */
+    const backingScale = Math.min((window.devicePixelRatio || 1) * 1.5, 3);
+    const backingW = Math.min(
+      maxSpectrogramCanvasPx,
+      Math.max(2, Math.round(width * backingScale)),
+    );
+    const backingH = Math.min(
+      maxSpectrogramCanvasHeightPx,
+      Math.max(2, Math.round(height * backingScale)),
+    );
+
     const canvas = document.createElement("canvas");
     canvas.className = "mainCanvas";
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = backingW;
+    canvas.height = backingH;
     componentRoot.appendChild(canvas);
 
     const axisCanvas = document.createElement("canvas");
     axisCanvas.className = "axisCanvas";
-    axisCanvas.width = width;
-    axisCanvas.height = height;
+    axisCanvas.width = backingW;
+    axisCanvas.height = backingH;
     componentRoot.appendChild(axisCanvas);
 
     switch (settings.frequencyScale) {
@@ -85,6 +112,20 @@ export default class WaveFormComponent {
           this.drawMelSpectrogram(canvas, sampleRate, settings, ch);
         }
         break;
+      case FrequencyScale.Hybrid:
+        this.drawHybridAxis(axisCanvas, settings, ch, numOfCh);
+        if (isWebGL2Supported(canvas)) {
+          this.drawSpectrogramWebGL(
+            canvas,
+            sampleRate,
+            settings,
+            ch,
+            FrequencyScale.Hybrid,
+          );
+        } else {
+          this.drawHybridSpectrogram(canvas, sampleRate, settings, ch);
+        }
+        break;
     }
   }
 
@@ -108,7 +149,16 @@ export default class WaveFormComponent {
     const melMin = AnalyzeService.hzToMel(fMin);
     const melMax = AnalyzeService.hzToMel(fMax);
     const freqMode =
-      scale === FrequencyScale.Log ? 1 : scale === FrequencyScale.Mel ? 2 : 0;
+      scale === FrequencyScale.Log
+        ? 1
+        : scale === FrequencyScale.Mel
+          ? 2
+          : scale === FrequencyScale.Hybrid
+            ? 3
+            : 0;
+    const hybridRatio = clampFrequencyScaleHybridRatio(
+      settings.frequencyScaleHybridRatio,
+    );
     const logBounds = piecewiseLogAxisBoundaries(fMin, fMax);
     const { count: logBoundCount, padded: logBoundsPadded } =
       padLogBounds(logBounds);
@@ -126,6 +176,7 @@ export default class WaveFormComponent {
         logMax,
         melMin,
         melMax,
+        hybridRatio,
         logBoundCount,
         logBoundsPadded,
       );
@@ -136,6 +187,8 @@ export default class WaveFormComponent {
         this.drawLinearSpectrogram(canvas, sampleRate, settings, ch);
       } else if (scale === FrequencyScale.Log) {
         this.drawLogSpectrogram(canvas, sampleRate, settings, ch);
+      } else if (scale === FrequencyScale.Hybrid) {
+        this.drawHybridSpectrogram(canvas, sampleRate, settings, ch);
       } else {
         this.drawMelSpectrogram(canvas, sampleRate, settings, ch);
       }
@@ -155,7 +208,7 @@ export default class WaveFormComponent {
     const axisContext = axisCanvas.getContext("2d");
     const width = axisCanvas.width;
     const height = axisCanvas.height;
-    axisContext.font = `20px Arial`;
+    axisContext.font = axisFontPx(axisCanvas.height);
 
     const minFreq = settings.minFrequency;
     const maxFreq = settings.maxFrequency;
@@ -220,7 +273,7 @@ export default class WaveFormComponent {
     const axisContext = axisCanvas.getContext("2d");
     const width = axisCanvas.width;
     const height = axisCanvas.height;
-    axisContext.font = `20px Arial`;
+    axisContext.font = axisFontPx(axisCanvas.height);
 
     const minF = settings.minFrequency;
     const maxF = settings.maxFrequency;
@@ -285,6 +338,88 @@ export default class WaveFormComponent {
     }
   }
 
+  private drawHybridAxis(
+    axisCanvas: HTMLCanvasElement,
+    settings: AnalyzeSettingsProps,
+    ch: number,
+    numOfCh: number,
+  ) {
+    // draw horizontal axis
+    this.drawTimeAxis(axisCanvas, settings);
+
+    // Vertical axis: even pixel rows, labels from the hybrid Hz mapping so
+    // ticks always sit exactly on the grid lines the shader draws.
+    const axisContext = axisCanvas.getContext("2d");
+    const width = axisCanvas.width;
+    const height = axisCanvas.height;
+    axisContext.font = axisFontPx(axisCanvas.height);
+
+    const minFreq = settings.minFrequency;
+    const maxFreq = settings.maxFrequency;
+    const ratio = settings.frequencyScaleHybridRatio;
+    const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
+    for (let i = 0; i < numAxes; i++) {
+      const yNorm = i / numAxes;
+      const freq = hybridHzFromNorm(yNorm, minFreq, maxFreq, ratio);
+      const y = height - yNorm * height;
+      axisContext.fillStyle = "rgb(245,130,32)";
+      axisContext.fillText(`${Math.trunc(freq)}`, 4, y - 4);
+
+      axisContext.fillStyle = "rgb(180,120,20)";
+      for (let j = 0; j < width; j++) {
+        axisContext.fillRect(j, y, 2, 2);
+      }
+    }
+
+    // draw channel label
+    this.drawChannelLabel(axisCanvas, ch, numOfCh);
+  }
+
+  private drawHybridSpectrogram(
+    canvas: HTMLCanvasElement,
+    sampleRate: number,
+    settings: AnalyzeSettingsProps,
+    ch: number,
+  ) {
+    /* Canvas2D fallback (no WebGL2): resample by output row instead of by
+       input bin — the hybrid mapping is closed-form norm→Hz, so each pixel
+       row fetches its nearest STFT bin directly. */
+    const context = canvas.getContext("2d", { alpha: false });
+    const spectrogram = this._analyzeService.getSpectrogram(ch, settings);
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const wholeSampleNum = (settings.maxTime - settings.minTime) * sampleRate;
+    const rectWidth = (width * settings.hopSize) / wholeSampleNum;
+    const rowH = Math.max(1, Math.round(height / 400));
+
+    const df = sampleRate / settings.windowSize;
+    const minFreqIndex = Math.floor(settings.minFrequency / df);
+    const numBins = spectrogram[0].length;
+    const minF = settings.minFrequency;
+    const maxF = settings.maxFrequency;
+    const ratio = settings.frequencyScaleHybridRatio;
+
+    for (let i = 0; i < spectrogram.length; i++) {
+      const x = i * rectWidth;
+      const frame = spectrogram[i];
+      for (let yTop = 0; yTop < height; yTop += rowH) {
+        const yNorm = 1 - yTop / height;
+        const hz = hybridHzFromNorm(yNorm, minF, maxF, ratio);
+        const bin = Math.min(
+          Math.max(0, Math.round(hz / df) - minFreqIndex),
+          numBins - 1,
+        );
+        context.fillStyle = this._analyzeService.getSpectrogramColor(
+          frame[bin],
+          settings.spectrogramAmplitudeLow,
+          settings.spectrogramAmplitudeHigh,
+        );
+        context.fillRect(x, yTop, rectWidth, rowH);
+      }
+    }
+  }
+
   private drawMelAxis(
     axisCanvas: HTMLCanvasElement,
     settings: AnalyzeSettingsProps,
@@ -298,7 +433,7 @@ export default class WaveFormComponent {
     const axisContext = axisCanvas.getContext("2d");
     const width = axisCanvas.width;
     const height = axisCanvas.height;
-    axisContext.font = `20px Arial`;
+    axisContext.font = axisFontPx(axisCanvas.height);
 
     const numAxes = Math.round(10 * settings.spectrogramVerticalScale);
     const minMel = AnalyzeService.hzToMel(settings.minFrequency);
@@ -363,7 +498,7 @@ export default class WaveFormComponent {
     const axisContext = axisCanvas.getContext("2d");
     const width = axisCanvas.width;
     const height = axisCanvas.height;
-    axisContext.font = `20px Arial`;
+    axisContext.font = axisFontPx(axisCanvas.height);
 
     const [niceT, digit] = AnalyzeService.roundToNearestNiceNumber(
       (settings.maxTime - settings.minTime) / 10,
@@ -393,7 +528,7 @@ export default class WaveFormComponent {
     numOfCh: number,
   ) {
     const axisContext = axisCanvas.getContext("2d");
-    axisContext.font = `20px Arial`;
+    axisContext.font = axisFontPx(axisCanvas.height);
 
     if (numOfCh > 1) {
       let channelText = "";

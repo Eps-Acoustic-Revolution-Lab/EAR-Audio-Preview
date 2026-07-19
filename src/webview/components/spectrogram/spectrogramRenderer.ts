@@ -23,7 +23,9 @@ uniform float u_logMin;
 uniform float u_logMax;
 uniform float u_melMin;
 uniform float u_melMax;
-uniform int u_freqMode; // 0=linear, 1=log piecewise, 2=mel
+uniform int u_freqMode; // 0=linear, 1=log piecewise, 2=mel, 3=hybrid (linear↔log blend)
+uniform float u_hybridRatio; // mode 3: 0=linear … 1=continuous log
+uniform vec2 u_texelCount; // (numBins, numFrames) of u_spectrogram
 uniform float u_logBounds[${MAX_LOG_BOUNDS}];
 uniform int u_logBoundCount;
 in vec2 v_uv;
@@ -33,17 +35,23 @@ float log10f(float x) {
   return log(x) / 2.302585092994046;
 }
 
-vec3 spectrogramColor(float t) {
+vec3 dataColor(float t) {
+  /* Magma-like perceptual ramp (from design-demo/gallery.html): uniform
+     luminance growth so quiet detail stays visible and hot ridges pop —
+     readable harmonic columns, no rainbow banding. Data encoding:
+     identical in all themes. */
   t = clamp(t, 0.0, 1.0);
-  float s = t * 6.0;
-  int seg = int(s);
-  float f = s - float(seg);
-  if (seg == 0) return vec3(1.0, 1.0, (125.0 + f * 130.0) / 255.0);
-  if (seg == 1) return vec3(1.0, (125.0 + f * 130.0) / 255.0, 125.0 / 255.0);
-  if (seg == 2) return vec3(1.0, f * 125.0 / 255.0, 125.0 / 255.0);
-  if (seg == 3) return vec3((125.0 + f * 130.0) / 255.0, 0.0, 125.0 / 255.0);
-  if (seg == 4) return vec3(f * 125.0 / 255.0, 0.0, 125.0 / 255.0);
-  return vec3(0.0, 0.0, f * 125.0 / 255.0);
+  const vec3 c0 = vec3(4.0, 3.0, 12.0) / 255.0;
+  const vec3 c1 = vec3(59.0, 15.0, 79.0) / 255.0;
+  const vec3 c2 = vec3(131.0, 38.0, 129.0) / 255.0;
+  const vec3 c3 = vec3(209.0, 78.0, 114.0) / 255.0;
+  const vec3 c4 = vec3(249.0, 142.0, 9.0) / 255.0;
+  const vec3 c5 = vec3(252.0, 255.0, 164.0) / 255.0;
+  if (t < 0.25) return mix(c0, c1, t / 0.25);
+  if (t < 0.5) return mix(c1, c2, (t - 0.25) / 0.25);
+  if (t < 0.7) return mix(c2, c3, (t - 0.5) / 0.2);
+  if (t < 0.88) return mix(c3, c4, (t - 0.7) / 0.18);
+  return mix(c4, c5, clamp((t - 0.88) / 0.12, 0.0, 1.0));
 }
 
 float hzFromLogPiecewise(float yNorm) {
@@ -77,15 +85,32 @@ void main() {
     float hz;
     if (u_freqMode == 1) {
       hz = hzFromLogPiecewise(yNorm);
+    } else if (u_freqMode == 3) {
+      /* Hybrid: mirror of hybridHzFromNorm() in spectrogramFrequencyLayout.ts. */
+      float hzLinear = mix(u_freqMinHz, u_freqMaxHz, yNorm);
+      float hzLog = pow(10.0, mix(u_logMin, u_logMax, yNorm));
+      hz = mix(hzLinear, hzLog, clamp(u_hybridRatio, 0.0, 1.0));
     } else {
       hz = mix(u_freqMinHz, u_freqMaxHz, yNorm);
     }
     freqUV = (hz - u_freqMinHz) / spanHz;
   }
   freqUV = clamp(freqUV, 0.0, 1.0);
-  float amp = texture(u_spectrogram, vec2(freqUV, v_uv.x)).r;
+  /* Anisotropic sampling for readability (iZotope RX / Audition style):
+     NEAREST along time — transient/onset edges stay crisp, no horizontal
+     smear; LINEAR along frequency — adjacent bins connect into continuous
+     harmonic ridges instead of blocks. Spectrograms are anisotropic data:
+     harmonics are smooth along frequency, percussive events sharp along
+     time, so each axis gets the filtering that suits it. */
+  int frame = clamp(int(v_uv.x * u_texelCount.y), 0, int(u_texelCount.y) - 1);
+  float binF = freqUV * max(u_texelCount.x - 1.0, 1.0);
+  int b0 = int(binF);
+  int b1 = min(b0 + 1, int(u_texelCount.x) - 1);
+  float a0 = texelFetch(u_spectrogram, ivec2(b0, frame), 0).r;
+  float a1 = texelFetch(u_spectrogram, ivec2(b1, frame), 0).r;
+  float amp = mix(a0, a1, binF - float(b0));
   float t = clamp((amp - u_low) / (u_high - u_low), 0.0, 1.0);
-  fragColor = vec4(spectrogramColor(1.0 - t), 1.0);
+  fragColor = vec4(dataColor(t), 1.0);
 }
 `;
 /* eslint-enable @typescript-eslint/naming-convention */
@@ -128,6 +153,7 @@ export class SpectrogramRenderer {
     logMax: number,
     melMin: number,
     melMax: number,
+    hybridRatio: number,
     logBoundCount: number,
     logBoundsPadded: Float32Array,
   ): void {
@@ -164,6 +190,8 @@ export class SpectrogramRenderer {
       gl.FLOAT,
       pixels,
     );
+    /* Filtering is done manually in the shader (texelFetch: crisp in time,
+       interpolated in frequency), so the sampler filter is irrelevant. */
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -184,6 +212,8 @@ export class SpectrogramRenderer {
       u_logMax: logMax,
       u_melMin: melMin,
       u_melMax: melMax,
+      u_hybridRatio: hybridRatio,
+      u_texelCount: [numBins, numFrames],
       u_logBounds: logBoundsPadded,
       u_logBoundCount: logBoundCount,
     });

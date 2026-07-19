@@ -22,6 +22,10 @@ import {
   clampPolarSampleFillBrightnessPct,
   clampPolarSampleRadiusGamma,
 } from "../utils/stereoPolarField";
+import {
+  clampFrequencyScaleHybridRatio,
+  frequencyScaleHybridRatioDefault,
+} from "../spectrogramFrequencyLayout";
 
 export enum WindowSizeIndex {
   W256 = 0,
@@ -116,6 +120,8 @@ export enum FrequencyScale {
   Linear = 0,
   Log = 1,
   Mel = 2,
+  /** Linear ↔ continuous-log blend; ratio = frequencyScaleHybridRatio. */
+  Hybrid = 3,
 }
 
 export enum WindowType {
@@ -145,6 +151,7 @@ export interface AnalyzeSettingsProps {
   spectrogramAmplitudeLow: number;
   spectrogramAmplitudeHigh: number;
   frequencyScale: number;
+  frequencyScaleHybridRatio: number;
   melFilterNum: number;
   windowType: WindowType;
   fftBackend: FftBackend;
@@ -164,6 +171,16 @@ export default class AnalyzeSettingsService extends Service {
   public static spectrogramRenderWidth(highRes: boolean): number {
     return highRes ? 3600 : AnalyzeSettingsService.SPECTROGRAM_CANVAS_WIDTH;
   }
+
+  /**
+   * STFT column-density supersampling: the hop heuristic divides by
+   * (renderWidth × this factor), so the analysis carries ~2× more time
+   * columns than the logical canvas needs. Zoomed-in views magnify a small
+   * time region; the extra columns are what keep harmonic detail readable
+   * there instead of turning into wide blocks (the display-side supersample
+   * in the spectrogram component is the other half of the same fix).
+   */
+  public static readonly SPECTROGRAM_COLUMN_DENSITY = 2;
 
   /** Base spectrogram canvas height (before vertical scale) when high-resolution is off. */
   public static spectrogramRenderHeightBase(highRes: boolean): number {
@@ -569,6 +586,19 @@ export default class AnalyzeSettingsService extends Service {
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_FREQUENCY_SCALE, {
         detail: { value: this._frequencyScale },
+      }),
+    );
+  }
+
+  private _frequencyScaleHybridRatio: number = frequencyScaleHybridRatioDefault;
+  public get frequencyScaleHybridRatio() {
+    return this._frequencyScaleHybridRatio;
+  }
+  public set frequencyScaleHybridRatio(value: number) {
+    this._frequencyScaleHybridRatio = clampFrequencyScaleHybridRatio(value);
+    this.dispatchEvent(
+      new CustomEvent(EventType.AS_UPDATE_FREQUENCY_SCALE_HYBRID_RATIO, {
+        detail: { value: this._frequencyScaleHybridRatio },
       }),
     );
   }
@@ -1128,6 +1158,11 @@ export default class AnalyzeSettingsService extends Service {
     // init frequency scale
     setting.frequencyScale = defaultSetting.frequencyScale;
 
+    // init hybrid blend ratio
+    setting.frequencyScaleHybridRatio =
+      defaultSetting.frequencyScaleHybridRatio ??
+      frequencyScaleHybridRatioDefault;
+
     // init mel filter num
     setting.melFilterNum = defaultSetting.melFilterNum;
 
@@ -1326,9 +1361,10 @@ export default class AnalyzeSettingsService extends Service {
     const fullSampleNum = (this.maxTime - this.minTime) * this._sampleRate;
     const enoughHopSize = Math.trunc(
       (minRectWidth * fullSampleNum) /
-        AnalyzeSettingsService.spectrogramRenderWidth(
+        (AnalyzeSettingsService.spectrogramRenderWidth(
           this._highResolutionSpectrogram,
-        ),
+        ) *
+          AnalyzeSettingsService.SPECTROGRAM_COLUMN_DENSITY),
     );
     const minHopSize = n / 32;
     const hopSize = Math.max(enoughHopSize, minHopSize);
@@ -1374,6 +1410,7 @@ export default class AnalyzeSettingsService extends Service {
       windowSizeIndex: this._windowSizeIndex,
       fftWindowAuto: this._fftWindowAuto,
       frequencyScale: this.frequencyScale,
+      frequencyScaleHybridRatio: this.frequencyScaleHybridRatio,
       melFilterNum: this.melFilterNum,
       minAmplitude: this.minAmplitude,
       maxAmplitude: this.maxAmplitude,
@@ -1422,6 +1459,7 @@ export default class AnalyzeSettingsService extends Service {
       spectrogramAmplitudeLow: this.spectrogramAmplitudeLow,
       spectrogramAmplitudeHigh: this.spectrogramAmplitudeHigh,
       frequencyScale: this.frequencyScale,
+      frequencyScaleHybridRatio: this.frequencyScaleHybridRatio,
       melFilterNum: this.melFilterNum,
       windowType: this.windowType,
       fftBackend: this.fftBackend,

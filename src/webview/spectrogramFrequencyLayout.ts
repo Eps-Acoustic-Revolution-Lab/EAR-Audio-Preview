@@ -91,3 +91,40 @@ export function canvasYTopToLogPiecewiseYNorm(
 ): number {
   return 1 - yFromTop / height;
 }
+
+/* ── Hybrid (linear ↔ log blend) scale ─────────────────────────────────────── */
+
+export const frequencyScaleHybridRatioDefault = 0.5;
+
+/** Clamp the hybrid blend ratio to [0,1]; non-finite → default 0.5. */
+export function clampFrequencyScaleHybridRatio(ratio: number): number {
+  const v = Number(ratio);
+  if (!Number.isFinite(v)) {
+    return frequencyScaleHybridRatioDefault;
+  }
+  return Math.max(0, Math.min(1, v));
+}
+
+/**
+ * Hybrid frequency axis: a per-pixel blend between the linear and continuous
+ * log mappings.
+ *   hz = (1 − ratio) · hzLinear(yNorm) + ratio · hzLog(yNorm)
+ * yNorm 0 (bottom) → minF, 1 (top) → maxF. ratio 0 ≡ Linear, 1 ≡ continuous
+ * Log, 0.5 keeps the mid-band readable while opening up the low end.
+ * Monotonic in yNorm for all ratios, so the WebGL shader and every Canvas2D /
+ * hit-testing consumer share this one closed-form mapping.
+ */
+export function hybridHzFromNorm(
+  yNorm: number,
+  minF: number,
+  maxF: number,
+  ratio: number,
+): number {
+  const y = Math.max(0, Math.min(1, yNorm));
+  const hzLinear = minF + (maxF - minF) * y;
+  const logMin = Math.log10(Math.max(minF, 1e-6));
+  const logMax = Math.log10(Math.max(maxF, 1e-6));
+  const hzLog = Math.pow(10, logMin + (logMax - logMin) * y);
+  const r = clampFrequencyScaleHybridRatio(ratio);
+  return hzLinear * (1 - r) + hzLog * r;
+}

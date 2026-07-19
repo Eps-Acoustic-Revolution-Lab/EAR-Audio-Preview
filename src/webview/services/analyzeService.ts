@@ -9,6 +9,7 @@ import {
 import Service from "../service";
 import {
   canvasYTopToLogPiecewiseYNorm,
+  hybridHzFromNorm,
   piecewiseLogAxisBoundaries,
   piecewiseYNormToHz,
 } from "../spectrogramFrequencyLayout";
@@ -19,6 +20,34 @@ import {
   essentiaWindowNames,
   sliceStftFrequencyBand,
 } from "../../shared/stftEssentiaCompute";
+
+/** Magma-like perceptual colormap stops (design-demo/gallery.html data
+    encoding — kept in sync with the WebGL shader's dataColor()). */
+const spectrogramDataColorStops: ReadonlyArray<
+  readonly [number, number, number, number]
+> = [
+  [0.0, 4, 3, 12],
+  [0.25, 59, 15, 79],
+  [0.5, 131, 38, 129],
+  [0.7, 209, 78, 114],
+  [0.88, 249, 142, 9],
+  [1.0, 252, 255, 164],
+];
+
+/** Canvas2D mirror of the shader colormap: t ∈ [0,1] → css rgb(). */
+function spectrogramDataColorCss(t: number): string {
+  for (let i = 1; i < spectrogramDataColorStops.length; i++) {
+    if (t <= spectrogramDataColorStops[i][0]) {
+      const [t0, r0, g0, b0] = spectrogramDataColorStops[i - 1];
+      const [t1, r1, g1, b1] = spectrogramDataColorStops[i];
+      const f = (t - t0) / (t1 - t0);
+      return `rgb(${Math.round(r0 + (r1 - r0) * f)},${Math.round(
+        g0 + (g1 - g0) * f,
+      )},${Math.round(b0 + (b1 - b0) * f)})`;
+    }
+  }
+  return "rgb(252,255,164)";
+}
 
 export default class AnalyzeService extends Service {
   private _audioBuffer: AudioBuffer;
@@ -183,39 +212,16 @@ export default class AnalyzeService extends Service {
 
   public getSpectrogramColor(amp: number, low: number, high: number): string {
     if (amp === null || !Number.isFinite(amp)) {
-      return "rgb(0,0,0)";
+      return "rgb(4,3,12)";
     }
-    const classNum = 6;
     const range = high - low;
     if (range === 0) {
-      return "rgb(0,0,0)";
+      return "rgb(4,3,12)";
     }
-    // Map dB so low (quiet) → dark, high (loud, toward `high`) → bright (matches shader / user expectation).
-    const a = Math.max(low, Math.min(high, amp));
-    const pseudo = low + high - a;
-    const classWidth = range / classNum;
-    const ampClass = Math.min(
-      classNum - 1,
-      Math.max(0, Math.floor((pseudo - low) / classWidth)),
-    );
-    const classMinAmp = low + (ampClass + 1) * classWidth;
-    const value = (pseudo - classMinAmp) / -classWidth;
-    switch (ampClass) {
-      case 0:
-        return `rgb(255,255,${125 + Math.floor(value * 130)})`;
-      case 1:
-        return `rgb(255,${125 + Math.floor(value * 130)},125)`;
-      case 2:
-        return `rgb(255,${Math.floor(value * 125)},125)`;
-      case 3:
-        return `rgb(${125 + Math.floor(value * 130)},0,125)`;
-      case 4:
-        return `rgb(${Math.floor(value * 125)},0,125)`;
-      case 5:
-        return `rgb(0,0,${Math.floor(value * 125)})`;
-      default:
-        return `rgb(0,0,0)`;
-    }
+    // Magma-like perceptual ramp — mirrors the WebGL shader's dataColor()
+    // (design-demo/gallery.html data encoding): quiet → dark, loud → bright.
+    const t = Math.max(0, Math.min(1, (amp - low) / range));
+    return spectrogramDataColorCss(t);
   }
 
   public analyze() {
@@ -560,6 +566,7 @@ export default class AnalyzeService extends Service {
     frequencyScale: FrequencyScale,
     minF: number,
     maxF: number,
+    hybridRatio = 0.5,
   ): number {
     if (height <= 0) {
       return minF;
@@ -581,6 +588,9 @@ export default class AnalyzeService extends Service {
         const melSpan = melMax - melMin;
         const mel = melMin + (1 - y / height) * melSpan;
         return AnalyzeService.melToHz(mel);
+      }
+      case FrequencyScale.Hybrid: {
+        return hybridHzFromNorm(1 - y / height, minF, maxF, hybridRatio);
       }
       default: {
         const range = maxF - minF;

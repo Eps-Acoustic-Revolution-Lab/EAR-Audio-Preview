@@ -7,6 +7,7 @@ import AnalyzeSettingsService, {
 } from "../../services/analyzeSettingsService";
 import {
   canvasYTopToLogPiecewiseYNorm,
+  hybridHzFromNorm,
   piecewiseLogAxisBoundaries,
   piecewiseYNormToHz,
 } from "../../spectrogramFrequencyLayout";
@@ -299,6 +300,7 @@ export default class FigureInteractionComponent extends Component {
           props.frequencyScale,
           props.minFrequency,
           props.maxFrequency,
+          props.frequencyScaleHybridRatio,
         );
         detail = {
           kind: "spectrogram",
@@ -677,6 +679,24 @@ export default class FigureInteractionComponent extends Component {
             maxFrequency = AnalyzeService.melToHz(
               melMin + (1 - minY / rect.height) * melSpan,
             );
+            break;
+          }
+          case FrequencyScale.Hybrid: {
+            const ratio = settings.frequencyScaleHybridRatio;
+            const hzA = hybridHzFromNorm(
+              1 - maxY / rect.height,
+              settings.minFrequency,
+              settings.maxFrequency,
+              ratio,
+            );
+            const hzB = hybridHzFromNorm(
+              1 - minY / rect.height,
+              settings.minFrequency,
+              settings.maxFrequency,
+              ratio,
+            );
+            minFrequency = Math.min(hzA, hzB);
+            maxFrequency = Math.max(hzA, hzB);
             break;
           }
         }
