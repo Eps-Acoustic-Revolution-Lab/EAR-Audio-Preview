@@ -51,6 +51,23 @@ export function emaDecayFromReleaseDbPerSec(
   return Math.exp(-1 / (fps * tau));
 }
 
+/** Time constant (seconds) of an exponential release at the given dB/s rate. */
+export function releaseTimeConstantSec(releaseDbPerSec: number): number {
+  return 20 / (Math.LN10 * clampReleaseDbPerSec(releaseDbPerSec));
+}
+
+/**
+ * EMA decay coefficient for time constant tau (s) over an arbitrary step
+ * dt (s). Frame-rate independent: pass the real inter-frame delta so
+ * ballistics stay identical at 60 / 120 / 144 Hz displays.
+ */
+export function emaDecayFromTimeConstant(
+  tauSec: number,
+  dtSec: number,
+): number {
+  return Math.exp(-dtSec / Math.max(tauSec, 1e-6));
+}
+
 /** Peak envelope fall in dB per animation frame. */
 export function peakFallDbPerFrameFromRelease(
   releaseDbPerSec: number,

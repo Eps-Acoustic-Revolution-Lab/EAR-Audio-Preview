@@ -51,12 +51,26 @@
   --hairline: rgba(255, 255, 255, 0.09);
 
   /* Accent: ink-green family derived from #388D29 — same hue (~111°),
-     raised lightness for dark-surface legibility; strong/dim derived. */
+     raised lightness for dark-surface legibility; strong/dim derived.
+     Each derived token has a static fallback first: webviews on older
+     Chromium (<111, i.e. older IDE forks' VS Code base) do not support
+     color-mix() and would otherwise drop the declaration entirely. */
   --accent: #5cc248;
+  --accent-strong: #8ad37b;
   --accent-strong: color-mix(in srgb, var(--accent) 72%, #ffffff);
+  --accent-dim: rgba(92, 194, 72, 0.16);
   --accent-dim: color-mix(in srgb, var(--accent) 16%, transparent);
 
-  --signal-red: #f44336;
+  /* Vintage-tuned signal colors for canvas visualizations (meter / clip /
+     overlay), from design-demo: muted so meters sit inside the machined
+     dark UI instead of glowing Material-bright. */
+  --signal-green: #82a35f;
+  --signal-yellow: #d9b84a;
+  --signal-red: #c0553f;
+
+  /* Canvas visualization semantics (warm off-white family, design-demo). */
+  --viz-readout: rgba(236, 229, 211, 0.95);
+  --viz-grid: rgba(236, 229, 211, 0.09);
 
   /* Neutral elevation / inset shadows */
   --shadow-modal: 0 10px 32px rgba(0, 0, 0, 0.45);
@@ -118,6 +132,7 @@
 .earEqPill--active {
   color: var(--accent-strong) !important;
   background: var(--accent-dim) !important;
+  border-color: #305e28 !important;
   border-color: color-mix(
     in srgb,
     var(--accent) 45%,
@@ -127,6 +142,7 @@
 
 .earEqPill--bypass {
   color: var(--pill-text-hover) !important;
+  border-color: #305e28 !important;
   border-color: color-mix(
     in srgb,
     var(--knob-accent, #5cc248) 45%,
