@@ -727,6 +727,26 @@ export default class WebView extends Component {
     );
     updateMeterColumn();
 
+    /* Mousemove arrives faster than the refresh rate; coalesce column-width
+       updates so the flex re-layout runs at most once per frame. */
+    let meterColumnRaf = 0;
+    const scheduleMeterColumnUpdate = () => {
+      if (meterColumnRaf) {
+        return;
+      }
+      meterColumnRaf = requestAnimationFrame(() => {
+        meterColumnRaf = 0;
+        updateMeterColumn();
+      });
+    };
+    const flushMeterColumnUpdate = () => {
+      if (meterColumnRaf) {
+        cancelAnimationFrame(meterColumnRaf);
+        meterColumnRaf = 0;
+      }
+      updateMeterColumn();
+    };
+
     this._addEventlistener(
       meterColumnResizeHandle,
       EventType.MOUSE_DOWN,
@@ -738,11 +758,12 @@ export default class WebView extends Component {
           meterColumnWidthPx = clampMeterColumnWidth(
             startWidth + (startX - ev.clientX),
           );
-          updateMeterColumn();
+          scheduleMeterColumnUpdate();
         };
         const up = () => {
           document.removeEventListener("mousemove", move);
           document.removeEventListener("mouseup", up);
+          flushMeterColumnUpdate();
         };
         document.addEventListener("mousemove", move);
         document.addEventListener("mouseup", up);

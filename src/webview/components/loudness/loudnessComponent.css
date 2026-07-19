@@ -39,6 +39,7 @@
 }
 
 .loudnessHost__expandBtn:hover {
+  background: rgba(42, 42, 46, 0.7); /* static fallback (Chromium <111) */
   background: color-mix(in srgb, var(--surface-3) 70%, transparent);
 }
 

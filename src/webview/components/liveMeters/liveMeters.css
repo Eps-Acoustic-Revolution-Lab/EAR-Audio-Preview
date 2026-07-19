@@ -134,6 +134,7 @@
 .workspaceChrome__meterToggle--on:hover {
   color: var(--accent-strong);
   background: var(--accent-dim);
+  border-color: rgba(92, 194, 72, 0.45); /* static fallback (Chromium <111) */
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
@@ -409,6 +410,7 @@ button.workspacePane__tab:focus {
 }
 
 .waveBand__resizeHandle:hover {
+  background: rgba(92, 194, 72, 0.4); /* static fallback (Chromium <111) */
   background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
@@ -438,6 +440,7 @@ button.workspacePane__tab:focus {
 }
 
 .meterColumnResizeHandle:hover {
+  background: rgba(92, 194, 72, 0.4); /* static fallback (Chromium <111) */
   background: color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
@@ -866,6 +869,7 @@ button.workspacePane__tab:focus {
   flex-basis: 100%;
   margin-top: 6px;
   padding-top: 6px;
+  border-top: 1px solid rgba(12, 12, 14, 0.55); /* fallback (Chromium <111) */
   border-top: 1px solid color-mix(in srgb, var(--edge-line) 55%, transparent);
 }
 

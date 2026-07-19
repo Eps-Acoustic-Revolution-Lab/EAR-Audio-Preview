@@ -73,11 +73,13 @@
 
 .btn--primary {
   background: var(--accent-dim);
+  border-color: #305e28; /* static fallback (Chromium <111) */
   border-color: color-mix(in srgb, var(--accent) 45%, var(--edge-line));
   color: var(--accent-strong);
 }
 
 .btn--primary:hover {
+  background: rgba(92, 194, 72, 0.24); /* static fallback (Chromium <111) */
   background: color-mix(in srgb, var(--accent) 24%, transparent);
 }
 

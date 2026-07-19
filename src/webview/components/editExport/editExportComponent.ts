@@ -389,6 +389,28 @@ export default class EditExportComponent extends Component {
       this._updateDurationHint();
     };
 
+    /* Pointer events can arrive far faster than the display refresh; coalesce
+       region UI updates into one rAF so dragging stays at frame rate instead
+       of re-laying-out on every event (setRegion also fires two events per
+       move, which all funnel through the same coalesced refresh). */
+    let regionUiRaf = 0;
+    const scheduleRegionUi = () => {
+      if (regionUiRaf) {
+        return;
+      }
+      regionUiRaf = requestAnimationFrame(() => {
+        regionUiRaf = 0;
+        onRegionUi();
+      });
+    };
+    const flushRegionUi = () => {
+      if (regionUiRaf) {
+        cancelAnimationFrame(regionUiRaf);
+        regionUiRaf = 0;
+      }
+      onRegionUi();
+    };
+
     this._addEventlistener(dragLayer, EventType.MOUSE_DOWN, (e: MouseEvent) => {
       if (e.button !== 0) {
         return;
@@ -397,7 +419,7 @@ export default class EditExportComponent extends Component {
       downX = e.clientX;
       const t = xToTime(e.clientX);
       this._editExportSettings.setRegion(t, t);
-      onRegionUi();
+      flushRegionUi();
       e.preventDefault();
     });
 
@@ -408,11 +430,15 @@ export default class EditExportComponent extends Component {
       const t0 = xToTime(downX);
       const t1 = xToTime(e.clientX);
       this._editExportSettings.setRegion(Math.min(t0, t1), Math.max(t0, t1));
-      onRegionUi();
+      scheduleRegionUi();
     };
 
     const onUp = () => {
+      if (!dragging) {
+        return;
+      }
       dragging = false;
+      flushRegionUi();
     };
 
     this._addEventlistener(document, EventType.MOUSE_MOVE, onMove);
@@ -422,7 +448,7 @@ export default class EditExportComponent extends Component {
       EventType.EE_UPDATE_REGION_START,
       EventType.EE_UPDATE_REGION_END,
     ]) {
-      this._addEventlistener(this._editExportSettings, type, onRegionUi);
+      this._addEventlistener(this._editExportSettings, type, scheduleRegionUi);
     }
     onRegionUi();
   }

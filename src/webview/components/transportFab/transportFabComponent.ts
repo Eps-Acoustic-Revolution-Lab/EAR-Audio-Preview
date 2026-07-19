@@ -215,6 +215,9 @@ export default class TransportFabComponent extends Component {
     this._loading = loading;
     this._knob.disabled = loading;
     this._expandChip.disabled = loading;
+    /* Mirrors the knob's disabled state for the :has()-less fallback in CSS
+       (Chromium <105 does not support :has()). */
+    this._fabWrap.classList.toggle("transportDock__fabWrap--disabled", loading);
     if (loading) {
       this.close();
     }

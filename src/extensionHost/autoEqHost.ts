@@ -7,6 +7,9 @@ const BASE_URL = "https://autoeq.app";
 const REQUEST_TIMEOUT_MS = 20000;
 const MAX_REDIRECTS = 3;
 const MAX_ERROR_BODY_CHARS = 300;
+/** Hard cap on response body size: guards the extension host against a
+    misbehaving endpoint (or hostile proxy) streaming unbounded data. */
+const MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
 
 export interface AutoEqEqualizeHostBody {
   name: string;
@@ -14,6 +17,11 @@ export interface AutoEqEqualizeHostBody {
   rig: string;
   target: string;
   fs: number;
+}
+
+interface AutoEqRequestOptions {
+  method?: string;
+  body?: string;
 }
 
 /**
@@ -27,7 +35,7 @@ export interface AutoEqEqualizeHostBody {
 function requestAutoEqJson(
   url: string,
   label: string,
-  options: { method?: string; body?: string } = {},
+  options: AutoEqRequestOptions = {},
 ): Promise<unknown> {
   if (typeof httpsRequest === "function") {
     return requestAutoEqJsonViaHttps(url, label, options);
@@ -35,11 +43,66 @@ function requestAutoEqJson(
   return requestAutoEqJsonViaFetch(url, label, options);
 }
 
+function parseJsonBody(text: string, label: string): unknown {
+  try {
+    return JSON.parse(text) as unknown;
+  } catch (parseError) {
+    throw new Error(
+      `AutoEq ${label} returned invalid JSON: ${String(parseError)}`,
+    );
+  }
+}
+
+/** Stream a fetch response body with a byte cap so a runaway response cannot
+    grow without bound in the extension host. */
+async function readFetchBodyCapped(
+  res: Response,
+  label: string,
+): Promise<string> {
+  if (!res.body) {
+    const text = await res.text();
+    if (text.length > MAX_RESPONSE_BYTES) {
+      throw new Error(
+        `AutoEq ${label} response exceeded ${MAX_RESPONSE_BYTES} bytes`,
+      );
+    }
+    return text;
+  }
+  const reader = res.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let received = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    if (value) {
+      received += value.byteLength;
+      if (received > MAX_RESPONSE_BYTES) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error(
+          `AutoEq ${label} response exceeded ${MAX_RESPONSE_BYTES} bytes`,
+        );
+      }
+      chunks.push(value);
+    }
+  }
+  const merged = new Uint8Array(received);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder("utf-8").decode(merged);
+}
+
 async function requestAutoEqJsonViaFetch(
   url: string,
   label: string,
-  options: { method?: string; body?: string },
+  options: AutoEqRequestOptions,
 ): Promise<unknown> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   let res: Response;
   try {
     res = await fetch(url, {
@@ -51,8 +114,14 @@ async function requestAutoEqJsonViaFetch(
           : {}),
       },
       body: options.body,
+      signal: controller.signal,
     });
   } catch (err) {
+    if (controller.signal.aborted) {
+      throw new Error(
+        `AutoEq ${label} request failed: timed out after ${REQUEST_TIMEOUT_MS}ms`,
+      );
+    }
     const cause = (err as { cause?: { code?: string; message?: string } })
       .cause;
     throw new Error(
@@ -60,6 +129,8 @@ async function requestAutoEqJsonViaFetch(
         cause ? ` (cause: ${cause.code ?? ""} ${cause.message ?? ""})` : ""
       }`,
     );
+  } finally {
+    clearTimeout(timer);
   }
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
@@ -69,16 +140,27 @@ async function requestAutoEqJsonViaFetch(
       }`,
     );
   }
-  return res.json() as Promise<unknown>;
+  const text = await readFetchBodyCapped(res, label);
+  return parseJsonBody(text, label);
 }
 
 function requestAutoEqJsonViaHttps(
   url: string,
   label: string,
-  options: { method?: string; body?: string } = {},
+  options: AutoEqRequestOptions = {},
   redirectsLeft: number = MAX_REDIRECTS,
+  deadline: number = Date.now() + REQUEST_TIMEOUT_MS,
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) {
+      reject(
+        new Error(
+          `AutoEq ${label} request failed: timed out after ${REQUEST_TIMEOUT_MS}ms`,
+        ),
+      );
+      return;
+    }
     const req = httpsRequest(
       url,
       {
@@ -103,19 +185,47 @@ function requestAutoEqJsonViaHttps(
         ) {
           res.resume();
           const nextUrl = new URL(res.headers.location, url).toString();
+          /* Only 307/308 preserve method and body across a redirect; for
+             301/302/303 a POST is downgraded to GET (fetch convention) so we
+             never re-send the payload where it would be unexpected. */
+          const nextOptions: AutoEqRequestOptions =
+            options.body !== undefined && status !== 307 && status !== 308
+              ? { method: "GET", body: undefined }
+              : options;
           resolve(
             requestAutoEqJsonViaHttps(
               nextUrl,
               label,
-              options,
+              nextOptions,
               redirectsLeft - 1,
+              deadline,
             ),
           );
           return;
         }
         const chunks: Uint8Array[] = [];
-        res.on("data", (chunk: Uint8Array) => chunks.push(chunk));
+        let received = 0;
+        let aborted = false;
+        res.on("data", (chunk: Uint8Array) => {
+          if (aborted) {
+            return;
+          }
+          received += chunk.byteLength;
+          if (received > MAX_RESPONSE_BYTES) {
+            aborted = true;
+            req.destroy(
+              new Error(
+                `AutoEq ${label} response exceeded ${MAX_RESPONSE_BYTES} bytes`,
+              ),
+            );
+            return;
+          }
+          chunks.push(chunk);
+        });
         res.on("end", () => {
+          if (aborted) {
+            return;
+          }
           const text = Buffer.concat(chunks).toString("utf8");
           if (status < 200 || status >= 300) {
             reject(
@@ -128,19 +238,18 @@ function requestAutoEqJsonViaHttps(
             return;
           }
           try {
-            resolve(JSON.parse(text) as unknown);
+            resolve(parseJsonBody(text, label));
           } catch (parseError) {
-            reject(
-              new Error(
-                `AutoEq ${label} returned invalid JSON: ${String(parseError)}`,
-              ),
-            );
+            reject(parseError);
           }
         });
         res.on("error", reject);
       },
     );
-    req.setTimeout(REQUEST_TIMEOUT_MS, () => {
+    /* Idle timer bounded by the remaining total deadline: a slow-drip server
+       can no longer hold the request open indefinitely by staying just under
+       the idle threshold. */
+    req.setTimeout(Math.min(remaining, REQUEST_TIMEOUT_MS), () => {
       req.destroy(new Error(`timed out after ${REQUEST_TIMEOUT_MS}ms`));
     });
     req.on("error", (err: NodeJS.ErrnoException) => {

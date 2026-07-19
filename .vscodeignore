@@ -5,7 +5,10 @@
 out/
 src/
 images/
+doc/**
 docs/**
+design-demo/
+.qoder/
 tmp_files/**
 .gitignore
 .eslintignore

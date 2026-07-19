@@ -117,6 +117,7 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:hover:not(:checked) {
+  border-color: #305e28; /* static fallback (Chromium <111) */
   border-color: color-mix(in srgb, var(--accent) 45%, var(--edge-line));
 }
 

@@ -101,11 +101,10 @@ body > #root {
 }
 
 .settingsDock__fabRingTrack {
-  stroke: color-mix(
-    in srgb,
-    var(--vscode-descriptionForeground) 38%,
-    transparent
-  );
+  /* stroke-opacity instead of color-mix(): works on all Chromium versions and
+     keeps following the theme variable without a derivable static fallback. */
+  stroke: var(--vscode-descriptionForeground);
+  stroke-opacity: 0.38;
 }
 
 .settingsDock__fabRingBar {

@@ -27,6 +27,12 @@
   opacity: 0.45;
 }
 
+/* JS-mirrored fallback for browsers without :has() (Chromium <105). */
+.transportDock__fabWrap--disabled {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
 .transportDock__expandChip {
   position: absolute;
   top: -4px;
@@ -47,8 +53,7 @@
   line-height: 1;
   cursor: pointer;
   pointer-events: auto;
-  transition: color var(--dur-1)
-    var(--ease-swift);
+  transition: color var(--dur-1) var(--ease-swift);
 }
 
 .transportDock__expandChip:hover {

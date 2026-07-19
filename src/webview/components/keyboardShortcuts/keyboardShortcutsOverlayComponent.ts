@@ -15,6 +15,9 @@ interface ShortcutGroup {
 export default class KeyboardShortcutsOverlayComponent extends Component {
   private _overlay: HTMLElement;
   private _isVisible = false;
+  /** Deferred `hidden` attr from _hide(); cleared on re-show so a stale
+      timeout cannot hide a freshly opened overlay (toggle race). */
+  private _hideTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly _modKey: string;
 
   constructor(selector: string) {
@@ -186,6 +189,10 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
 
   private _show(): void {
     this._isVisible = true;
+    if (this._hideTimer !== undefined) {
+      clearTimeout(this._hideTimer);
+      this._hideTimer = undefined;
+    }
     this._overlay.removeAttribute("hidden");
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -197,8 +204,20 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
   private _hide(): void {
     this._isVisible = false;
     this._overlay.classList.remove("keyboardShortcutsOverlay--open");
-    setTimeout(() => {
+    if (this._hideTimer !== undefined) {
+      clearTimeout(this._hideTimer);
+    }
+    this._hideTimer = setTimeout(() => {
+      this._hideTimer = undefined;
       this._overlay.setAttribute("hidden", "");
     }, 150);
+  }
+
+  override dispose() {
+    if (this._hideTimer !== undefined) {
+      clearTimeout(this._hideTimer);
+      this._hideTimer = undefined;
+    }
+    super.dispose();
   }
 }

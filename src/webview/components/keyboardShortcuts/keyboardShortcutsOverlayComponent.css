@@ -81,6 +81,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem;
+  background: rgba(17, 17, 17, 0.3); /* static fallback (Chromium <111) */
   background: color-mix(in srgb, var(--surface-0) 30%, transparent);
   border-radius: var(--r-2);
 }
