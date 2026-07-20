@@ -152,6 +152,7 @@ export class WebviewMessageType {
   public static readonly WRITE_WAV = "WRITE_WAV";
   public static readonly ERROR = "ERROR";
   public static readonly SAVE_ANALYZE_UI = "SAVE_ANALYZE_UI";
+  public static readonly SAVE_ONBOARDING_SEEN = "SAVE_ONBOARDING_SEEN";
   public static readonly ANALYZE_SEQUENCE_FEATURES =
     "ANALYZE_SEQUENCE_FEATURES";
   public static readonly ANALYZE_STFT = "ANALYZE_STFT";
@@ -180,6 +181,12 @@ export class WebviewMessageType {
     msg: WebviewMessage,
   ): msg is WebviewSaveAnalyzeUiMessage {
     return msg.type === WebviewMessageType.SAVE_ANALYZE_UI;
+  }
+
+  public static isSaveOnboardingSeen(
+    msg: WebviewMessage,
+  ): msg is WebviewSaveOnboardingSeenMessage {
+    return msg.type === WebviewMessageType.SAVE_ONBOARDING_SEEN;
   }
 
   public static isAnalyzeSequenceFeatures(
@@ -225,6 +232,7 @@ export type WebviewMessage =
   | WebviewWriteWavMessage
   | WebviewErrorMessage
   | WebviewSaveAnalyzeUiMessage
+  | WebviewSaveOnboardingSeenMessage
   | WebviewAnalyzeSequenceFeaturesMessage
   | WebviewAnalyzeStftMessage
   | WebviewSaveEqSettingsMessage
@@ -271,6 +279,11 @@ export interface WebviewErrorMessageData {
 export class WebviewSaveAnalyzeUiMessage {
   type = WebviewMessageType.SAVE_ANALYZE_UI;
   data: Record<string, unknown>;
+}
+
+/** Marks the cold-start onboarding tour as completed (persisted in globalState). */
+export class WebviewSaveOnboardingSeenMessage {
+  type = WebviewMessageType.SAVE_ONBOARDING_SEEN;
 }
 
 export interface WebviewAnalyzeSequenceFeaturesMessageData {

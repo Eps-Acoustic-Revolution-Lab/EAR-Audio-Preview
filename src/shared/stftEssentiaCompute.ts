@@ -1,4 +1,5 @@
 import type { EssentiaInstance } from "./essentiaTypes";
+import { freeEssentiaVector } from "./essentiaTypes";
 
 export interface StftSettingsWire {
   windowSize: number;
@@ -83,6 +84,10 @@ export async function computeEssentiaStftSpectrogram(
     );
     const specOut = essentia.Spectrum(windowed.frame, windowSize);
     const specArr = essentia.vectorToArray(specOut.spectrum);
+    // Release per-frame WASM vectors — embind heap is not GC-managed.
+    freeEssentiaVector(frameVec);
+    freeEssentiaVector(windowed.frame);
+    freeEssentiaVector(specOut.spectrum);
 
     const rowOff = frameIdx * binCount;
     for (let j = minFreqIndex; j < maxFreqIndex; j++) {

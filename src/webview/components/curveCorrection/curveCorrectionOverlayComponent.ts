@@ -192,6 +192,19 @@ export default class CurveCorrectionOverlayComponent extends Component {
         this.close();
         return;
       }
+      // Bare "E" toggles the overlay. The former Cmd/Ctrl+Shift+E chord is
+      // swallowed by the IDE workbench (Show Explorer) before the webview
+      // ever sees it; it is kept below only for environments that pass it.
+      if (
+        e.key.toLowerCase() === "e" &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        this.toggle();
+        return;
+      }
       const mod = this._modKey === "meta" ? e.metaKey : e.ctrlKey;
       if (e.key.toLowerCase() === "e" && e.shiftKey && mod) {
         e.preventDefault();

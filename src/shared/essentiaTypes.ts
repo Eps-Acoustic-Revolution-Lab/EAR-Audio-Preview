@@ -30,3 +30,15 @@ export type EssentiaInstance = {
   shutdown(): void;
 };
 /* eslint-enable @typescript-eslint/naming-convention */
+
+/**
+ * Free an embind VectorFloat returned by essentia.js. WASM-heap vectors are
+ * not garbage-collected, so per-frame vectors must be released or long
+ * analyses grow the heap unbounded. Safe on mocks/stubs without delete().
+ */
+export function freeEssentiaVector(vec: unknown): void {
+  const d = (vec as { delete?: () => void } | null | undefined)?.delete;
+  if (typeof d === "function") {
+    d.call(vec);
+  }
+}

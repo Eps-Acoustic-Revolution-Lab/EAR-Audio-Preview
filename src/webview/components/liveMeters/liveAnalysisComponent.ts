@@ -164,6 +164,9 @@ export default class LiveAnalysisComponent extends Component {
     });
     this._addEventlistener(document, "keydown", (e: KeyboardEvent) => {
       if (e.code === "Escape" && !this._overlay.classList.contains("hidden")) {
+        // Mark Esc as consumed so global listeners (onboarding tour) know
+        // this keypress closed the fullscreen overlay, not the tour.
+        e.preventDefault();
         this._closeOverlay();
       }
     });

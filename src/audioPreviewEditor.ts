@@ -29,6 +29,7 @@ import type {
 
 const analyzeUiCacheKey = "earAudioPreview.analyzeUiCache.v1";
 const headphoneEqCacheKey = "earAudioPreview.headphoneEq.v1";
+const onboardingSeenKey = "earAudioPreview.onboardingSeen.v1";
 const workspaceEqFileName = "ear-headphone-eq.json";
 
 class AudioPreviewDocument extends Disposable implements vscode.CustomDocument {
@@ -254,6 +255,8 @@ export class AudioPreviewEditorProvider
         const data = {
           ...this.buildWebviewConfig(document),
           headphoneEq,
+          onboardingSeen:
+            this._context.globalState.get(onboardingSeenKey) === true,
           loudnessWorkletUri: webviewPanel.webview
             .asWebviewUri(
               vscode.Uri.joinPath(
@@ -270,6 +273,10 @@ export class AudioPreviewEditorProvider
         });
         break;
       }
+
+      case WebviewMessageType.SAVE_ONBOARDING_SEEN:
+        await this._context.globalState.update(onboardingSeenKey, true);
+        break;
 
       case WebviewMessageType.SAVE_ANALYZE_UI:
         if (WebviewMessageType.isSaveAnalyzeUi(msg)) {

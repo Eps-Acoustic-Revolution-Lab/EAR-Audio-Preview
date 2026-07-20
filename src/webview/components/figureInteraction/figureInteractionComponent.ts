@@ -104,35 +104,42 @@ export default class FigureInteractionComponent extends Component {
     positionBar.style.display = "none";
     componentRoot.appendChild(positionBar);
 
+    const updatePositionBar = (sec: number) => {
+      const props = analyseSettingsService.toProps();
+      const trng = props.maxTime - props.minTime;
+      if (trng <= 0 || !Number.isFinite(sec)) {
+        positionBar.style.display = "none";
+        return;
+      }
+      const rootW = componentRoot.getBoundingClientRect().width;
+      const pad = readTimelinePadFromElement(componentRoot);
+      const percentInFigureRange = timeSecToContainerPercent(
+        sec,
+        props.minTime,
+        props.maxTime,
+        rootW,
+        pad.left,
+        pad.right,
+      );
+      if (percentInFigureRange < 0 || 100 < percentInFigureRange) {
+        positionBar.style.display = "none";
+        return;
+      }
+      positionBar.style.display = "block";
+      positionBar.style.left = `${percentInFigureRange}%`;
+    };
+
     this._addEventlistener(
       playerService,
       EventType.UPDATE_PLAYBACK_POSITION,
       (e: CustomEventInit) => {
-        const props = analyseSettingsService.toProps();
-        const trng = props.maxTime - props.minTime;
-        if (trng <= 0) {
-          positionBar.style.display = "none";
-          return;
-        }
-        const sec = e.detail.sec;
-        const rootW = componentRoot.getBoundingClientRect().width;
-        const pad = readTimelinePadFromElement(componentRoot);
-        const percentInFigureRange = timeSecToContainerPercent(
-          sec,
-          props.minTime,
-          props.maxTime,
-          rootW,
-          pad.left,
-          pad.right,
-        );
-        if (percentInFigureRange < 0 || 100 < percentInFigureRange) {
-          positionBar.style.display = "none";
-          return;
-        }
-        positionBar.style.display = "block";
-        positionBar.style.left = `${percentInFigureRange}%`;
+        updatePositionBar(e.detail.sec);
       },
     );
+    // Seed from the current cue so a figure (re)built after a time-range
+    // change shows the white line at the right spot without waiting for the
+    // next position event.
+    updatePositionBar(playerService.playbackPosition);
 
     const readoutEl = document.createElement("div");
     readoutEl.className = onWaveformCanvas

@@ -1,4 +1,5 @@
 import type { EssentiaInstance } from "./essentiaTypes";
+import { freeEssentiaVector } from "./essentiaTypes";
 
 export interface SequenceFeatureProfile {
   timeSec: Float32Array;
@@ -159,6 +160,10 @@ export async function computeSequenceFeatures(
     } else {
       onsetFlux[frameIdx] = 0;
     }
+    // Release per-frame WASM vectors — embind heap is not GC-managed.
+    freeEssentiaVector(frameVec);
+    freeEssentiaVector(windowed.frame);
+    freeEssentiaVector(specOut.spectrum);
     frameIdx++;
   }
 

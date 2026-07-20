@@ -222,6 +222,9 @@ export default class LevelMeterComponent extends Component {
         return;
       }
       this._meterLayout = this._meterLayout === "lr" ? "ms" : "lr";
+      // Immediate label feedback — _tick only runs while playing, so a
+      // paused right-click would otherwise change nothing visibly.
+      this._syncLabels();
     });
 
     this._addEventlistener(
@@ -234,6 +237,7 @@ export default class LevelMeterComponent extends Component {
         } else {
           this._meterLayout = "lr";
         }
+        this._syncLabels();
       },
     );
 
@@ -297,6 +301,21 @@ export default class LevelMeterComponent extends Component {
 
   private _effectiveLayout(mon: LiveMonitoringMode): MeterLayout {
     return mon === "m" || mon === "s" ? "ms" : this._meterLayout;
+  }
+
+  /** Sync the column labels to the current layout outside the rAF tick. */
+  private _syncLabels() {
+    const layout = this._effectiveLayout(
+      this._analyzeSettingsService.liveMonitoringMode,
+    );
+    const left = layout === "lr" ? "L" : "M";
+    const right = layout === "lr" ? "R" : "S";
+    if (this._labelL.textContent !== left) {
+      this._labelL.textContent = left;
+    }
+    if (this._labelR.textContent !== right) {
+      this._labelR.textContent = right;
+    }
   }
 
   private _tick(nowMs: number) {

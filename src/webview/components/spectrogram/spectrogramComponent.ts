@@ -27,6 +27,14 @@ function axisFontPx(canvasHeight: number): string {
   return `${Math.max(8, Math.round((canvasHeight / 600) * 20))}px Arial`;
 }
 
+/** Baseline (backing px) that keeps top-row labels fully inside the canvas:
+    one font-height plus a small pad, scaled like axisFontPx. A fixed 18px
+    baseline put most of the glyphs above the canvas once the backing store
+    was supersampled. */
+function axisTopLabelBaselinePx(canvasHeight: number): number {
+  return Math.max(18, Math.round((canvasHeight / 600) * 26));
+}
+
 export default class WaveFormComponent {
   private _analyzeService: AnalyzeService;
 
@@ -45,9 +53,11 @@ export default class WaveFormComponent {
 
     /* The canvases are CSS-stretched to their container (figure.css), so the
        backing store must outrun the display resolution: supersample by
-       dpr × 1.5 (capped) — zoomed-in regions stay sharp instead of showing
-       stretched canvas pixels, and axis labels render at full fidelity. */
-    const backingScale = Math.min((window.devicePixelRatio || 1) * 1.5, 3);
+       dpr × 2 (capped) — zoomed-in regions stay sharp instead of showing
+       stretched canvas pixels, and axis labels render at full fidelity.
+       (Raised from dpr×1.5/cap 3 to compensate for frequency zoom keeping
+       the one-shot analysis window — see effectiveWindowSize.) */
+    const backingScale = Math.min((window.devicePixelRatio || 1) * 2, 3.5);
     const backingW = Math.min(
       maxSpectrogramCanvasPx,
       Math.max(2, Math.round(width * backingScale)),
@@ -503,6 +513,7 @@ export default class WaveFormComponent {
     const [niceT, digit] = AnalyzeService.roundToNearestNiceNumber(
       (settings.maxTime - settings.minTime) / 10,
     );
+    const labelY = axisTopLabelBaselinePx(height);
     const dx = width / (settings.maxTime - settings.minTime);
     const t0 = Math.ceil(settings.minTime / niceT) * niceT;
     const numAxis = Math.floor((settings.maxTime - settings.minTime) / niceT);
@@ -512,7 +523,7 @@ export default class WaveFormComponent {
 
       axisContext.fillStyle = "rgb(245,130,32)";
       if (width * (5 / 100) < x && x < width * (95 / 100)) {
-        axisContext.fillText(`${t.toFixed(digit)}`, x, 18);
+        axisContext.fillText(`${t.toFixed(digit)}`, x, labelY);
       } // don't draw near the edge
 
       axisContext.fillStyle = "rgb(180,120,20)";
@@ -539,7 +550,11 @@ export default class WaveFormComponent {
       }
 
       axisContext.fillStyle = "rgb(220, 220, 220)";
-      axisContext.fillText(channelText, 60, 18);
+      axisContext.fillText(
+        channelText,
+        Math.round((axisCanvas.height / 600) * 60),
+        axisTopLabelBaselinePx(axisCanvas.height),
+      );
     }
   }
 }

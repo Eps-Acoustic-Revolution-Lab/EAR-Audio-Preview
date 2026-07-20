@@ -659,7 +659,9 @@ export default class PlayerService extends Service {
       try {
         await loadLoudnessWorkletModule(this._audioContext);
         const node = new LoudnessWorkletNode(this._audioContext, {
-          processorOptions: { interval: 0.05, capacity: 0 },
+          // Snapshot at display rate (≈60 Hz) so the LUFS / true-peak readouts
+          // update every animation frame instead of every 3rd one (was 50 ms).
+          processorOptions: { interval: 1 / 60, capacity: 0 },
         });
         node.port.onmessage = (
           e: MessageEvent<{ currentMeasurements: LoudnessMeasurements[] }>,

@@ -9,6 +9,8 @@ export interface Config {
   fileName?: string;
   /** VS Code webview URI for `dist/loudness.worklet.js` (AudioWorklet module). */
   loudnessWorkletUri?: string;
+  /** True once the user has completed/skipped the cold-start onboarding tour. */
+  onboardingSeen?: boolean;
   /** Restored headphone EQ state (globalState + optional workspace file). */
   headphoneEq?: HeadphoneEqPersistedState;
 }

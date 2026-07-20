@@ -970,28 +970,25 @@ describe("analyzeSettingsService", () => {
     expect(as.toProps().windowSize).toBe(4096);
   });
 
-  test("frequency zoom alone boosts windowSize so harmonics keep bin density", () => {
+  test("frequency zoom does not change windowSize (one-shot analysis stays fast)", () => {
     defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
-    // full nyquist 22050 → band 0–2000 Hz: ratio ≈ 11 → +3 index steps
     as.minFrequency = 0;
     as.maxFrequency = 2000;
-    expect(as.toProps().windowSize).toBe(8192);
+    expect(as.toProps().windowSize).toBe(1024);
   });
 
-  test("combined time + frequency zoom caps at W8192", () => {
+  test("time zoom caps at W8192", () => {
     defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
     const as = AnalyzeSettingsService.fromDefaultSetting(
       defaultSettings,
       audioBuffer,
     );
     as.minTime = 0;
-    as.maxTime = 0.1;
-    as.minFrequency = 100;
-    as.maxFrequency = 400;
+    as.maxTime = 0.001;
     expect(as.toProps().windowSize).toBe(8192);
   });
 

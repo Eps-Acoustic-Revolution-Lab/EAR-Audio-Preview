@@ -31,6 +31,14 @@
 
 ---
 
+## What's new in v0.5.0
+
+- **Getting-started tour** — first open launches a 24-step interactive spotlight guide (try-it steps auto-advance as you click tabs, toggle meters or open panels); replay anytime via the `?` button top-right
+- **Sharper zoomed STFT** — time-zoom-aware FFT window boost plus higher canvas supersampling; one-shot analysis is ~23% faster and export/analysis loops allocate far less
+- **60 Hz everywhere** — loudness readouts, F0/onset strips (~60 frames/s) and meter ballistics now update at display rate; per-frame WASM vectors are freed to keep long sessions lean
+- **Benchmark & behavior-anchor suite** — five-dimension micro-benchmarks (`npm run bench`) with locked speed/size baselines, and 450+ tests anchoring DSP, IPC and UI contracts
+- **Fixes** — headphone-EQ overlay now opens with the `E` key (the old `Cmd+Shift+E` chord is swallowed by the IDE), playhead no longer jumps to the far left after leaving Edit & Export, level-meter L/R ↔ M/S right-click flips instantly while paused, masonry shortcut panel, dead Waveform-visible setting removed
+
 ## What's new in v0.4.0
 
 - **CQT spectrum analyzer** — a PAZ-style Constant-Q spectrum mode in the Live Spec pane: variable-Q psychoacoustic bands (Q≈3.85–6.97 below 250 Hz, ≈10 above), left-edge rendering, low-freq trapezoids + smooth highs, and a max-hold Peak Hold envelope (double-click to clear)
@@ -39,7 +47,7 @@
 ## What's new in v0.3.0
 
 - **Headphone curve correction** — AutoEq PEQ compensation in the Transport FAB Monitor panel; search models, visualize curves, bypass or apply in real time
-- **Curve Correction overlay** — `Cmd+Shift+E` / `Ctrl+Shift+E` opens the full EQ editor; save profiles per-workspace or globally
+- **Curve Correction overlay** — press `E` to open the full EQ editor; save profiles per-workspace or globally
 - **Extension-host AutoEq proxy** — headphone metadata only (no audio upload); CSP-safe access to [autoeq.app](https://autoeq.app)
 
 ## What's new in v0.2.0
@@ -394,7 +402,7 @@ Click the FAB (bottom-left) to open the settings sheet. Three tabs:
 - Click **Save** at the bottom of the settings sheet to redraw the spectrogram with current analysis settings. Settings persist automatically to VS Code `globalState` (debounced, 500 ms).
 
 **Headphone curve correction (Monitor):**
-- Open the Transport FAB → **Monitor** section → click the profile row (or press `Cmd+Shift+E` / `Ctrl+Shift+E`)
+- Open the Transport FAB → **Monitor** section → click the profile row (or press `E`)
 - Search [autoeq.app](https://autoeq.app) for your headphone model, pick measurement + target curve, then **Apply preset**
 - **BYPASS** toggles real-time EQ without clearing the profile
 - **Save to workspace** writes `.vscode/ear-headphone-eq.json`; **Save globally** stores in extension `globalState`

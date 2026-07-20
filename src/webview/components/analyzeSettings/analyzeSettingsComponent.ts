@@ -52,12 +52,6 @@ export default class AnalyzeSettingsComponent extends Component {
           <h3 class="panelGroup__title">Waveform</h3>
           <div class="panelGroup__items">
             <div class="panelRow">
-              <span class="panelRow__label">Visible</span>
-              <div class="panelRow__control">
-                <input class="js-analyzeSetting-waveformVisible" type="checkbox">
-              </div>
-            </div>
-            <div class="panelRow">
               <span class="panelRow__label">Amplitude range</span>
               <div class="panelRow__control panelRow__control--dual">
                 <span class="panelRow__field"><input class="js-analyzeSetting-minAmplitude" type="number" step="0.1"></span>
@@ -321,21 +315,9 @@ export default class AnalyzeSettingsComponent extends Component {
   private initAnalyzerSettingUI() {
     const settings = this._analyzeSettingsService;
 
-    // init waveform visible checkbox
-    const waveformVisible = <HTMLInputElement>(
-      this._componentRoot.querySelector(".js-analyzeSetting-waveformVisible")
-    );
-    waveformVisible.checked = settings.waveformVisible;
-    this._addEventlistener(waveformVisible, EventType.CHANGE, () => {
-      settings.waveformVisible = waveformVisible.checked;
-    });
-    this._addEventlistener(
-      settings,
-      EventType.AS_UPDATE_WAVEFORM_VISIBLE,
-      (e: CustomEventInit) => {
-        waveformVisible.checked = e.detail.value;
-      },
-    );
+    // NOTE: the waveform is always rendered (webview forces waveformVisible
+    // to true at startup and no renderer reads the flag), so the former
+    // "Visible" toggle was dead UI and has been removed.
 
     // init spectrogram visible checkbox
     const spectrogramVisible = <HTMLInputElement>(

@@ -91,7 +91,11 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
         title: "Playback Control",
         shortcuts: [
           { keys: ["Space"], description: "Play / Pause" },
-          { keys: ["Click waveform"], description: "Set cue position" },
+          { keys: ["Click figure"], description: "Set cue position" },
+          {
+            keys: ["Scroll on play FAB"],
+            description: "Adjust volume",
+          },
         ],
       },
       {
@@ -115,20 +119,35 @@ export default class KeyboardShortcutsOverlayComponent extends Component {
             keys: ["Shift", "+", "Right-click"],
             description: "Reset frequency/amplitude axis only",
           },
+          {
+            keys: ["Drag"],
+            description: "Zoom time range (Loudness strips)",
+          },
         ],
       },
       {
         title: "View Control",
         shortcuts: [
-          { keys: ["Esc"], description: "Exit fullscreen (Live Spec)" },
           { keys: ["Click", "↗"], description: "Enter fullscreen" },
+          {
+            keys: ["Esc"],
+            description: "Exit fullscreen (Live Spec / Loudness)",
+          },
+          {
+            keys: ["Right-click"],
+            description: "Exit fullscreen (while fullscreen)",
+          },
+          {
+            keys: ["Esc"],
+            description: "Close dialog / settings / EQ overlay",
+          },
         ],
       },
       {
         title: "Monitoring",
         shortcuts: [
           {
-            keys: [this._modKey, "+", "Shift", "+", "E"],
+            keys: ["E"],
             description: "Open / close curve correction (headphone EQ)",
           },
         ],

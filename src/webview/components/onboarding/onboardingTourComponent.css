@@ -1,0 +1,123 @@
+/* Onboarding tour: spotlight + step card (driver.js-style, dependency-free). */
+
+.onboardingTour {
+  position: fixed;
+  inset: 0;
+  z-index: 240;
+  /* Never trap the pointer: every step lets the user try the real UI
+     underneath the dim layer; only the step card itself is interactive. */
+  pointer-events: none;
+}
+
+.onboardingTour[hidden] {
+  display: none;
+}
+
+/* Spotlight: transparent window over the target; the huge shadow dims the
+   rest of the UI. Transitions make step changes glide between anchors. */
+.onboardingTour__spotlight {
+  position: absolute;
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.58);
+  outline: 1px solid var(--accent, #3f6f5f);
+  pointer-events: none;
+  transition:
+    top 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.onboardingTour__spotlight--none {
+  /* Centered final card: no window, dim everything evenly. */
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.58);
+  width: 0;
+  height: 0;
+  outline: none;
+}
+
+.onboardingTour__card {
+  position: absolute;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  padding: 14px 16px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--edge-line, #3a3a3d);
+  background: var(--surface-1, #1e1e20);
+  color: var(--vscode-foreground, #ddd);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  transition:
+    top 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.onboardingTour__title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.onboardingTour__body {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+.onboardingTour__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.onboardingTour__dots {
+  /* Own full-width row: long tours (19 dots) must not push the buttons
+     outside the card. */
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.onboardingTour__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--edge-line, #55555a);
+}
+
+.onboardingTour__dot--active {
+  background: var(--accent, #3f6f5f);
+}
+
+.onboardingTour__btn {
+  flex-shrink: 0;
+  border: 1px solid var(--edge-line, #3a3a3d);
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.onboardingTour__btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.onboardingTour__btn--primary {
+  background: var(--accent, #3f6f5f);
+  border-color: var(--accent, #3f6f5f);
+  color: #fff;
+}
+
+/* "?" launcher in the workspace chrome (between meter toggle and settings). */
+.workspaceChrome__helpGlyph {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}

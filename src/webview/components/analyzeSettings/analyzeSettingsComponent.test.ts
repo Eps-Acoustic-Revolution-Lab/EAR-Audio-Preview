@@ -53,27 +53,10 @@ describe("analyzeSettingsComponent", () => {
     document.documentElement.dataset.workspacePane = "stft";
   });
 
-  test("waveform-visible should be updated when recieving update-waveform-visible event", () => {
-    analyzeSettingsService.dispatchEvent(
-      new CustomEvent(EventType.AS_UPDATE_WAVEFORM_VISIBLE, {
-        detail: {
-          value: true,
-        },
-      }),
-    );
-    const waveformVisible = <HTMLInputElement>(
-      document.querySelector(".js-analyzeSetting-waveformVisible")
-    );
-    expect(waveformVisible.checked).toBe(true);
-
-    analyzeSettingsService.dispatchEvent(
-      new CustomEvent(EventType.AS_UPDATE_WAVEFORM_VISIBLE, {
-        detail: {
-          value: false,
-        },
-      }),
-    );
-    expect(waveformVisible.checked).toBe(false);
+  test("waveform visible toggle is removed (waveform is always rendered)", () => {
+    expect(
+      document.querySelector(".js-analyzeSetting-waveformVisible"),
+    ).toBeNull();
   });
 
   test("spectrogram-visible should be updated when recieving update-spectrogram-visible event", () => {

@@ -40,6 +40,7 @@ import EditExportSettingsService from "../../services/editExportSettingsService"
 import EditListenService from "../../services/editListenService";
 import SettingsOverlayComponent from "../settingsOverlay/settingsOverlayComponent";
 import KeyboardShortcutsOverlayComponent from "../keyboardShortcuts/keyboardShortcutsOverlayComponent";
+import OnboardingTourComponent from "../onboarding/onboardingTourComponent";
 import HeadphoneEqSettingsService from "../../services/headphoneEqSettingsService";
 import CurveCorrectionOverlayComponent from "../curveCorrection/curveCorrectionOverlayComponent";
 import "../curveCorrection/curveCorrectionOverlayComponent.css";
@@ -172,6 +173,14 @@ export default class WebView extends Component {
           </button>
           <button
             type="button"
+            class="workspaceChrome__settingsBtn js-openTour"
+            aria-label="Open getting-started guide"
+            title="Getting started guide"
+          >
+            <span class="workspaceChrome__helpGlyph" aria-hidden="true">?</span>
+          </button>
+          <button
+            type="button"
             class="workspaceChrome__settingsBtn js-openSettings"
             aria-label="Pane settings"
             aria-haspopup="dialog"
@@ -244,6 +253,7 @@ export default class WebView extends Component {
       </div>
       <div id="settingsOverlayMount"></div>
       <div id="keyboardShortcutsOverlay"></div>
+      <div id="onboardingTourMount"></div>
       <div id="curveCorrectionOverlayMount"></div>
       <div id="transportDock" class="transportDock"></div>
       <div id="settingsDock" class="settingsDock">
@@ -662,12 +672,225 @@ export default class WebView extends Component {
     const keyboardShortcutsOverlay = new KeyboardShortcutsOverlayComponent(
       "#keyboardShortcutsOverlay",
     );
+
+    const modKey = navigator.platform.toLowerCase().includes("mac")
+      ? "Cmd"
+      : "Ctrl";
+    /** Flip-detector: true once the probed value differs from the value seen
+        when the step was entered (reset re-baselines on step re-entry). */
+    const makeFlipCheck = (probe: () => string | boolean) => {
+      let initial: string | boolean | null = null;
+      return {
+        check: () => {
+          if (initial === null) {
+            initial = probe();
+            return false;
+          }
+          return probe() !== initial;
+        },
+        reset: () => {
+          initial = null;
+        },
+      };
+    };
+    const meterToggleFlip = makeFlipCheck(
+      // Authoritative service state: the collapsed meter column keeps its
+      // content width under overflow:hidden, so rect probing cannot see the
+      // toggle.
+      () => analyzeSettingsService.showLevelMeter,
+    );
+    const meterLayoutFlip = makeFlipCheck(
+      () => document.querySelector(".js-meterLabelL")?.textContent ?? "",
+    );
+    const onboardingTour = new OnboardingTourComponent(
+      "#onboardingTourMount",
+      [
+        {
+          target: "#workspaceStrip",
+          title: "Workspace tabs",
+          body: "Four analysis views live here: STFT spectrogram, Live meters, Edit & Export and Loudness. Let's visit each one.",
+        },
+        {
+          target: "#waveBand",
+          title: "Waveform",
+          body: "Overview of the clip. Click to set the playback cue (white line); drag to zoom into a time range.",
+        },
+        {
+          target: "#tabStft",
+          title: "Try it: open the spectrogram",
+          body: "Click the STFT tab — the tour continues once the view opens.",
+          padPx: 3,
+          advanceOn: { kind: "pane", pane: "stft" },
+        },
+        {
+          target: "#deckStft",
+          title: "Spectrogram",
+          body: `Time–frequency view for harmonic inspection. Drag to zoom a region (${modKey} = time only, Shift = frequency only); right-click resets the view.`,
+        },
+        {
+          target: "#tabLiveSpec",
+          title: "Try it: open Live meters",
+          body: "Click the Live Spec tab to switch to the real-time meters.",
+          padPx: 3,
+          advanceOn: { kind: "pane", pane: "liveSpec" },
+        },
+        {
+          target: "#deckLive",
+          title: "Live meters",
+          body: "Real-time spectrum analyzer (FFT/CQT), stereo sound field and per-band phase correlation while the clip plays. Right-click a meter to enter fullscreen; right-click or Esc exits.",
+        },
+        {
+          target: "#tabEdit",
+          title: "Try it: open Edit & Export",
+          body: "Click the Edit & Export tab.",
+          padPx: 3,
+          advanceOn: { kind: "pane", pane: "edit" },
+        },
+        {
+          target: "#deckEdit",
+          title: "Edit & Export",
+          body: "Pick a region, audition it dry or with the processing chain, then render and export it as WAV.",
+        },
+        {
+          target: "#tabLoudness",
+          title: "Try it: open Loudness",
+          body: "Click the Loudness tab.",
+          padPx: 3,
+          advanceOn: { kind: "pane", pane: "loudness" },
+        },
+        {
+          target: "#deckLoudness",
+          title: "Loudness",
+          body: "EBU R128 loudness (LUFS), true peak and range over time, plus F0 pitch and onset strips. Drag horizontally on a strip to zoom into a time range for close reading.",
+        },
+        {
+          target: ".transportDock__fabWrap",
+          title: "Transport",
+          body: "Play / pause (Space) and the volume knob — scroll on it to adjust volume.",
+          padPx: 4,
+        },
+        {
+          target: ".js-transportExpand",
+          title: "Try it: expand the transport",
+          body: "Click the ⋯ chip to open the monitor & seek panel.",
+          padPx: 3,
+          advanceOn: { kind: "visible", selector: "#transportPopover" },
+        },
+        {
+          target: ".transportPopover__panel",
+          title: "Monitor & seek",
+          body: "Monitoring matrix (L / R / M / S / swap), per-band solo, the headphone-EQ pill and precise seek controls. Close it (Esc or ×) and the tour continues.",
+          advanceOn: { kind: "closed", selector: "#transportPopover" },
+        },
+        {
+          target: ".js-toggleLevelMeter",
+          title: "Try it: level meter",
+          body: "Click to toggle the real-time stereo level meter column — the tour continues after you press it.",
+          padPx: 2,
+          advanceOn: {
+            kind: "custom",
+            check: meterToggleFlip.check,
+            reset: meterToggleFlip.reset,
+          },
+        },
+        {
+          target: "#levelMeterInner",
+          title: "Level meter: M/S view",
+          body: "RMS + peak bars with clip LEDs. Try it: right-click the meters to switch the columns between L/R and M/S — the tour continues when they flip.",
+          advanceOn: {
+            kind: "custom",
+            check: meterLayoutFlip.check,
+            reset: meterLayoutFlip.reset,
+          },
+        },
+        {
+          target: ".js-openSettings",
+          title: "Try it: open Settings",
+          body: `Click the gear or press ${modKey} + / — the tour continues when the panel opens.`,
+          padPx: 2,
+          advanceOn: { kind: "visible", selector: "#settingsOverlay" },
+        },
+        {
+          target: ".settingsOverlay__dialog",
+          title: "Settings",
+          body: "Playback tab: seek-to-play, filters, EQ. Analysis tab: FFT window, frequency scale, live smoothing and meter ballistics. Explore, then close it (Esc or ×) — the tour moves on automatically.",
+          advanceOn: { kind: "closed", selector: "#settingsOverlay" },
+        },
+        {
+          target: null,
+          title: "Try it: headphone EQ (press E)",
+          body: "Press E to open Curve Correction — parametric headphone EQ powered by the AutoEq database.",
+          advanceOn: { kind: "visible", selector: ".curveCorrectionOverlay" },
+        },
+        {
+          target: ".curveCorrectionOverlay__dialog",
+          title: "Curve correction (AutoEq)",
+          body: "Search your headphone model to load its AutoEq profile, tweak bands on the canvas and A/B with bypass. Close it (Esc) and the tour continues.",
+          advanceOn: { kind: "closed", selector: ".curveCorrectionOverlay" },
+        },
+        {
+          target: null,
+          title: "Try it: shortcut list",
+          body: "Press ? to open the full keyboard shortcut reference.",
+          advanceOn: { kind: "visible", selector: ".keyboardShortcutsOverlay" },
+        },
+        {
+          target: ".keyboardShortcutsOverlay__dialog",
+          title: "Keyboard shortcuts",
+          body: "Every shortcut in one place — press ? anytime. Close it (Esc) and the tour continues.",
+          advanceOn: { kind: "closed", selector: ".keyboardShortcutsOverlay" },
+        },
+        {
+          target: "#settingsFab",
+          title: "Try it: audio info",
+          body: "Click the badge bottom-left to open the file metadata.",
+          padPx: 4,
+          advanceOn: { kind: "visible", selector: "#metaPopover" },
+        },
+        {
+          target: ".metaPopover__panel",
+          title: "Audio info",
+          body: "Format, sample rate, bit depth, channels and duration of the open file. Close it (Esc or ×) and the tour continues.",
+          advanceOn: { kind: "closed", selector: "#metaPopover" },
+        },
+        {
+          target: null,
+          title: "You're set",
+          body: "Reopen this guide anytime via the ? button in the top-right corner. Enjoy monitoring!",
+        },
+      ],
+      () =>
+        this._postMessage({ type: WebviewMessageType.SAVE_ONBOARDING_SEEN }),
+      {
+        escGuardSelectors: [
+          "#settingsOverlay",
+          ".curveCorrectionOverlay",
+          ".keyboardShortcutsOverlay",
+          "#transportPopover",
+          "#metaPopover",
+        ],
+      },
+    );
+    const openTourBtn = document.querySelector(".js-openTour");
+    if (openTourBtn) {
+      this._addEventlistener(openTourBtn, EventType.CLICK, () => {
+        if (!onboardingTour.active) {
+          onboardingTour.start();
+        }
+      });
+    }
+    if (this._config.onboardingSeen !== true) {
+      // First open: give layout a frame to settle before anchoring spotlights.
+      requestAnimationFrame(() => onboardingTour.start());
+    }
+
     this._disposables.push(
       analyzeService,
       analyzeSettingsService,
       settingsOverlay,
       settingTabComponent,
       keyboardShortcutsOverlay,
+      onboardingTour,
     );
 
     // Wire level meter, monitoring bar, workspace panes (lazy STFT / Live).

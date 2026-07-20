@@ -6,10 +6,11 @@ export function computeAdaptiveSequenceHopSec(
   durationSec: number,
   sampleRate: number,
 ): number {
-  const targetPointsMin = 250;
-  const targetPointsMax = 3500;
-  /** ~45 frames/s for short clips; capped for long tracks. */
-  const pointsPerSec = 45;
+  const targetPointsMin = 300;
+  /** Cap ≈ 60 frames/s over two minutes; long tracks degrade gracefully. */
+  const targetPointsMax = 7200;
+  /** ~60 frames/s — matches the 60 Hz display granularity of the strips. */
+  const pointsPerSec = 60;
 
   const safeDuration = Math.max(0.01, durationSec);
   const targetPoints = Math.min(

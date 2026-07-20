@@ -54,6 +54,7 @@ import {
 } from "../src/shared/stftEssentiaCompute";
 import { computeSequenceFeatures } from "../src/shared/sequenceFeatureCompute";
 import { flattenSpectrogramForUpload } from "../src/webview/components/spectrogram/spectrogramRenderer";
+import AnalyzeService from "../src/webview/services/analyzeService";
 import type { EssentiaInstance } from "../src/shared/essentiaTypes";
 import type { EqFilterBand } from "../src/webview/types/headphoneEq";
 
@@ -367,6 +368,47 @@ function buildCases(): BenchCase[] {
   }
 
   /* ── render.* — spectrogram texture-upload data prep ──────────── */
+
+  {
+    // Full one-shot Ooura spectrogram: 3 s @ 48 kHz, W1024, hop 80
+    // (≈ the hop heuristic for a full view on the 1800 px canvas).
+    const sr = 48000;
+    const audio = seededF32(sr * 3, 19, 0.8);
+    const fakeBuffer = {
+      sampleRate: sr,
+      numberOfChannels: 1,
+      duration: 3,
+      length: audio.length,
+      getChannelData: () => audio,
+    } as unknown as AudioBuffer;
+    const service = new AnalyzeService(fakeBuffer);
+    const settings = {
+      waveformVerticalScale: 1,
+      spectrogramVerticalScale: 1,
+      windowSize: 1024,
+      hopSize: 80,
+      minFrequency: 0,
+      maxFrequency: sr / 2,
+      minTime: 0,
+      maxTime: 3,
+      minAmplitude: -1,
+      maxAmplitude: 1,
+      spectrogramAmplitudeRange: -90,
+      spectrogramAmplitudeLow: -90,
+      spectrogramAmplitudeHigh: 0,
+      frequencyScale: 0,
+      frequencyScaleHybridRatio: 0.5,
+      melFilterNum: 40,
+      windowType: 0,
+      fftBackend: 0,
+    };
+    cases.push({
+      name: "render.oouraSpectrogram.3s.w1024h80",
+      warmup: 2,
+      samples: 10,
+      fn: () => service.getSpectrogram(0, settings),
+    });
+  }
 
   {
     // Mirrors SpectrogramRenderer.render(): number[][] grid → Float32Array

@@ -4,6 +4,30 @@ All notable changes to **EAR Audio Preview** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-07-20
+
+### Added
+
+- **Getting-started tour** — 24-step interactive spotlight onboarding on first open (persisted via `globalState`), replayable anytime from the `?` button top-right. Try-it steps free the pointer and auto-advance on the real action: switching workspace tabs, expanding the Transport monitor panel, toggling the level meter, right-clicking it into M/S, and opening/closing Settings, Curve Correction, the shortcut list and Audio info.
+- **Benchmark suite** — `npm run bench` / `bench:size` / `bench:compare`: five-dimension micro-benchmarks (dsp / anim / pipeline / io / render) with per-case ops/s, p95, frame-budget share and alloc-per-op, plus locked speed (+10%) and bundle-size (+1%) regression gates against `bench/baseline.json`.
+- **Behavior anchors** — 450+ tests now lock DSP numerics (frame timing, STFT dB layout, log-frequency axis, monitoring matrix, WAV encoding) and cross-process contracts (message types, viewType, persisted keys).
+
+### Changed
+
+- **Sharper zoomed STFT** — FFT window boosted by time-zoom level (capped at W8192; manual larger windows are no longer downgraded) and canvas supersampling raised to dpr×2 (cap 3.5); one-shot spectrogram analysis is ~23% faster with hoisted FFT work arrays; spectrogram canvas is 10% shorter with top time ticks kept inside the canvas.
+- **60 Hz pipeline** — loudness worklet reports at display rate (was 50 ms), F0/onset strips analyze at ~60 frames/s (was ~45), and meter/spectrum ballistics stay frame-rate independent.
+- **Leaner runtime** — per-frame Essentia WASM vectors are freed (`freeEssentiaVector`), analysis loops yield on a 12 ms time budget, RAF hot paths reuse scratch buffers, and the dead essentia-wasm fallback chain was removed (~2 MB off the `.vsix`).
+- **Curve Correction shortcut** — now opens with the bare `E` key; the former `Cmd/Ctrl+Shift+E` chord is intercepted by the IDE workbench and never reached the webview.
+- **Keyboard shortcut panel** — masonry two-column layout (staggered group headers, no row-height holes) and entries for wheel-volume, fullscreen and monitoring shortcuts.
+- **Settings panel** — removed the dead Waveform-visible toggle (the waveform always renders).
+
+### Fixed
+
+- **Playhead reprojection** — leaving Edit & Export no longer drags the white cue line to the far left; overlays reproject against the restored time window immediately.
+- **Level meter** — right-clicking between L/R and M/S now updates labels instantly while paused (was only during playback).
+- **Protocol hygiene** — `WebviewMessageType.ERROR` no longer shares the `"RELOAD"` literal; webview error messages are safely stringified; `pause()` is idempotent and the `AudioContext` is closed on dispose.
+- **Packaging** — `vscode:prepublish` cleans `dist/` so stale chunks can never ship again.
+
 ## [0.4.0] - 2026-06-28
 
 ### Added

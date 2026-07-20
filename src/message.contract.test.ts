@@ -45,6 +45,7 @@ describe("message type contract", () => {
         "ERROR",
         "SAVE_ANALYZE_UI",
         "SAVE_EQ_SETTINGS",
+        "SAVE_ONBOARDING_SEEN",
         "WRITE_EQ_PROFILE",
         "WRITE_WAV",
       ].sort(),
@@ -114,6 +115,9 @@ describe("persisted state key contract", () => {
     );
     expect(editorSource).toContain(
       'const workspaceEqFileName = "ear-headphone-eq.json"',
+    );
+    expect(editorSource).toContain(
+      'const onboardingSeenKey = "earAudioPreview.onboardingSeen.v1"',
     );
   });
 

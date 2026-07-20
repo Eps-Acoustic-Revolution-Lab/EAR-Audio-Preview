@@ -168,6 +168,12 @@ export default class EditListenService extends Service {
     if (wasPlaying) {
       this._playerService.play();
     }
+    // Re-emit the cue position so playhead overlays reproject the white line
+    // onto the restored (non-edit) time window — otherwise it keeps the
+    // percent computed under the edit region view (visually far left).
+    this._playerService.setPlaybackPosition(
+      this._playerService.playbackPosition,
+    );
     this.invalidateCache();
     this.dispatchEvent(
       new CustomEvent(EventType.EL_UPDATE_ACTIVE, {

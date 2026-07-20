@@ -264,37 +264,42 @@ export default class AnalyzeService extends Service {
       Math.floor(settings.maxFrequency / df),
       Math.floor(windowSize / 2),
     );
+    const binCount = Math.max(0, maxFreqIndex - minFreqIndex);
 
     const ooura = new Ooura(windowSize, { type: "real", radix: 4 });
+    // Hoisted FFT work arrays — one-shot analysis walks thousands of frames,
+    // so per-frame factory allocations dominated the pass (see bench
+    // render.oouraSpectrogram.*).
+    const d = ooura.scalarArrayFactory();
+    const re = ooura.vectorArrayFactory();
+    const im = ooura.vectorArrayFactory();
 
     let maxValue = Number.EPSILON;
 
     const spectrogram: number[][] = [];
     for (let i = startIndex; i < endIndex; i += settings.hopSize) {
-      // i is center of the window
-      const s = i - windowSize / 2,
-        t = i + windowSize / 2;
-      const ss = s > 0 ? s : 0,
-        tt = t < data.length ? t : data.length;
-      const d = ooura.scalarArrayFactory();
-      for (let j = 0; j < d.length; j++) {
-        if (s + j < ss) {
-          continue;
-        }
-        if (tt < s + j) {
-          continue;
-        }
+      // i is center of the window; fill the edge zero-pad without
+      // per-sample branches.
+      const s = i - windowSize / 2;
+      const jStart = Math.max(0, -s);
+      const jEnd = Math.min(windowSize, data.length - s);
+      if (jStart > 0) {
+        d.fill(0, 0, Math.min(jStart, windowSize));
+      }
+      if (jEnd < windowSize) {
+        d.fill(0, Math.max(jEnd, 0), windowSize);
+      }
+      for (let j = jStart; j < jEnd; j++) {
         d[j] = data[s + j] * window[j];
       }
 
-      const re = ooura.vectorArrayFactory();
-      const im = ooura.vectorArrayFactory();
       ooura.fft(d.buffer, re.buffer, im.buffer);
 
-      const ps: number[] = [];
-      for (let j = minFreqIndex; j < maxFreqIndex; j++) {
-        const v = re[j] * re[j] + im[j] * im[j];
-        ps.push(v);
+      const ps = new Array<number>(binCount);
+      for (let j = 0; j < binCount; j++) {
+        const k = minFreqIndex + j;
+        const v = re[k] * re[k] + im[k] * im[k];
+        ps[j] = v;
         if (maxValue < v) {
           maxValue = v;
         }
