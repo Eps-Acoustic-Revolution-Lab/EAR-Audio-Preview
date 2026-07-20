@@ -34,9 +34,15 @@
 ## What's new in v0.5.0
 
 - **Getting-started tour** — first open launches a 24-step interactive spotlight guide (try-it steps auto-advance as you click tabs, toggle meters or open panels); replay anytime via the `?` button top-right
-- **Sharper zoomed STFT** — time-zoom-aware FFT window boost plus higher canvas supersampling; one-shot analysis is ~23% faster and export/analysis loops allocate far less
-- **60 Hz everywhere** — loudness readouts, F0/onset strips (~60 frames/s) and meter ballistics now update at display rate; per-frame WASM vectors are freed to keep long sessions lean
-- **Benchmark & behavior-anchor suite** — five-dimension micro-benchmarks (`npm run bench`) with locked speed/size baselines, and 450+ tests anchoring DSP, IPC and UI contracts
+- **Anisotropic spectrogram rendering** — sharp on the time axis, smooth on the frequency axis, the way RX/Audition read; deep dive: [English](doc/blog/anisotropic-spectrogram-rendering.en.md) · [中文](doc/blog/anisotropic-spectrogram-rendering.md)
+- **Measured speedups** (micro-benchmarks vs the locked v0.4.0 baseline, same machine):
+  - F0/onset sequence analysis **6.4× faster** (2.97 → 0.46 ms per 3 s clip) — buffer reuse, per-frame WASM vector release, time-budget yielding
+  - Offline STFT framing **2.3× faster** (8.47 → 3.72 ms) and spectrogram wire deserialization **3.0× faster** (1.68 → 0.56 ms)
+  - WAV export encoding **1.9× faster** (5.40 → 2.85 ms per 5 s stereo clip) via a little-endian `Int16Array` fast path
+  - One-shot spectrogram analysis **−23%** (34.1 → 26.3 ms for 3 s @ W1024) with hoisted FFT work arrays; RAF frame-prep hot paths now allocate **zero** arrays per frame (was ~6)
+  - Package **−64%**: `.vsix` 15.6 → 5.6 MB (dead essentia-wasm chain and stale chunks removed), dist gzip −9%
+- **60 Hz everywhere** — loudness readouts report at display rate (was 50 ms — 3× the update frequency), F0/onset strips analyze at ~60 frames/s (was ~45), meter ballistics stay frame-rate independent
+- **Benchmark & behavior-anchor suite** — five-dimension micro-benchmarks (`npm run bench`) with locked speed/size regression gates, and 450+ tests anchoring DSP, IPC and UI contracts
 - **Fixes** — headphone-EQ overlay now opens with the `E` key (the old `Cmd+Shift+E` chord is swallowed by the IDE), playhead no longer jumps to the far left after leaving Edit & Export, level-meter L/R ↔ M/S right-click flips instantly while paused, masonry shortcut panel, dead Waveform-visible setting removed
 
 ## What's new in v0.4.0
@@ -482,6 +488,8 @@ Three webpack outputs: `dist/extension.js` (Node), `dist/audioPreview.js` (webvi
 - [x] Loudness multi-strip layout — LUFS + F0 (PitchYinFFT) + Onset flux (Essentia)
 - [x] Monitoring curve for flat frequency response (AutoEq PEQ, live playback)
 - [x] CQT spectrum analyzer (PAZ-style variable-Q, left-edge rendering, Peak Hold) — deep dive: [English](doc/blog/cqt-spectrum-analyzer.en.md) · [中文](doc/blog/cqt-spectrum-analyzer.md)
+- [x] Anisotropic spectrogram rendering (time-sharp / frequency-smooth) — deep dive: [English](doc/blog/anisotropic-spectrogram-rendering.en.md) · [中文](doc/blog/anisotropic-spectrogram-rendering.md)
+- [x] Getting-started tour — 24-step interactive spotlight onboarding with try-it auto-advance
 
 ### Planned
 
