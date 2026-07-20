@@ -10,6 +10,9 @@ docs/**
 design-demo/
 .qoder/
 tmp_files/**
+bench/**
+.bench/**
+tsconfig.bench.json
 .gitignore
 .eslintignore
 .prettierignore

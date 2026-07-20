@@ -36,12 +36,21 @@ const w2 = 1 / 120;
 export function quinticBSplineSmooth(
   data: Float32Array | number[],
 ): Float32Array {
-  const n = data.length;
-  if (n === 0) {
-    return new Float32Array(0);
-  }
+  const out = new Float32Array(data.length);
+  quinticBSplineSmoothInto(data, out);
+  return out;
+}
 
-  const out = new Float32Array(n);
+/**
+ * Allocation-free variant for per-frame (RAF) callers: writes the smoothed
+ * values into `out` (same length as `data`). `out` must NOT alias `data`
+ * because each output taps up to two already-processed neighbours.
+ */
+export function quinticBSplineSmoothInto(
+  data: Float32Array | number[],
+  out: Float32Array,
+): void {
+  const n = data.length;
   for (let i = 0; i < n; i++) {
     // Clamp indices to [0, n-1] for boundary handling.
     const i0 = Math.max(0, i - 2);
@@ -57,5 +66,4 @@ export function quinticBSplineSmooth(
       w1 * data[i3] +
       w2 * data[i4];
   }
-  return out;
 }

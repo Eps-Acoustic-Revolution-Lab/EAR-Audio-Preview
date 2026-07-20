@@ -9,8 +9,6 @@ export interface Config {
   fileName?: string;
   /** VS Code webview URI for `dist/loudness.worklet.js` (AudioWorklet module). */
   loudnessWorkletUri?: string;
-  /** VS Code webview URI for `dist/essentia-wasm.web.wasm` (Essentia async fallback). */
-  essentiaWasmUri?: string;
   /** Restored headphone EQ state (globalState + optional workspace file). */
   headphoneEq?: HeadphoneEqPersistedState;
 }

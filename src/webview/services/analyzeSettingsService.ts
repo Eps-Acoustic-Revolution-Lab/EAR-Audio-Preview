@@ -373,6 +373,11 @@ export default class AnalyzeSettingsService extends Service {
       this._sampleRate / 2,
     );
     this._minFrequency = minFrequency;
+    // Frequency zoom feeds effectiveWindowSize; keep hop paired with the
+    // boosted window so frameCount × binCount stays bounded.
+    if (this._autoCalcHopSize) {
+      this._hopSize = this.calcHopSize();
+    }
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MIN_FREQUENCY, {
         detail: { value: this._minFrequency },
@@ -394,6 +399,10 @@ export default class AnalyzeSettingsService extends Service {
       this._sampleRate / 2,
     );
     this._maxFrequency = maxFrequency;
+    // See minFrequency setter: re-pair hop with the frequency-boosted window.
+    if (this._autoCalcHopSize) {
+      this._hopSize = this.calcHopSize();
+    }
     this.dispatchEvent(
       new CustomEvent(EventType.AS_UPDATE_MAX_FREQUENCY, {
         detail: { value: this._maxFrequency },
@@ -1094,6 +1103,12 @@ export default class AnalyzeSettingsService extends Service {
     defaultSetting: AnalyzeDefault,
     audioBuffer: AudioBuffer,
   ) {
+    // Isolate per-document state: the service writes runtime extrema back into
+    // its default object, so never share the caller's CONFIG reference.
+    defaultSetting =
+      typeof structuredClone === "function"
+        ? structuredClone(defaultSetting)
+        : (JSON.parse(JSON.stringify(defaultSetting)) as AnalyzeDefault);
     // calc min & max amplitude
     let min = Number.POSITIVE_INFINITY,
       max = Number.NEGATIVE_INFINITY;
@@ -1373,20 +1388,34 @@ export default class AnalyzeSettingsService extends Service {
 
   /*
   Returns a window size boosted by zoom level so that zoomed-in views have
-  higher frequency resolution. Capped at W8192 (index 5) to avoid OOM on
-  very narrow ranges.
+  higher frequency resolution. Both axes contribute: time zoom shortens the
+  visible span (more columns per second), and frequency zoom narrows the
+  visible band — fewer bins would stretch across the canvas, blurring
+  harmonics, so the window grows to shrink df accordingly. Capped at W8192
+  (index 5) to avoid OOM on very narrow ranges; a larger manual window is
+  never reduced by the cap.
   */
   private get effectiveWindowSize(): number {
     const totalDuration = this._duration;
     const currentRange = this._maxTime - this._minTime;
-    if (!totalDuration || !currentRange || currentRange >= totalDuration) {
+    let timeBoost = 0;
+    if (totalDuration && currentRange && currentRange < totalDuration) {
+      timeBoost = Math.floor(Math.log2(totalDuration / currentRange));
+    }
+    const nyquist = this._sampleRate / 2;
+    const freqSpan = this._maxFrequency - this._minFrequency;
+    let freqBoost = 0;
+    if (nyquist > 0 && freqSpan > 0 && freqSpan < nyquist) {
+      freqBoost = Math.floor(Math.log2(nyquist / freqSpan));
+    }
+    if (timeBoost === 0 && freqBoost === 0) {
       return this._windowSize;
     }
-    const zoomRatio = totalDuration / currentRange;
     const maxEffectiveIndex = 5; // W8192
+    const baseIndex = this.effectiveBaseWindowIndex;
     const effectiveIndex = Math.min(
-      this.effectiveBaseWindowIndex + Math.floor(Math.log2(zoomRatio)),
-      maxEffectiveIndex,
+      baseIndex + timeBoost + freqBoost,
+      Math.max(maxEffectiveIndex, baseIndex),
     );
     return Math.pow(2, effectiveIndex + 8);
   }

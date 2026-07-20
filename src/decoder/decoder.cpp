@@ -220,32 +220,52 @@ DecodeAudioResult decode_audio(const std::string& path) {
     while ((status.status = av_read_frame(format, packet)) >= 0) {
         if (packet->stream_index == audio_stream_index) {
             // send compressed packet to decoder
-            status.status = avcodec_send_packet(codec, packet);
-            if (status.status == AVERROR(EAGAIN) || status.status == AVERROR_EOF) {
-                continue;
-            } else if (status.status < 0) {
+            const int send_status = avcodec_send_packet(codec, packet);
+            if (send_status < 0 && send_status != AVERROR(EAGAIN) && send_status != AVERROR_EOF) {
                 close_audio_stream(format, codec, frame, packet);
-                status.error = "avcodec_send_packet: " + get_error_str(status.status);
+                status.status = send_status;
+                status.error = "avcodec_send_packet: " + get_error_str(send_status);
                 return { status };
             }
 
-            // receive uncompressed frame from decoder
-            while ((status.status = avcodec_receive_frame(codec, frame)) >= 0) {
-                if (status.status == AVERROR(EAGAIN) || status.status == AVERROR_EOF) {
+            // receive uncompressed frames from decoder (FFmpeg reference pattern:
+            // error handling outside the loop condition so failures are not masked)
+            for (;;) {
+                const int recv_status = avcodec_receive_frame(codec, frame);
+                if (recv_status == AVERROR(EAGAIN) || recv_status == AVERROR_EOF) {
+                    // decoder needs more input / stream drained — not an error
                     break;
-                } else if (status.status < 0) {
+                }
+                if (recv_status < 0) {
                     close_audio_stream(format, codec, frame, packet);
-                    status.error = "avcodec_receive_frame: " + get_error_str(status.status);
+                    status.status = recv_status;
+                    status.error = "avcodec_receive_frame: " + get_error_str(recv_status);
                     return { status };
                 }
 
                 // read samples from frame into result
-                read_samples(frame, codec->sample_fmt, samples);
+                if (read_samples(frame, codec->sample_fmt, samples) < 0) {
+                    const char* fmt_name = av_get_sample_fmt_name(codec->sample_fmt);
+                    close_audio_stream(format, codec, frame, packet);
+                    status.status = -1;
+                    status.error = std::string("read_samples: unsupported sample format: ")
+                        + (fmt_name ? fmt_name : "unknown");
+                    return { status };
+                }
                 av_frame_unref(frame);
             }
-
-            av_packet_unref(packet);
         }
+
+        // every packet returned by av_read_frame must be unreferenced, audio or not
+        av_packet_unref(packet);
+    }
+
+    // av_read_frame ends with AVERROR_EOF on normal completion; report anything else
+    if (status.status != AVERROR_EOF) {
+        const int read_status = status.status;
+        close_audio_stream(format, codec, frame, packet);
+        status.error = "av_read_frame: " + get_error_str(read_status);
+        return { status };
     }
 
     // cleanup

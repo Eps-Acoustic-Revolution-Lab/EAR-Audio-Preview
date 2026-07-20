@@ -19,7 +19,10 @@ export interface StftSpectrogramWire {
 
 export type StftAnalysisProgress = (percent: number) => void;
 
-const yieldEveryFrames = 32;
+/** Yield to the event loop only after this much continuous compute time.
+    Time-based (not frame-count) so light loads skip timer latency entirely
+    while heavy loads stay responsive. */
+const yieldIntervalMs = 12;
 
 function yieldToMain(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
@@ -49,20 +52,24 @@ export async function computeEssentiaStftSpectrogram(
   const powerFlat = new Float32Array(frameCount * binCount);
   let maxValue = Number.EPSILON;
   let frameIdx = 0;
+  let lastYieldMs = Date.now();
+
+  // Reused per-frame window buffer — essentia copies it into a WASM vector,
+  // so hoisting the allocation out of the frame loop is safe and avoids
+  // frameCount × windowSize float churn on long files.
+  const frame = new Float32Array(windowSize);
 
   for (const center of frameCenters) {
-    if (frameIdx > 0 && frameIdx % yieldEveryFrames === 0) {
+    if (frameIdx > 0 && Date.now() - lastYieldMs >= yieldIntervalMs) {
       onProgress?.(Math.min(99, (frameIdx / Math.max(1, frameCount)) * 100));
       await yieldToMain();
+      lastYieldMs = Date.now();
     }
 
     const s = center - windowSize / 2;
-    const frame = new Float32Array(windowSize);
     for (let j = 0; j < windowSize; j++) {
       const idx = s + j;
-      if (idx >= 0 && idx < channelData.length) {
-        frame[j] = channelData[idx];
-      }
+      frame[j] = idx >= 0 && idx < channelData.length ? channelData[idx] : 0;
     }
 
     const frameVec = essentia.arrayToVector(frame);
@@ -107,14 +114,16 @@ export async function computeEssentiaStftSpectrogram(
 
 export function stftWireToSpectrogram(wire: StftSpectrogramWire): number[][] {
   const db = new Float32Array(wire.dbValues);
-  const out: number[][] = [];
+  // Pre-sized rows + indexed writes: measurably faster than push() for the
+  // frameCount × binCount grids this decodes (hundreds × thousands).
+  const out: number[][] = new Array(wire.frameCount);
   for (let f = 0; f < wire.frameCount; f++) {
-    const row: number[] = [];
+    const row = new Array<number>(wire.binCount);
     const off = f * wire.binCount;
     for (let b = 0; b < wire.binCount; b++) {
-      row.push(db[off + b]);
+      row[b] = db[off + b];
     }
-    out.push(row);
+    out[f] = row;
   }
   return out;
 }

@@ -1,4 +1,8 @@
-import { buildModifiedAkima, akimaResample } from "./modifiedAkima";
+import {
+  buildModifiedAkima,
+  akimaResample,
+  akimaResampleInto,
+} from "./modifiedAkima";
 
 describe("buildModifiedAkima", () => {
   test("throws with fewer than 2 points", () => {
@@ -56,5 +60,18 @@ describe("akimaResample", () => {
   test("output length matches dstXs length", () => {
     const out = akimaResample([0, 1, 2], [3, 1, 2], [0, 0.1, 0.2, 1.5, 2]);
     expect(out.length).toBe(5);
+  });
+});
+
+describe("akimaResampleInto", () => {
+  test("matches the allocating variant element-for-element", () => {
+    const srcXs = [0, 1, 2, 3, 4];
+    const srcYs = [0, 1, 0, -1, 0];
+    const dstXs = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0];
+    const out = new Float32Array(dstXs.length);
+    akimaResampleInto(srcXs, srcYs, dstXs, out);
+    expect(Array.from(out)).toEqual(
+      Array.from(akimaResample(srcXs, srcYs, dstXs)),
+    );
   });
 });

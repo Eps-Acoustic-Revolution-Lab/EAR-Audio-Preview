@@ -2,8 +2,8 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import PlayerService from "../../services/playerService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
-import { quinticBSplineSmooth } from "../../utils/quinticBSpline";
-import { akimaResample } from "../../utils/modifiedAkima";
+import { quinticBSplineSmoothInto } from "../../utils/quinticBSpline";
+import { akimaResampleInto } from "../../utils/modifiedAkima";
 import {
   emaDecayFromReleaseDbPerSec,
   peakFallDbPerFrameFromRelease,
@@ -93,6 +93,14 @@ export default class SpectralAnalyzerComponent extends Component {
   private _axisMin = 10;
   private _axisMax = 20000;
   private _numPoints = 0;
+
+  // Per-frame scratch buffers (reused across RAF ticks to avoid GC churn).
+  private _fftSrcXs: Float64Array = new Float64Array(0);
+  private _fftSrcYs: Float64Array = new Float64Array(0);
+  private _cqtSrcXs: Float64Array = new Float64Array(0);
+  private _cqtSrcYs: Float64Array = new Float64Array(0);
+  private _resampleOut: Float32Array = new Float32Array(0);
+  private _smoothOut: Float32Array = new Float32Array(0);
   /** X-positions for curve control points: logFreqs(300) for both FFT and CQT. */
   private _curveFreqs: Float64Array = new Float64Array(0);
   private _fftLogFreqs: Float64Array | null = null;
@@ -211,6 +219,15 @@ export default class SpectralAnalyzerComponent extends Component {
     this._peakHoldUntilMs.fill(0);
   }
 
+  /** Resize resample/smooth outputs to follow the active curve grid. */
+  private _ensureCurveScratch(): void {
+    const n = this._curveFreqs.length;
+    if (this._resampleOut.length !== n) {
+      this._resampleOut = new Float32Array(n);
+      this._smoothOut = new Float32Array(n);
+    }
+  }
+
   /** Recompute axis range, point count, and curve-point frequencies for the current mode + sample rate. */
   private _configureAxis(isCqt: boolean, sampleRate: number): void {
     const nyquist = sampleRate / 2;
@@ -309,8 +326,12 @@ export default class SpectralAnalyzerComponent extends Component {
     );
     const tilt = this._analyzeSettingsService.liveSpectrumTiltDbPerOct;
 
-    const srcXs = new Float64Array(binCount);
-    const srcYs = new Float64Array(binCount);
+    if (this._fftSrcXs.length !== binCount) {
+      this._fftSrcXs = new Float64Array(binCount);
+      this._fftSrcYs = new Float64Array(binCount);
+    }
+    const srcXs = this._fftSrcXs;
+    const srcYs = this._fftSrcYs;
     for (let k = 0; k < binCount; k++) {
       const f = (k + 0.5) * binHz;
       srcXs[k] = f;
@@ -331,8 +352,10 @@ export default class SpectralAnalyzerComponent extends Component {
       srcYs[k] = Math.max(dbFloor, Math.min(dbCeil + 12, db));
     }
 
-    const resampled = akimaResample(srcXs, srcYs, this._curveFreqs);
-    return quinticBSplineSmooth(resampled);
+    this._ensureCurveScratch();
+    akimaResampleInto(srcXs, srcYs, this._curveFreqs, this._resampleOut);
+    quinticBSplineSmoothInto(this._resampleOut, this._smoothOut);
+    return this._smoothOut;
   }
 
   private _computeCqtFrame(analysers: {
@@ -380,8 +403,12 @@ export default class SpectralAnalyzerComponent extends Component {
     const leftEdges = layout.leftEdges;
     const nyquist = sampleRate / 2;
     const srcN = numBins + 1;
-    const srcXs = new Float64Array(srcN);
-    const srcYs = new Float64Array(srcN);
+    if (this._cqtSrcXs.length !== srcN) {
+      this._cqtSrcXs = new Float64Array(srcN);
+      this._cqtSrcYs = new Float64Array(srcN);
+    }
+    const srcXs = this._cqtSrcXs;
+    const srcYs = this._cqtSrcYs;
     for (let k = 0; k < numBins; k++) {
       srcXs[k] = leftEdges[k];
       let db = this._cqtDbBuf[k];
@@ -392,7 +419,9 @@ export default class SpectralAnalyzerComponent extends Component {
     srcXs[numBins] = nyquist;
     srcYs[numBins] = srcYs[numBins - 1];
 
-    return akimaResample(srcXs, srcYs, this._curveFreqs);
+    this._ensureCurveScratch();
+    akimaResampleInto(srcXs, srcYs, this._curveFreqs, this._resampleOut);
+    return this._resampleOut;
   }
 
   private _draw() {

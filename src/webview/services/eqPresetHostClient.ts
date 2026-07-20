@@ -1,10 +1,9 @@
 import {
   WebviewMessageType,
+  type EqPresetOp,
   type ExtEqPresetOpResultMessage,
   type PostMessage,
 } from "../../message";
-
-type EqPresetOp = "import" | "list" | "read" | "write_library";
 
 interface PendingEqPreset {
   resolve: (value: unknown) => void;

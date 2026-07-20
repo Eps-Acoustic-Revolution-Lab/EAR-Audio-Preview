@@ -123,6 +123,32 @@ const quadAttributes = {
   },
 };
 
+/** Grow-only scratch for texture uploads — spectrogram grids run to tens of
+    MB (frames × bins × 4B), so re-renders reuse one buffer instead of
+    reallocating per draw. */
+let _texUploadScratch = new Float32Array(0);
+
+/** Flatten row-major frames into a reusable upload buffer (exported for bench). */
+export function flattenSpectrogramForUpload(
+  spectrogram: number[][],
+  numFrames: number,
+  numBins: number,
+): Float32Array {
+  const needed = numFrames * numBins;
+  if (_texUploadScratch.length < needed) {
+    _texUploadScratch = new Float32Array(needed);
+  }
+  const pixels = _texUploadScratch;
+  for (let i = 0; i < numFrames; i++) {
+    const row = spectrogram[i];
+    const off = i * numBins;
+    for (let j = 0; j < numBins; j++) {
+      pixels[off + j] = row[j];
+    }
+  }
+  return pixels.subarray(0, needed);
+}
+
 export class SpectrogramRenderer {
   private _gl: WebGL2RenderingContext;
   private _programInfo: twgl.ProgramInfo;
@@ -167,12 +193,7 @@ export class SpectrogramRenderer {
       return;
     }
 
-    const pixels = new Float32Array(numFrames * numBins);
-    for (let i = 0; i < numFrames; i++) {
-      for (let j = 0; j < numBins; j++) {
-        pixels[i * numBins + j] = spectrogram[i][j];
-      }
-    }
+    const pixels = flattenSpectrogramForUpload(spectrogram, numFrames, numBins);
 
     if (this._texture) {
       gl.deleteTexture(this._texture);

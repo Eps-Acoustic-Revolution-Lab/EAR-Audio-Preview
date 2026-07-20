@@ -34,7 +34,7 @@ export function encodeToWav(
   // byte of data chunk
   view.setUint32(40, dataBytes, true);
   // audio data
-  floatTo16BitPCM(view, 44, samples);
+  floatTo16BitPCM(buffer, 44, samples);
 
   return new Uint8Array(buffer);
 }
@@ -45,17 +45,37 @@ function writeString(view: DataView, offset: number, string: string) {
   }
 }
 
+/** WAV is little-endian; direct Int16Array stores are only valid on LE hosts. */
+const isLittleEndian = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
+
 function floatTo16BitPCM(
-  output: DataView,
-  offset: number,
+  buffer: ArrayBuffer,
+  byteOffset: number,
   input: Float32Array[],
 ) {
   const length = input[0].length;
   const numChannels = input.length;
+
+  if (isLittleEndian) {
+    // Fast path: typed-array stores avoid per-sample DataView call overhead.
+    // byteOffset (44) is 2-byte aligned; Int16Array truncation matches setInt16.
+    const out = new Int16Array(buffer, byteOffset, length * numChannels);
+    let w = 0;
+    for (let i = 0; i < length; i++) {
+      for (let ch = 0; ch < numChannels; ch++) {
+        const s = Math.max(-1, Math.min(1, input[ch][i]));
+        out[w++] = s < 0 ? s * 0x8000 : s * 0x7fff;
+      }
+    }
+    return;
+  }
+
+  const view = new DataView(buffer);
+  let offset = byteOffset;
   for (let i = 0; i < length; i++, offset += 2 * numChannels) {
     for (let ch = 0; ch < numChannels; ch++) {
       const s = Math.max(-1, Math.min(1, input[ch][i]));
-      output.setInt16(offset + 2 * ch, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      view.setInt16(offset + 2 * ch, s < 0 ? s * 0x8000 : s * 0x7fff, true);
     }
   }
 }

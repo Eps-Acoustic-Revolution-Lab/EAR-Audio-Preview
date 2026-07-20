@@ -150,7 +150,7 @@ export class WebviewMessageType {
   public static readonly CONFIG = "CONFIG";
   public static readonly DATA = "DATA";
   public static readonly WRITE_WAV = "WRITE_WAV";
-  public static readonly ERROR = "RELOAD";
+  public static readonly ERROR = "ERROR";
   public static readonly SAVE_ANALYZE_UI = "SAVE_ANALYZE_UI";
   public static readonly ANALYZE_SEQUENCE_FEATURES =
     "ANALYZE_SEQUENCE_FEATURES";

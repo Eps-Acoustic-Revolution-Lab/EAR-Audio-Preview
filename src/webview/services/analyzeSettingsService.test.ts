@@ -947,4 +947,62 @@ describe("analyzeSettingsService", () => {
     as.applyMonitorBandsSnapshot([30, 70, 200, 800, 4000, 20000], 0b011);
     expect(as.monitorBandSoloMask).toBe(0b011);
   });
+
+  // effectiveWindowSize zoom boosts (via toProps().windowSize)
+  test("windowSize is unboosted at full time + frequency range", () => {
+    defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    expect(as.toProps().windowSize).toBe(1024);
+  });
+
+  test("time zoom boosts windowSize by floor(log2(zoom))", () => {
+    defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    // duration 1 s → view 0.25 s: zoom 4× → +2 index steps
+    as.minTime = 0;
+    as.maxTime = 0.25;
+    expect(as.toProps().windowSize).toBe(4096);
+  });
+
+  test("frequency zoom alone boosts windowSize so harmonics keep bin density", () => {
+    defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    // full nyquist 22050 → band 0–2000 Hz: ratio ≈ 11 → +3 index steps
+    as.minFrequency = 0;
+    as.maxFrequency = 2000;
+    expect(as.toProps().windowSize).toBe(8192);
+  });
+
+  test("combined time + frequency zoom caps at W8192", () => {
+    defaultSettings.windowSizeIndex = WindowSizeIndex.W1024;
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.minTime = 0;
+    as.maxTime = 0.1;
+    as.minFrequency = 100;
+    as.maxFrequency = 400;
+    expect(as.toProps().windowSize).toBe(8192);
+  });
+
+  test("a manual window above the cap is never reduced by zoom", () => {
+    defaultSettings.windowSizeIndex = WindowSizeIndex.W32768;
+    const as = AnalyzeSettingsService.fromDefaultSetting(
+      defaultSettings,
+      audioBuffer,
+    );
+    as.minTime = 0;
+    as.maxTime = 0.25;
+    expect(as.toProps().windowSize).toBe(32768);
+  });
 });

@@ -52,6 +52,13 @@ export class FrequencyPhaseCorrelationEngine {
   private _hann: Float64Array | null = null;
   private _srcXs = new Float64Array(0);
   private _srcYs = new Float64Array(0);
+  // Per-size FFT work arrays — reused across frames (engine lives per panel).
+  private _dL: Float64Array | null = null;
+  private _dR: Float64Array | null = null;
+  private _reL: Float64Array | null = null;
+  private _imL: Float64Array | null = null;
+  private _reR: Float64Array | null = null;
+  private _imR: Float64Array | null = null;
 
   ensureFftSize(fftSize: number): void {
     if (this._fftSize === fftSize) {
@@ -63,6 +70,12 @@ export class FrequencyPhaseCorrelationEngine {
     const binCount = Math.floor(fftSize / 2);
     this._srcXs = new Float64Array(binCount);
     this._srcYs = new Float64Array(binCount);
+    this._dL = this._ooura.scalarArrayFactory();
+    this._dR = this._ooura.scalarArrayFactory();
+    this._reL = this._ooura.vectorArrayFactory();
+    this._imL = this._ooura.vectorArrayFactory();
+    this._reR = this._ooura.vectorArrayFactory();
+    this._imR = this._ooura.vectorArrayFactory();
   }
 
   computeRhoPerBin(
@@ -78,17 +91,17 @@ export class FrequencyPhaseCorrelationEngine {
     const binCount = this._srcXs.length;
     const binHz = sampleRate / fftSize;
 
-    const dL = ooura.scalarArrayFactory();
-    const dR = ooura.scalarArrayFactory();
+    const dL = this._dL!;
+    const dR = this._dR!;
     for (let i = 0; i < fftSize; i++) {
       dL[i] = mixL[i] * hann[i];
       dR[i] = mixR[i] * hann[i];
     }
 
-    const reL = ooura.vectorArrayFactory();
-    const imL = ooura.vectorArrayFactory();
-    const reR = ooura.vectorArrayFactory();
-    const imR = ooura.vectorArrayFactory();
+    const reL = this._reL!;
+    const imL = this._imL!;
+    const reR = this._reR!;
+    const imR = this._imR!;
     ooura.fft(dL.buffer, reL.buffer, imL.buffer);
     ooura.fft(dR.buffer, reR.buffer, imR.buffer);
 

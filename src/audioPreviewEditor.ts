@@ -237,7 +237,8 @@ export class AudioPreviewEditorProvider
       try {
         await this.onReceiveMessage(msg, webviewPanel, document);
       } catch (err) {
-        vscode.window.showErrorMessage(err.message);
+        const message = err instanceof Error ? err.message : String(err);
+        vscode.window.showErrorMessage(message);
       }
     });
   }
@@ -259,15 +260,6 @@ export class AudioPreviewEditorProvider
                 this._context.extensionUri,
                 "dist",
                 "loudness.worklet.js",
-              ),
-            )
-            .toString(),
-          essentiaWasmUri: webviewPanel.webview
-            .asWebviewUri(
-              vscode.Uri.joinPath(
-                this._context.extensionUri,
-                "dist",
-                "essentia-wasm.web.wasm",
               ),
             )
             .toString(),
@@ -568,7 +560,7 @@ export class AudioPreviewEditorProvider
                 
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 
-                <title>Wav Preview</title>
+                <title>EAR Audio Preview</title>
             </head>
             <body>
                 <div id="root"></div>

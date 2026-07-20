@@ -111,7 +111,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production --devtool hidden-source-map",
+    "vscode:prepublish": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && webpack --mode production --devtool hidden-source-map",
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
     "test": "jest",
@@ -120,6 +120,9 @@
     "lint-check": "eslint \"src/**/*.{js,ts}\" || (echo \"Lint errors found\" && exit 1)",
     "format-check": "prettier --check \"src/**/*.ts\" || (echo \"Formatting errors found\" && exit 1)",
     "ci": "npm run lint-check && npm run format-check && npm test && npm run webpack && npm run vsix",
+    "bench": "tsc -p tsconfig.bench.json && node --expose-gc .bench/bench/benchmark.js",
+    "bench:size": "node bench/bundleSize.mjs",
+    "bench:compare": "node bench/compare.mjs",
     "vsix": "vsce package --no-dependencies",
     "publish": "vsce publish"
   },

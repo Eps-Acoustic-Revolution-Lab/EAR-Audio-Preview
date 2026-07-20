@@ -167,10 +167,23 @@ export function akimaResample(
   srcValues: ArrayLike<number>,
   dstXs: ArrayLike<number>,
 ): Float32Array {
-  const interp = buildModifiedAkima(srcXs, srcValues);
   const out = new Float32Array(dstXs.length);
+  akimaResampleInto(srcXs, srcValues, dstXs, out);
+  return out;
+}
+
+/**
+ * Allocation-reduced variant for per-frame (RAF) callers: writes interpolated
+ * values into `out` (length ≥ dstXs.length) instead of allocating a result.
+ */
+export function akimaResampleInto(
+  srcXs: ArrayLike<number>,
+  srcValues: ArrayLike<number>,
+  dstXs: ArrayLike<number>,
+  out: Float32Array,
+): void {
+  const interp = buildModifiedAkima(srcXs, srcValues);
   for (let i = 0; i < dstXs.length; i++) {
     out[i] = interp.evaluate(dstXs[i]);
   }
-  return out;
 }

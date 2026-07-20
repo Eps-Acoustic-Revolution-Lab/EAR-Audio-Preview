@@ -319,7 +319,8 @@ export default class WebView extends Component {
     this._primeLoadRingGeometry();
     this._metaFab = new MetaFabComponent("#metaPopoverMount", "#settingsFab");
     this._disposables.push(this._metaFab);
-    document.documentElement.dataset.workspacePane = "stft";
+    // Route through the shared setter so listeners see the initial pane too.
+    setActiveWorkspacePane("stft");
   }
 
   private _primeLoadRingGeometry() {

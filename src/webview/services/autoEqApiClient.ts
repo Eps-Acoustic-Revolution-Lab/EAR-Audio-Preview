@@ -7,9 +7,7 @@ import type {
   EqFilterType,
   HeadphoneEqProfile,
 } from "../types/headphoneEq";
-import { buildAutoEqEqualizePayload } from "../../shared/autoEqEqualizePayload";
-
-const BASE_URL = "https://autoeq.app";
+import type { AutoEqRequestEndpoint } from "../../message";
 
 const CACHE_MAX = 48;
 const cache = new Map<string, HeadphoneEqProfile>();
@@ -17,7 +15,8 @@ const cache = new Map<string, HeadphoneEqProfile>();
 let entriesPromise: Promise<AutoEqEntries> | null = null;
 let targetsPromise: Promise<AutoEqTarget[]> | null = null;
 
-export type AutoEqEndpoint = "entries" | "targets" | "equalize";
+/** Single source of truth: the wire endpoint union from message.ts. */
+export type AutoEqEndpoint = AutoEqRequestEndpoint;
 
 export interface AutoEqHostRequest {
   endpoint: AutoEqEndpoint;
@@ -43,18 +42,15 @@ export function unbindAutoEqHost(): void {
   hostRequest = null;
 }
 
-async function fetchJson<T>(
-  path: string,
-  endpoint: AutoEqEndpoint,
-): Promise<T> {
-  if (hostRequest) {
-    return (await hostRequest({ endpoint })) as T;
+async function fetchJson<T>(endpoint: AutoEqEndpoint): Promise<T> {
+  if (!hostRequest) {
+    // All AutoEq traffic must go through the Extension Host: the webview CSP
+    // has no connect-src for autoeq.app, so a direct fetch can never succeed.
+    throw new Error(
+      "AutoEq host bridge not initialized (bindAutoEqHost missing)",
+    );
   }
-  const res = await fetch(`${BASE_URL}${path}`);
-  if (!res.ok) {
-    throw new Error(`AutoEq ${endpoint} failed: ${res.status}`);
-  }
-  return res.json() as Promise<T>;
+  return (await hostRequest({ endpoint })) as T;
 }
 
 function cacheKey(parts: {
@@ -171,24 +167,20 @@ export function mapEqualizeResponse(
 
 export async function fetchEntries(): Promise<AutoEqEntries> {
   if (!entriesPromise) {
-    entriesPromise = fetchJson<AutoEqEntries>("/entries", "entries").catch(
-      (err) => {
-        entriesPromise = null;
-        throw err;
-      },
-    );
+    entriesPromise = fetchJson<AutoEqEntries>("entries").catch((err) => {
+      entriesPromise = null;
+      throw err;
+    });
   }
   return entriesPromise;
 }
 
 export async function fetchTargets(): Promise<AutoEqTarget[]> {
   if (!targetsPromise) {
-    targetsPromise = fetchJson<AutoEqTarget[]>("/targets", "targets").catch(
-      (err) => {
-        targetsPromise = null;
-        throw err;
-      },
-    );
+    targetsPromise = fetchJson<AutoEqTarget[]>("targets").catch((err) => {
+      targetsPromise = null;
+      throw err;
+    });
   }
   return targetsPromise;
 }
@@ -238,26 +230,9 @@ export async function equalizeParametric(opts: {
       },
     })) as EqualizeResponse;
   } else {
-    const res = await fetch(`${BASE_URL}/equalize`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(
-        buildAutoEqEqualizePayload({
-          name: opts.name,
-          source: opts.variant.source,
-          rig: opts.variant.rig,
-          target: opts.targetLabel,
-          fs: opts.fs,
-        }),
-      ),
-    });
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      throw new Error(
-        `AutoEq equalize failed: ${res.status}${detail ? ` — ${detail}` : ""}`,
-      );
-    }
-    body = (await res.json()) as EqualizeResponse;
+    throw new Error(
+      "AutoEq host bridge not initialized (bindAutoEqHost missing)",
+    );
   }
   const profile = mapEqualizeResponse(
     opts.name,

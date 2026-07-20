@@ -1,4 +1,7 @@
-import { quinticBSplineSmooth } from "./quinticBSpline";
+import {
+  quinticBSplineSmooth,
+  quinticBSplineSmoothInto,
+} from "./quinticBSpline";
 
 describe("quinticBSplineSmooth", () => {
   test("returns empty array for empty input", () => {
@@ -30,5 +33,14 @@ describe("quinticBSplineSmooth", () => {
     );
     // Smoothed RMS should be substantially lower than input RMS.
     expect(rmsOut).toBeLessThan(rmsIn * 0.5);
+  });
+});
+
+describe("quinticBSplineSmoothInto", () => {
+  test("matches the allocating variant element-for-element", () => {
+    const data = Array.from({ length: 33 }, (_, i) => Math.sin(i * 0.37) * 5);
+    const out = new Float32Array(data.length);
+    quinticBSplineSmoothInto(data, out);
+    expect(Array.from(out)).toEqual(Array.from(quinticBSplineSmooth(data)));
   });
 });

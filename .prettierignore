@@ -2,3 +2,5 @@ src/decoder
 dist
 out
 node_modules
+bench
+.bench

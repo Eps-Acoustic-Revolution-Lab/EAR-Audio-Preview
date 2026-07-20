@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "node": "v26.0.0",
+    "date": "2026-07-20T07:07:57.658Z",
+    "gcExposed": true
+  },
+  "dsp": {
+    "goertzelCqt.pazFrame4096": {
+      "opsPerSec": 9782,
+      "meanMs": 0.1022,
+      "p95Ms": 0.1077,
+      "frameBudgetPct": 0.61,
+      "allocKbPerOp": 0.5
+    },
+    "quinticBSplineSmooth.300": {
+      "opsPerSec": 781497,
+      "meanMs": 0.0013,
+      "p95Ms": 0.0015,
+      "frameBudgetPct": 0.01,
+      "allocKbPerOp": 0.7
+    },
+    "akimaResample.128to300": {
+      "opsPerSec": 149865,
+      "meanMs": 0.0067,
+      "p95Ms": 0.0095,
+      "frameBudgetPct": 0.04,
+      "allocKbPerOp": 0.9
+    },
+    "liveBallistics.emaFrame300": {
+      "opsPerSec": 1665556,
+      "meanMs": 0.0006,
+      "p95Ms": 0.0005,
+      "frameBudgetPct": 0,
+      "allocKbPerOp": 0.6
+    },
+    "spectralPeakDisplay.frame300": {
+      "opsPerSec": 380257,
+      "meanMs": 0.0026,
+      "p95Ms": 0.0032,
+      "frameBudgetPct": 0.02,
+      "allocKbPerOp": 9.8
+    },
+    "stereoPolarField.instant4096x64": {
+      "opsPerSec": 43253,
+      "meanMs": 0.0231,
+      "p95Ms": 0.0286,
+      "frameBudgetPct": 0.14,
+      "allocKbPerOp": 9.5
+    },
+    "eqCanvasMath.curve300plus10band": {
+      "opsPerSec": 10950,
+      "meanMs": 0.0913,
+      "p95Ms": 0.103,
+      "frameBudgetPct": 0.55,
+      "allocKbPerOp": 10.3
+    },
+    "phaseCorrelation.fft2048": {
+      "opsPerSec": 15660,
+      "meanMs": 0.0639,
+      "p95Ms": 0.094,
+      "frameBudgetPct": 0.38,
+      "allocKbPerOp": 3.7
+    },
+    "anim.fftFramePrep.1024to300": {
+      "opsPerSec": 17039,
+      "meanMs": 0.0587,
+      "p95Ms": 0.0619,
+      "frameBudgetPct": 0.35,
+      "allocKbPerOp": 1.6
+    },
+    "pipeline.stftFrames.3s.w4096h1024": {
+      "opsPerSec": 118,
+      "meanMs": 8.4681,
+      "p95Ms": 9.8145,
+      "frameBudgetPct": 50.81,
+      "allocKbPerOp": 18.3
+    },
+    "pipeline.sequenceFeatures.3s.hop20ms": {
+      "opsPerSec": 337,
+      "meanMs": 2.9681,
+      "p95Ms": 3.1569,
+      "frameBudgetPct": 17.81,
+      "allocKbPerOp": 64.5
+    },
+    "io.wavEncode.stereo5s48k": {
+      "opsPerSec": 185,
+      "meanMs": 5.4049,
+      "p95Ms": 5.7837,
+      "frameBudgetPct": 32.43,
+      "allocKbPerOp": 29
+    },
+    "io.stftWireToSpectrogram.500x1024": {
+      "opsPerSec": 597,
+      "meanMs": 1.6758,
+      "p95Ms": 2.9183,
+      "frameBudgetPct": 10.06,
+      "allocKbPerOp": 4133.1
+    }
+  },
+  "bundle": {
+    "files": {
+      "4062d505493786e728bb.module.wasm": {
+        "raw": 87519,
+        "gzip": 44282
+      },
+      "52.audioPreview.js": {
+        "raw": 4095889,
+        "gzip": 3283816
+      },
+      "audioPreview.js": {
+        "raw": 1041851,
+        "gzip": 381839
+      },
+      "audioPreview.js.LICENSE.txt": {
+        "raw": 321,
+        "gzip": 245
+      },
+      "essentia-wasm.web.wasm": {
+        "raw": 1987689,
+        "gzip": 534986
+      },
+      "extension.js": {
+        "raw": 2634158,
+        "gzip": 810571
+      },
+      "extension.js.LICENSE.txt": {
+        "raw": 1734,
+        "gzip": 829
+      },
+      "loudness.worklet.js": {
+        "raw": 14689,
+        "gzip": 3869
+      },
+      "web/extension.js": {
+        "raw": 2639861,
+        "gzip": 812639
+      },
+      "web/extension.js.LICENSE.txt": {
+        "raw": 1734,
+        "gzip": 829
+      }
+    },
+    "distTotalRaw": 12505445,
+    "distTotalGzip": 5873905,
+    "vsix": {
+      "name": "ear-audio-preview-0.4.0.vsix",
+      "size": 15961260
+    }
+  }
+}

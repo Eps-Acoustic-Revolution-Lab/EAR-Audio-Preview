@@ -1,5 +1,7 @@
 /node_modules
 /out
+/.bench
+/bench/current.json
 *.vsix
 /dist
 .vscode-test

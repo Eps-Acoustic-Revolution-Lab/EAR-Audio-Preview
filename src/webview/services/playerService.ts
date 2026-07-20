@@ -862,6 +862,10 @@ export default class PlayerService extends Service {
   }
 
   public pause() {
+    // Idempotent: pause without an active source (double pause, natural end) is a no-op.
+    if (!this._source) {
+      return;
+    }
     cancelAnimationFrame(this._animationFrameID);
 
     this._source.stop();
@@ -1005,5 +1009,19 @@ export default class PlayerService extends Service {
     if (resumeRequired || this._playerSettingsService.enableSeekToPlay) {
       this.play();
     }
+  }
+
+  public dispose() {
+    if (this._isPlaying) {
+      this.pause();
+    }
+    // Close the AudioContext so switching files does not accumulate live
+    // audio rendering threads in long webview sessions.
+    try {
+      void this._audioContext.close();
+    } catch {
+      // context may already be closed/closing — nothing to release
+    }
+    super.dispose();
   }
 }

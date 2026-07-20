@@ -24,20 +24,21 @@ const frameSize = 2048;
 const f0MinHz = 80;
 const f0MaxHz = 4000;
 const f0ConfidenceThreshold = 0.5;
-const yieldEveryFrames = 64;
+/** Yield to the event loop only after this much continuous compute time. */
+const yieldIntervalMs = 12;
 
 function extractFrame(
   data: Float32Array,
   center: number,
   size: number,
+  out: Float32Array,
 ): Float32Array {
-  const frame = new Float32Array(size);
   const half = size / 2;
   for (let j = 0; j < size; j++) {
     const idx = center - half + j;
-    frame[j] = idx >= 0 && idx < data.length ? data[idx] : 0;
+    out[j] = idx >= 0 && idx < data.length ? data[idx] : 0;
   }
-  return frame;
+  return out;
 }
 
 function yieldToMain(): Promise<void> {
@@ -104,16 +105,21 @@ export async function computeSequenceFeatures(
   const onsetFlux = new Float32Array(frameCount);
 
   let frameIdx = 0;
+  let lastYieldMs = Date.now();
+
+  // Reused per-frame buffer — essentia copies it into a WASM vector each call.
+  const frameBuf = new Float32Array(frameSize);
 
   for (let center = startCenter; center <= endCenter; center += hopSize) {
-    if (frameIdx > 0 && frameIdx % yieldEveryFrames === 0) {
+    if (frameIdx > 0 && Date.now() - lastYieldMs >= yieldIntervalMs) {
       onProgress?.(Math.min(99, (frameIdx / Math.max(1, frameCount)) * 100));
       await yieldToMain();
+      lastYieldMs = Date.now();
     }
 
     timeSec[frameIdx] = center / sampleRate;
 
-    const frame = extractFrame(data, center, frameSize);
+    const frame = extractFrame(data, center, frameSize, frameBuf);
     const frameVec = essentia.arrayToVector(frame);
     const windowed = essentia.Windowing(
       frameVec,

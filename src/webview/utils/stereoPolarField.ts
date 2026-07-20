@@ -102,8 +102,15 @@ export function computeInstantPolarBins(
   out.fill(0);
   const n = lBuf.length;
   const numBins = out.length;
-  const sumSq = new Float32Array(numBins);
-  const counts = new Uint16Array(numBins);
+  if (_polarSumSq.length < numBins) {
+    _polarSumSq = new Float32Array(numBins);
+    _polarCounts = new Uint16Array(numBins);
+    _polarScratch = new Float32Array(numBins);
+  }
+  const sumSq = _polarSumSq;
+  const counts = _polarCounts;
+  sumSq.fill(0, 0, numBins);
+  counts.fill(0, 0, numBins);
   for (let i = 0; i < n; i += stride) {
     const left = lBuf[i];
     const right = rBuf[i];
@@ -124,7 +131,8 @@ export function computeInstantPolarBins(
   if (neighborMix <= 0) {
     return;
   }
-  const scratch = new Float32Array(numBins);
+  const scratch = _polarScratch;
+  scratch.fill(0, 0, numBins);
   for (let i = 0; i < numBins; i++) {
     if (out[i] <= 0) {
       continue;
@@ -135,6 +143,12 @@ export function computeInstantPolarBins(
     out[i] = Math.max(out[i], scratch[i]);
   }
 }
+
+/** Grow-only scratch for computeInstantPolarBins — called every RAF frame;
+    webview is single-threaded so module-level reuse is safe. */
+let _polarSumSq = new Float32Array(0);
+let _polarCounts = new Uint16Array(0);
+let _polarScratch = new Float32Array(0);
 
 /**
  * Polar Sample: collect (angle, radius) dots for semicircle scatter.
