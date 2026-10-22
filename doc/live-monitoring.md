@@ -122,8 +122,11 @@ playback updates at up to 10 Hz; comparison mode reports each published track,
 including paused seeks. Closing the editor resets this local display choice.
 
 Measurements use a Hann-windowed FFT of the current stereo time-domain frame,
-summing channel powers rather than summing waveforms. DC is excluded; silence
+subtracting each channel's finite-frame mean before windowing and summing channel
+powers rather than summing waveforms. DC is excluded; silence
 shows a dash. They follow the monitoring matrix, but not spectrum display tilt,
 A-weighting, smoothing, or peak hold. They remain FFT-based when the plot uses
 CQT. Frame length and sample rate determine resolution; these are instantaneous
 spectral measurements, not an offline whole-file analysis or pitch estimate.
+Removing a finite-frame mean also affects signals whose period is longer than
+the frame; low-frequency readings remain dependent on frame length.

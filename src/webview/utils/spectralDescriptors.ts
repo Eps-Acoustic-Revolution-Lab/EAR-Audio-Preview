@@ -73,10 +73,21 @@ export class SpectralDescriptorAnalyzer {
       this._window[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / (length - 1));
     }
     for (const channel of [left, right]) {
+      // Remove the finite-frame DC offset before windowing; otherwise Hann
+      // spreads a constant offset into nonzero bins that survive the DC skip.
+      let sum = 0;
+      let count = 0;
+      for (let i = 0; i < length; i++) {
+        if (Number.isFinite(channel[i])) {
+          sum += channel[i];
+          count++;
+        }
+      }
+      const mean = count ? sum / count : 0;
       this._input.fill(0);
       for (let i = 0; i < length; i++) {
         this._input[i] = Number.isFinite(channel[i])
-          ? channel[i] * this._window[i]
+          ? (channel[i] - mean) * this._window[i]
           : 0;
       }
       this._fft.fft(this._input.buffer, this._real.buffer, this._imag.buffer);
