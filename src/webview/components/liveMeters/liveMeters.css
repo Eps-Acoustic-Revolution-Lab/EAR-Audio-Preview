@@ -953,3 +953,15 @@ button.workspacePane__tab:focus {
 .spectralDescriptors__rows {
   padding-top: 4px;
 }
+
+.levelMeter__weighting {
+  width: 100%;
+  min-width: 0;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 9px;
+  color: var(--vscode-dropdown-foreground);
+  background: var(--vscode-dropdown-background);
+  border: 1px solid var(--vscode-dropdown-border, transparent);
+  border-radius: 2px;
+}

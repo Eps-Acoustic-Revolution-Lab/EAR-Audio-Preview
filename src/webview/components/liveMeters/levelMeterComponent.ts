@@ -13,6 +13,11 @@ import {
 } from "../../utils/liveMonitoring";
 import { formatDbFs } from "../../services/loudnessService";
 
+import {
+  FrequencyWeightedRms,
+  type RmsWeighting,
+} from "../../utils/frequencyWeightedRms";
+
 const dbMin = -60;
 const dbMax = 6;
 /** Clip LED triggers at 0 dBFS even though the scale extends to +6 dBFS. */
@@ -88,6 +93,9 @@ function formatDb(db: number): string {
 }
 
 export default class LevelMeterComponent extends Component {
+  private _weighting: RmsWeighting = "Z";
+  private _weightedRms = new FrequencyWeightedRms();
+  private _meterSampleRate = 48000;
   private _inner: HTMLElement;
   private _wrapL: HTMLElement;
   private _wrapR: HTMLElement;
@@ -159,6 +167,9 @@ export default class LevelMeterComponent extends Component {
     containerEl.innerHTML = `
       <div class="levelMeterComponent" id="levelMeterInner"
         title="Right-click: toggle L–R / M–S columns (when not in Solo M/S). Solo M or S switches to M–S automatically.">
+        <select class="levelMeter__weighting" aria-label="RMS frequency weighting" title="RMS estimate in dBFS; Z is unweighted. A/B/C affect RMS only, not peaks or playback. Not calibrated SPL.">
+          <option value="Z">RMS Z</option><option value="A">RMS A</option><option value="B">RMS B</option><option value="C">RMS C</option>
+        </select>
         <div class="levelMeter__main">
           <div class="levelMeter__channel">
             <div class="levelMeter__clipLed" id="clipLedL" title="Click to clear clip"></div>
@@ -189,6 +200,16 @@ export default class LevelMeterComponent extends Component {
         </div>
       </div>`;
 
+    const weightingSelect = containerEl.querySelector<HTMLSelectElement>(
+      ".levelMeter__weighting",
+    );
+    this._addEventlistener(weightingSelect, "change", () => {
+      this._weighting = weightingSelect.value as RmsWeighting;
+      this._stateL.smoothedRms = dbMin;
+      this._stateR.smoothedRms = dbMin;
+      this._rmsTextL.textContent =
+        this._rmsTextR.textContent = `R${this._weighting === "Z" ? "" : this._weighting} —`;
+    });
     this._inner = containerEl.querySelector("#levelMeterInner");
     this._wrapL = containerEl.querySelector(".js-meterWrapL");
     this._wrapR = containerEl.querySelector(".js-meterWrapR");
@@ -324,6 +345,8 @@ export default class LevelMeterComponent extends Component {
       return;
     }
 
+    this._meterSampleRate = analysers.left.context.sampleRate;
+
     /* Real frame delta → frame-rate-independent ballistics (clamped so a
        backgrounded tab's long gap releases smoothly instead of jumping). */
     const dtSec =
@@ -445,7 +468,7 @@ export default class LevelMeterComponent extends Component {
     smoothedRms: number,
     peakDb: number,
   ) {
-    const rmsText = `R ${formatDb(smoothedRms)}`;
+    const rmsText = `R${this._weighting === "Z" ? "" : this._weighting} ${formatDb(smoothedRms)}`;
     if (rmsEl.textContent !== rmsText) {
       rmsEl.textContent = rmsText;
     }
@@ -490,7 +513,14 @@ export default class LevelMeterComponent extends Component {
         peak = s;
       }
     }
-    const rms = Math.sqrt(sumSq / buf.length);
+    const rms =
+      this._weighting === "Z"
+        ? Math.sqrt(sumSq / buf.length)
+        : this._weightedRms.compute(
+            buf,
+            this._meterSampleRate,
+            this._weighting,
+          );
     const rmsDb = 20 * Math.log10(Math.max(rms, 1e-9));
     const peakDb = 20 * Math.log10(Math.max(peak, 1e-9));
 
