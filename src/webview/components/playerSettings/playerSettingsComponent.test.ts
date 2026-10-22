@@ -1,4 +1,4 @@
-import { createAudioContext, getRandomFloat } from "../../../__mocks__/helper";
+import { createAudioContext } from "../../../__mocks__/helper";
 import { EventType } from "../../events";
 import AnalyzeService from "../../services/analyzeService";
 import AnalyzeSettingsService from "../../services/analyzeSettingsService";
@@ -115,7 +115,7 @@ describe("playerSettingsComponent", () => {
   });
 
   test("hpf-frequency should be updated when user change hpf-frequency-input", () => {
-    const hpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
+    const hpfFrequency = 120;
     const hpfFrequencyInput = document.querySelector(
       ".js-playerSetting-hpfFrequency",
     ) as HTMLInputElement;
@@ -123,8 +123,29 @@ describe("playerSettingsComponent", () => {
     hpfFrequencyInput.dispatchEvent(new Event(EventType.CHANGE));
     expect(playerSettingsService.hpfFrequency).toBeCloseTo(hpfFrequency);
   });
+  test.each(["hpf", "lpf"])(
+    "%s frequency input clamps to the supported range",
+    (filter) => {
+      const input = document.querySelector(
+        `.js-playerSetting-${filter}Frequency`,
+      ) as HTMLInputElement;
+      for (const [value, expected] of [
+        [0.7, 10],
+        [audioBuffer.sampleRate, audioBuffer.sampleRate / 2],
+      ]) {
+        input.value = String(value);
+        input.dispatchEvent(new Event(EventType.CHANGE));
+        expect(
+          filter === "hpf"
+            ? playerSettingsService.hpfFrequency
+            : playerSettingsService.lpfFrequency,
+        ).toBe(expected);
+        expect(Number(input.value)).toBe(expected);
+      }
+    },
+  );
   test("hpf-frequency-input should be updated when recieving update-hpf-frequency event", () => {
-    const hpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
+    const hpfFrequency = 240;
     playerSettingsService.dispatchEvent(
       new CustomEvent(EventType.PS_UPDATE_HPF_FREQUENCY, {
         detail: {
@@ -174,7 +195,7 @@ describe("playerSettingsComponent", () => {
   });
 
   test("lpf-frequency should be updated when user change lpf-frequency-input", () => {
-    const lpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
+    const lpfFrequency = 8000;
     const lpfFrequencyInput = document.querySelector(
       ".js-playerSetting-lpfFrequency",
     ) as HTMLInputElement;
@@ -183,7 +204,7 @@ describe("playerSettingsComponent", () => {
     expect(playerSettingsService.lpfFrequency).toBeCloseTo(lpfFrequency);
   });
   test("lpf-frequency-input should be updated when recieving update-lpf-frequency event", () => {
-    const lpfFrequency = getRandomFloat(0, audioBuffer.sampleRate / 2);
+    const lpfFrequency = 12000;
     playerSettingsService.dispatchEvent(
       new CustomEvent(EventType.PS_UPDATE_LPF_FREQUENCY, {
         detail: {
