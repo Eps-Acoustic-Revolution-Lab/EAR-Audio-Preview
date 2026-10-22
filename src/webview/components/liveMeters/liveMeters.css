@@ -934,3 +934,22 @@ button.workspacePane__tab:focus {
 #liveMetersRight {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
 }
+
+.spectralDescriptors {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+  max-width: calc(100% - 48px);
+  max-height: 45%;
+  overflow: auto;
+  background: var(--spectrum-bg, #0f0f0f);
+  color: var(--vscode-foreground);
+  font: 10px/1.5 var(--font-mono, monospace);
+  padding: 2px 6px;
+}
+.spectralDescriptors summary {
+  cursor: pointer;
+}
+.spectralDescriptors__rows {
+  padding-top: 4px;
+}

@@ -1,3 +1,4 @@
+import SpectralDescriptorLane from "./spectralDescriptorLane";
 import { aWeightDb } from "../../utils/aWeighting";
 import { EventType } from "../../events";
 import Component from "../../component";
@@ -55,6 +56,7 @@ function dbFromCanvasY(y: number, padT: number, drawH: number): number {
   return dbFloor + (1 - tl) * (dbCeil - dbFloor);
 }
 export default class SpectralAnalyzerComponent extends Component {
+  private _descriptorLane: SpectralDescriptorLane;
   private _container: HTMLElement;
   private _canvas: HTMLCanvasElement;
   private _readoutEl: HTMLElement;
@@ -199,6 +201,14 @@ export default class SpectralAnalyzerComponent extends Component {
       <canvas class="spectralAnalyzer__canvas"></canvas>
       <div class="spectralAnalyzer__hoverReadout" style="visibility:hidden" aria-live="polite"></div>
     </div>`;
+    this._descriptorLane = this._register(
+      new SpectralDescriptorLane(
+        containerEl.querySelector(".spectralAnalyzerComponent"),
+        playerService,
+        analyzeSettingsService,
+        _comparison,
+      ),
+    );
     this._canvas = containerEl.querySelector(".spectralAnalyzer__canvas");
     this._readoutEl = containerEl.querySelector(
       ".spectralAnalyzer__hoverReadout",
@@ -239,6 +249,7 @@ export default class SpectralAnalyzerComponent extends Component {
     });
 
     this._addEventlistener(playerService, EventType.UPDATE_IS_PLAYING, () => {
+      this._descriptorLane.update(true);
       this._syncRafToState();
     });
 
@@ -539,6 +550,7 @@ export default class SpectralAnalyzerComponent extends Component {
   }
 
   private _draw() {
+    this._descriptorLane.update();
     const analysers = this._playerService.getAnalysers();
     const playing = this._playerService.isPlaying;
 
