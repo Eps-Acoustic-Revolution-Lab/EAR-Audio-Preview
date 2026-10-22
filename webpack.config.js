@@ -54,7 +54,7 @@ const extensionConfig = {
 const webviewConfig = {
   target: "web",
 
-  entry: {audioPreview: "./src/webview/index.ts", comparison: "./src/webview/comparison/index.ts", comparisonWorker: "./src/webview/comparison/analysisWorker.ts", aacDecoderWorker: "./src/webview/decoders/aacDecoderWorker.ts"},
+  entry: {sequenceWorker: "./src/webview/services/sequenceWorker.ts", audioPreview: "./src/webview/index.ts", comparison: "./src/webview/comparison/index.ts", comparisonWorker: "./src/webview/comparison/analysisWorker.ts", aacDecoderWorker: "./src/webview/decoders/aacDecoderWorker.ts"},
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
@@ -79,6 +79,7 @@ const webviewConfig = {
   },
   module: {
     rules: [
+      { test: /essentia-wasm\.web\.js$/, use: [path.resolve(__dirname, "scripts/essentia-worker-loader.cjs")] },
       {
         test: /\.ts$/,
         exclude: /node_modules/,

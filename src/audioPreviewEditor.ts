@@ -319,6 +319,24 @@ export class AudioPreviewEditorProvider
           headphoneEq,
           onboardingSeen:
             this._context.globalState.get(onboardingSeenKey) === true,
+          sequenceWorkerUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "sequenceWorker.js",
+              ),
+            )
+            .toString(),
+          essentiaWasmUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "essentia-wasm.web.wasm",
+              ),
+            )
+            .toString(),
           loudnessWorkletUri: webview
             .asWebviewUri(
               vscode.Uri.joinPath(

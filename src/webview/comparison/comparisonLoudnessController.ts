@@ -1,3 +1,4 @@
+import type { SequenceWorkerResources } from "../services/sequenceWorkerClient";
 import type { WebviewAnalyzeSequenceFeaturesMessage } from "../../message";
 import type { PageRpcClient } from "../services/pageRpcClient";
 import type { ComparisonTrack } from "./comparisonSession";
@@ -18,6 +19,7 @@ interface Profile {
 
 /** Loudness pane owns its jobs, cancellation and revision-scoped results. */
 export class ComparisonLoudnessController {
+  public sequenceResources: SequenceWorkerResources = {};
   public readonly profiles = new Map<string, Profile>();
   private readonly _profiles = this.profiles;
   private _profileBusy = false;
@@ -78,7 +80,12 @@ export class ComparisonLoudnessController {
         this.status(`Analyzing loudness and pitch · ${track.name}`);
         try {
           this._activeTrack = track;
-          const sequence = new SequenceFeatureService(track.buffer, this.rpc);
+          const sequence = new SequenceFeatureService(
+            track.buffer,
+            this.rpc,
+            undefined,
+            this.sequenceResources,
+          );
           this._profileSequence = sequence;
           const url = await this.workerReady();
           state.loudness = await analyzeNativeLoudness(

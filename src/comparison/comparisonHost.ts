@@ -141,6 +141,24 @@ export class ComparisonHost implements vscode.Disposable {
             false,
           ),
           headphoneEq,
+          sequenceWorkerUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "sequenceWorker.js",
+              ),
+            )
+            .toString(),
+          essentiaWasmUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "essentia-wasm.web.wasm",
+              ),
+            )
+            .toString(),
           workerUri: webview
             .asWebviewUri(
               vscode.Uri.joinPath(

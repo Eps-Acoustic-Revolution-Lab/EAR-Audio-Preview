@@ -1,0 +1,13 @@
+# Background sequence analysis (unreleased)
+
+F0 and onset analysis use a dedicated Web Worker in both the single-file and comparison Loudness panes. Chroma and predominant melody use the same worker on explicit request in the single-file pane. Each job receives its own mono PCM copy through transferable storage; playback channels are never detached. The comparison controller processes tracks sequentially, so an eight-file session does not create eight analysis runtimes at once.
+
+The extension supplies `sequenceWorkerUri` and `essentiaWasmUri`. The webview fetches the packaged worker and starts it through a temporary blob URL, matching the existing worker CSP policy. The worker loads the packaged Essentia WASM binary. No network service is involved. F0/onset progress is forwarded to the existing service callback. A ten-minute timeout bounds resource loading and computation; disposal and timeout terminate the worker and release its blob URL, including while Melodia is inside a synchronous native call.
+
+If worker setup or normal sequence analysis fails, the service attempts the existing host path once. Harmonic analysis never falls back to the host because its whole-signal synchronous call would block extension work. A worker failure leaves the optional analysis unavailable with a retryable UI error.
+
+The upstream browser runtime hardcodes the window environment and generates JavaScript bindings at runtime. `scripts/essentia-worker-loader.cjs` checks the exact source SHA-256, selects the worker environment, and replaces five binding factories with equivalent static closures. The webview retains its existing CSP without `unsafe-eval`. A dependency change fails the build until these adaptations are reviewed. Tooling tests initialize the actual WASM with JavaScript code generation disabled and execute DSP through those bindings.
+
+Validation: production worker in headless Chrome with the webview-equivalent CSP processed a three-second 440 Hz tone: 60 F0 frames, 1,023 voiced melody frames, mean melody 440.005 Hz. The page's 10 ms timer continued during the job (34 ticks in that run). This establishes browser-worker execution and responsiveness for that fixture; it is not native VS Code acceptance or a long-recording benchmark.
+
+A ten-minute, 16 kHz synthetic tone using the adaptive 600/7200-second hop produced 7,201 sequence frames in 5.78 seconds with 573 page timer ticks and a mean F0 of 439.779 Hz. A separate run terminated the worker at 0.111% progress; no final result arrived during the subsequent 200 ms observation. These timings are local headless Chrome observations, not cross-platform performance guarantees.

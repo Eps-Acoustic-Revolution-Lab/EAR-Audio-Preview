@@ -1,3 +1,4 @@
+import { SequenceWorkerClient } from "./sequenceWorkerClient";
 import { PageRpcClient } from "./pageRpcClient";
 import SequenceFeatureService from "./sequenceFeatureService";
 import {
@@ -246,32 +247,58 @@ test("analysis timeout cancels host work and permits a retry", async () => {
   }
 });
 
-test("harmonic analysis is opt-in, deduplicated and does not overwrite the default profile cache", async () => {
+test("harmonics require a worker and never fall back to the host", async () => {
   const post = jest.fn();
   const rpc = new PageRpcClient(post);
   const service = new SequenceFeatureService(makeAudioBuffer(44100), rpc);
-  const normal = service.analyzeProfile();
-  expect(post.mock.calls[0][0].data.harmonic).toBeUndefined();
-  const base: SequenceFeatureProfile = {
+  await expect(service.analyzeHarmonics()).rejects.toThrow(
+    "requires the background worker",
+  );
+  expect(post).not.toHaveBeenCalled();
+  service.dispose();
+  rpc.dispose();
+});
+
+test("worker failure falls back once for F0 but not for harmonics", async () => {
+  const analyze = jest
+    .spyOn(SequenceWorkerClient.prototype, "analyze")
+    .mockRejectedValue(new Error("worker failed"));
+  const warning = jest.spyOn(console, "warn").mockImplementation(() => {});
+  const post = jest.fn();
+  const rpc = new PageRpcClient(post);
+  const service = new SequenceFeatureService(
+    makeAudioBuffer(44100),
+    rpc,
+    undefined,
+    { sequenceWorkerUri: "worker", essentiaWasmUri: "wasm" },
+  );
+  const pending = service.analyzeProfile();
+  for (let i = 0; i < 5; i++) {
+    await Promise.resolve();
+  }
+  expect(post).toHaveBeenCalledTimes(1);
+  rpc.handleResponse({
+    type: ExtMessageType.SEQUENCE_FEATURES,
+    data: { requestId: post.mock.calls[0][0].data.requestId },
+  });
+  await expect(pending).resolves.toBeNull();
+  await expect(service.analyzeHarmonics()).rejects.toThrow("worker failed");
+  expect(post).toHaveBeenCalledTimes(1);
+  service.dispose();
+  rpc.dispose();
+  analyze.mockRestore();
+  warning.mockRestore();
+});
+
+test("worker harmonic requests deduplicate and preserve the normal profile cache", async () => {
+  const profile: SequenceFeatureProfile = {
     timeSec: new Float32Array([0]),
-    f0Hz: new Float32Array([220]),
+    f0Hz: new Float32Array([440]),
     f0Confidence: new Float32Array([1]),
     onsetFlux: new Float32Array([0]),
     sampleRate: 44100,
     hopSec: 0.05,
   };
-  rpc.handleResponse({
-    type: ExtMessageType.SEQUENCE_FEATURES,
-    data: {
-      requestId: post.mock.calls[0][0].data.requestId,
-      payload: profileToWire(base),
-    },
-  });
-  const normalProfile = await normal;
-  const first = service.analyzeHarmonics();
-  const second = service.analyzeHarmonics();
-  expect(first).toBe(second);
-  expect(post.mock.calls[1][0].data.harmonic).toBe(true);
   const harmonic = {
     chroma: new Float32Array(12),
     chromaTimeSec: new Float32Array([0]),
@@ -279,18 +306,32 @@ test("harmonic analysis is opt-in, deduplicated and does not overwrite the defau
     melodyConfidence: new Float32Array([1]),
     melodyHopSec: 128 / 44100,
   };
-  rpc.handleResponse({
-    type: ExtMessageType.SEQUENCE_FEATURES,
-    data: {
-      requestId: post.mock.calls[1][0].data.requestId,
-      payload: profileToWire({ ...base, harmonic }),
-    },
-  });
-  const result = await first;
-  expect(result?.harmonic?.melodyHz[0]).toBe(440);
-  expect(await service.analyzeHarmonics()).toBe(result);
-  expect(await service.analyzeProfile()).toBe(normalProfile);
-  expect(post).toHaveBeenCalledTimes(2);
-  service.dispose();
-  rpc.dispose();
+  const analyze = jest
+    .spyOn(SequenceWorkerClient.prototype, "analyze")
+    .mockResolvedValueOnce(profileToWire(profile))
+    .mockResolvedValueOnce(profileToWire({ ...profile, harmonic }));
+  const post = jest.fn();
+  const rpc = new PageRpcClient(post);
+  const service = new SequenceFeatureService(
+    makeAudioBuffer(44100),
+    rpc,
+    undefined,
+    { sequenceWorkerUri: "worker", essentiaWasmUri: "wasm" },
+  );
+  try {
+    const normal = await service.analyzeProfile();
+    const first = service.analyzeHarmonics();
+    expect(service.analyzeHarmonics()).toBe(first);
+    const result = await first;
+    expect(result?.harmonic?.melodyHz[0]).toBe(440);
+    expect(await service.analyzeHarmonics()).toBe(result);
+    expect(await service.analyzeProfile()).toBe(normal);
+    expect(analyze).toHaveBeenCalledTimes(2);
+    expect(analyze.mock.calls[1][5]).toBe(true);
+    expect(post).not.toHaveBeenCalled();
+  } finally {
+    service.dispose();
+    rpc.dispose();
+    analyze.mockRestore();
+  }
 });

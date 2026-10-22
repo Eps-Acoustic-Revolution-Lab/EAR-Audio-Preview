@@ -1,3 +1,7 @@
+import {
+  SequenceWorkerClient,
+  type SequenceWorkerResources,
+} from "./sequenceWorkerClient";
 import { PageRpcClient } from "./pageRpcClient";
 import Service from "../service";
 import { computeAdaptiveSequenceHopSec } from "../../shared/sequenceHop";
@@ -29,6 +33,7 @@ function monoDownmix(buffer: AudioBuffer): Float32Array {
 }
 
 export default class SequenceFeatureService extends Service {
+  private _workers = new Set<SequenceWorkerClient>();
   private _requestIds = new Set<string>();
   private _harmonicCache: SequenceFeatureProfile | null = null;
   private _harmonicPromise: Promise<SequenceFeatureProfile | null> | null =
@@ -40,6 +45,7 @@ export default class SequenceFeatureService extends Service {
     private _audioBuffer: AudioBuffer,
     private _rpc: PageRpcClient,
     private _send?: PostMessage,
+    private _resources: SequenceWorkerResources = {},
   ) {
     super();
   }
@@ -48,8 +54,6 @@ export default class SequenceFeatureService extends Service {
     hopSec?: number,
     onProgress?: SequenceAnalysisProgress,
   ): Promise<SequenceFeatureProfile | null> {
-    // The host currently returns the final profile without incremental progress.
-    void onProgress;
     if (this._isDisposed) {
       return Promise.resolve(null);
     }
@@ -66,7 +70,11 @@ export default class SequenceFeatureService extends Service {
       return this._analyzePromise;
     }
 
-    this._analyzePromise = this._runAnalysis(effectiveHop).finally(() => {
+    this._analyzePromise = this._runAnalysis(
+      effectiveHop,
+      false,
+      onProgress,
+    ).finally(() => {
       this._analyzePromise = null;
     });
     return this._analyzePromise;
@@ -95,10 +103,55 @@ export default class SequenceFeatureService extends Service {
     return this._harmonicPromise;
   }
 
-  private _runAnalysis(
+  private async _runAnalysis(
     hopSec: number,
     harmonic = false,
+    onProgress?: SequenceAnalysisProgress,
   ): Promise<SequenceFeatureProfile | null> {
+    if (this._resources.sequenceWorkerUri && this._resources.essentiaWasmUri) {
+      const worker = new SequenceWorkerClient();
+      this._workers.add(worker);
+      try {
+        const value = await worker.analyze(
+          monoDownmix(this._audioBuffer),
+          this._audioBuffer.sampleRate,
+          hopSec,
+          this._resources,
+          onProgress,
+          harmonic,
+        );
+        if (this._isDisposed) {
+          return null;
+        }
+        const profile = profileFromWire(value);
+        if (!harmonic) {
+          this._profileCache = profile;
+        }
+        return profile;
+      } catch (error) {
+        if (this._isDisposed) {
+          return null;
+        }
+        if (harmonic) {
+          throw error;
+        }
+        console.warn(
+          "[sequenceFeatureService] Worker unavailable; using host fallback",
+          error,
+        );
+      } finally {
+        worker.dispose();
+        this._workers.delete(worker);
+      }
+    }
+    if (this._isDisposed) {
+      return null;
+    }
+    if (harmonic) {
+      throw new Error(
+        "Harmonic analysis requires the background worker. Reload the audio editor and try again.",
+      );
+    }
     const mono = monoDownmix(this._audioBuffer);
     let requestId = "";
     return this._rpc
@@ -143,6 +196,10 @@ export default class SequenceFeatureService extends Service {
 
   public dispose(): void {
     super.dispose();
+    for (const worker of this._workers) {
+      worker.dispose();
+    }
+    this._workers.clear();
     for (const id of this._requestIds) {
       this._rpc.cancel(id);
     }
