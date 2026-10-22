@@ -30,6 +30,9 @@ function monoDownmix(buffer: AudioBuffer): Float32Array {
 
 export default class SequenceFeatureService extends Service {
   private _requestIds = new Set<string>();
+  private _harmonicCache: SequenceFeatureProfile | null = null;
+  private _harmonicPromise: Promise<SequenceFeatureProfile | null> | null =
+    null;
   private _profileCache: SequenceFeatureProfile | null = null;
   private _analyzePromise: Promise<SequenceFeatureProfile | null> | null = null;
 
@@ -69,7 +72,33 @@ export default class SequenceFeatureService extends Service {
     return this._analyzePromise;
   }
 
-  private _runAnalysis(hopSec: number): Promise<SequenceFeatureProfile | null> {
+  public analyzeHarmonics(): Promise<SequenceFeatureProfile | null> {
+    if (this._isDisposed) {
+      return Promise.resolve(null);
+    }
+    if (this._harmonicCache) {
+      return Promise.resolve(this._harmonicCache);
+    }
+    if (this._harmonicPromise) {
+      return this._harmonicPromise;
+    }
+    this._harmonicPromise = this._runAnalysis(0.05, true)
+      .then((profile) => {
+        if (profile?.harmonic) {
+          this._harmonicCache = profile;
+        }
+        return profile;
+      })
+      .finally(() => {
+        this._harmonicPromise = null;
+      });
+    return this._harmonicPromise;
+  }
+
+  private _runAnalysis(
+    hopSec: number,
+    harmonic = false,
+  ): Promise<SequenceFeatureProfile | null> {
     const mono = monoDownmix(this._audioBuffer);
     let requestId = "";
     return this._rpc
@@ -85,6 +114,7 @@ export default class SequenceFeatureService extends Service {
               samples: mono.buffer,
               sampleRate: this._audioBuffer.sampleRate,
               hopSec,
+              ...(harmonic ? { harmonic: true } : {}),
             },
           };
         },
@@ -97,7 +127,9 @@ export default class SequenceFeatureService extends Service {
           return null;
         }
         const profile = profileFromWire(value as SequenceFeatureProfileWire);
-        this._profileCache = profile;
+        if (!harmonic) {
+          this._profileCache = profile;
+        }
         return profile;
       })
       .catch((error) => {
@@ -116,5 +148,6 @@ export default class SequenceFeatureService extends Service {
     }
     this._requestIds.clear();
     this._profileCache = null;
+    this._harmonicCache = null;
   }
 }

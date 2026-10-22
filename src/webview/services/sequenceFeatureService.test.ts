@@ -245,3 +245,52 @@ test("analysis timeout cancels host work and permits a retry", async () => {
     jest.useRealTimers();
   }
 });
+
+test("harmonic analysis is opt-in, deduplicated and does not overwrite the default profile cache", async () => {
+  const post = jest.fn();
+  const rpc = new PageRpcClient(post);
+  const service = new SequenceFeatureService(makeAudioBuffer(44100), rpc);
+  const normal = service.analyzeProfile();
+  expect(post.mock.calls[0][0].data.harmonic).toBeUndefined();
+  const base: SequenceFeatureProfile = {
+    timeSec: new Float32Array([0]),
+    f0Hz: new Float32Array([220]),
+    f0Confidence: new Float32Array([1]),
+    onsetFlux: new Float32Array([0]),
+    sampleRate: 44100,
+    hopSec: 0.05,
+  };
+  rpc.handleResponse({
+    type: ExtMessageType.SEQUENCE_FEATURES,
+    data: {
+      requestId: post.mock.calls[0][0].data.requestId,
+      payload: profileToWire(base),
+    },
+  });
+  const normalProfile = await normal;
+  const first = service.analyzeHarmonics();
+  const second = service.analyzeHarmonics();
+  expect(first).toBe(second);
+  expect(post.mock.calls[1][0].data.harmonic).toBe(true);
+  const harmonic = {
+    chroma: new Float32Array(12),
+    chromaTimeSec: new Float32Array([0]),
+    melodyHz: new Float32Array([440]),
+    melodyConfidence: new Float32Array([1]),
+    melodyHopSec: 128 / 44100,
+  };
+  rpc.handleResponse({
+    type: ExtMessageType.SEQUENCE_FEATURES,
+    data: {
+      requestId: post.mock.calls[1][0].data.requestId,
+      payload: profileToWire({ ...base, harmonic }),
+    },
+  });
+  const result = await first;
+  expect(result?.harmonic?.melodyHz[0]).toBe(440);
+  expect(await service.analyzeHarmonics()).toBe(result);
+  expect(await service.analyzeProfile()).toBe(normalProfile);
+  expect(post).toHaveBeenCalledTimes(2);
+  service.dispose();
+  rpc.dispose();
+});

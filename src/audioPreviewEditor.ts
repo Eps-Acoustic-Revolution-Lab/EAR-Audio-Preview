@@ -547,7 +547,7 @@ export class AudioPreviewEditorProvider
 
       case WebviewMessageType.ANALYZE_SEQUENCE_FEATURES:
         if (WebviewMessageType.isAnalyzeSequenceFeatures(msg)) {
-          const { requestId, samples, sampleRate, hopSec } = msg.data;
+          const { requestId, samples, sampleRate, hopSec, harmonic } = msg.data;
           const buf = samples as ArrayBuffer;
           const mono = new Float32Array(buf, 0, buf.byteLength / 4);
           await this.analysisTasks.run(
@@ -561,6 +561,7 @@ export class AudioPreviewEditorProvider
                   hopSec,
                   undefined,
                   shouldCancel,
+                  harmonic,
                 );
                 if (shouldCancel()) {
                   return;

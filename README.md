@@ -201,7 +201,7 @@ In multi-file comparison, each track is analyzed natively at its decoded sample 
 
 ### 🔭 Planned Next
 
-* [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and polyphonic melody estimation via `PredominantPitchMelodia`.
+* [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and predominant melody estimation via `PredominantPitchMelodia` ([unreleased implementation and limits](doc/harmonic-analysis.md)).
 * [ ] **Extended Spectral Descriptors:** Optional feature lanes including real-time Spectral Centroid.
 * [ ] **Weighted Metering:** Standard `A / B / C` frequency-weighted RMS measurements.
 * [ ] **Background Worker Pipeline:** Off-thread Web Worker $F_0$ and onset computation for long-form recordings.

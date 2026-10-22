@@ -1,3 +1,4 @@
+import HarmonicTimeline from "./harmonicTimeline";
 /**
  * Inline or fullscreen pane: LUFS + F0 + Onset flux timeline strips.
  */
@@ -271,6 +272,18 @@ export default class LoudnessPane extends Component {
       const ro = new ResizeObserver(() => this._draw());
       ro.observe(this._stripsEl);
       this._register({ dispose: () => ro.disconnect() });
+    }
+
+    if (this._sequenceFeatureService) {
+      this._register(
+        new HarmonicTimeline(
+          mountEl,
+          this._sequenceFeatureService,
+          analyzeSettingsService,
+          audioBuffer.duration,
+          audioBuffer.sampleRate,
+        ),
+      );
     }
 
     void this._loadProfile();

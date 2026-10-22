@@ -295,6 +295,7 @@ export class WebviewSaveOnboardingSeenMessage {
 }
 
 export interface WebviewAnalyzeSequenceFeaturesMessageData {
+  harmonic?: boolean;
   requestId: string;
   samples: ArrayBufferLike;
   sampleRate: number;
