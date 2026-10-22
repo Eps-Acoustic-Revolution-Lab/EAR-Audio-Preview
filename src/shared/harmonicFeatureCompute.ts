@@ -175,6 +175,11 @@ export async function computeHarmonicFeatures(
         sampleRate,
       );
       vectors.push(peaks.frequencies, peaks.magnitudes);
+      // Essentia's converter throws for an empty native vector. Inspect its
+      // size first; the array fallback also supports the lightweight test API.
+      if ((peaks.frequencies as { size?: () => number }).size?.() === 0) {
+        continue;
+      }
       if (essentia.vectorToArray(peaks.frequencies).length === 0) {
         continue;
       }

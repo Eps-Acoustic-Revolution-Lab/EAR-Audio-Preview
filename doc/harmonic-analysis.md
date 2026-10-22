@@ -11,4 +11,9 @@ Chroma and Melodia run in an isolated browser Web Worker using the packaged Esse
 
 Validation includes real installed Essentia WASM: A4 maps to chroma A and a predominant melody near 440 Hz, while silence has no voiced melody. Unit coverage checks wire copies, rejected inputs, cancellation, allocation cleanup, opt-in request/cache behavior, UI failure/retry and disposal. This is synthetic numerical validation, not an accuracy benchmark on music or a native VS Code acceptance result.
 
+Frames without spectral peaks retain zero chroma without passing an empty native
+vector to Essentia's converter. This permits impulse recordings, quiet tones,
+and ordinary silent segments to complete. The original Melodia output is retained;
+quiet periodic signals are not automatically relabelled as unvoiced.
+
 Algorithm references: [HPCP](https://essentia.upf.edu/reference/std_HPCP.html), [PredominantPitchMelodia](https://essentia.upf.edu/reference/std_PredominantPitchMelodia.html), [EqualLoudness](https://essentia.upf.edu/reference/std_EqualLoudness.html).
