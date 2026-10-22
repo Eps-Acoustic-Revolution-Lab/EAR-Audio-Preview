@@ -17,7 +17,7 @@ export default class SpectralDescriptorLane extends Component {
   private _mixLeft = new Float32Array(0);
   private _mixRight = new Float32Array(0);
   private _lastUpdate = -Infinity;
-  private _lastComparisonRevision: number | undefined;
+  private _lastComparisonKey: string | undefined;
 
   constructor(
     container: HTMLElement,
@@ -56,14 +56,22 @@ export default class SpectralDescriptorLane extends Component {
       return;
     }
     const snapshot = this._comparison?.snapshot();
-    if (
-      !force &&
-      snapshot &&
-      snapshot.revision === this._lastComparisonRevision
-    ) {
+    // Active/removed tracks are filtered without changing the published revision.
+    const comparisonKey = snapshot
+      ? JSON.stringify([
+          snapshot.revision,
+          snapshot.tracks.map((track) => [
+            track.id,
+            track.revision,
+            track.name,
+            track.color,
+          ]),
+        ])
+      : undefined;
+    if (!force && snapshot && comparisonKey === this._lastComparisonKey) {
       return;
     }
-    this._lastComparisonRevision = snapshot?.revision;
+    this._lastComparisonKey = comparisonKey;
     this._lastUpdate = now;
     this._rows.replaceChildren();
     const add = (

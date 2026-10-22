@@ -74,3 +74,39 @@ it("applies the single-file monitoring matrix before FFT and clears on pause", (
   expect(container.textContent).toContain("Playback paused · Centroid —");
   lane.dispose();
 });
+
+it("refreshes filtered tracks even when the published revision stays unchanged", () => {
+  const container = document.createElement("div");
+  const tone = Float32Array.from({ length: 4096 }, (_, i) =>
+    Math.sin((2 * Math.PI * 1000 * i) / 48000),
+  );
+  const track = {
+    id: "a",
+    revision: "1",
+    name: "Track A",
+    color: "red",
+    left: tone,
+    right: tone,
+    sampleRate: 48000,
+  };
+  let tracks = [track];
+  const lane = new SpectralDescriptorLane(
+    container,
+    {} as LivePlayback,
+    {} as AnalyzeSettingsService,
+    {
+      snapshot: () => ({ revision: 1, time: 0, tracks }),
+    } as unknown as LiveComparisonInput,
+  );
+  container.querySelector("details")!.open = true;
+  lane.update();
+  expect(container.textContent).toContain("Track A");
+  tracks = [];
+  lane.update();
+  expect(container.textContent).not.toContain("Track A");
+  expect(container.textContent).toContain("No tracks");
+  tracks = [track];
+  lane.update();
+  expect(container.textContent).toContain("Track A");
+  lane.dispose();
+});
