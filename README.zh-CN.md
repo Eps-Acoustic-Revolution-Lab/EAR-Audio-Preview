@@ -198,9 +198,11 @@ code --install-extension Eps-Acoustic-Revolution-Lab.ear-audio-preview
 
 ### 🔭 规划中
 
-- [ ] 基于 `PredominantPitchMelodia` 的色度（Chroma）时间线与复音旋律估计。
-- [ ] 可选特征轨道（包括频谱质心 Spectral Centroid）。
-- [ ] `A / B / C` 计权 RMS 测量。
+以下功能已在开发分支实现初版，尚未包含在 v0.6.0 中；发布前保留未勾选状态。具体范围和验证边界见[开发记录](doc/roadmap-development.md)。
+
+- [ ] 色度（Chroma）时间线及基于 `PredominantPitchMelodia` 的主旋律估计，非多音符转录（[支持范围](doc/harmonic-analysis.md)）。
+- [ ] 可选实时特征读数：频谱质心 Spectral Centroid、频谱展宽和 85% 滚降频率。
+- [ ] `A / B / C` 计权 RMS 的 dBFS 估计（[测量边界](doc/frequency-weighted-rms.md)）。
 - [ ] 基于 Web Worker 的长音频文件后台 $F_0$ 与起音点分析。
 
 📋 [版本历史](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md) · 💡 [提交功能建议](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/issues)

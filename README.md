@@ -201,9 +201,11 @@ In multi-file comparison, each track is analyzed natively at its decoded sample 
 
 ### 🔭 Planned Next
 
+The following features have initial implementations on the development branch and are not part of v0.6.0. Checkboxes remain open until release; see [implementation scope and validation](doc/roadmap-development.md).
+
 * [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and predominant melody estimation via `PredominantPitchMelodia` ([unreleased implementation and limits](doc/harmonic-analysis.md)).
-* [ ] **Extended Spectral Descriptors:** Optional feature lanes including real-time Spectral Centroid.
-* [ ] **Weighted Metering:** Standard `A / B / C` frequency-weighted RMS measurements.
+* [ ] **Extended Spectral Descriptors:** Optional live Spectral Centroid, spread and 85% rolloff ([details](doc/live-monitoring.md)).
+* [ ] **Weighted Metering:** `A / B / C` frequency-weighted RMS estimates in dBFS ([measurement limits](doc/frequency-weighted-rms.md)).
 * [ ] **Background Worker Pipeline:** Off-thread Web Worker $F_0$ and onset computation for long-form recordings.
 
 📋 [Release History](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md) · 💡 [Request a Feature](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/issues)

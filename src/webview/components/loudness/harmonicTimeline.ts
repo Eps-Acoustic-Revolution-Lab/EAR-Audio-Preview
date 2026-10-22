@@ -142,8 +142,7 @@ export default class HarmonicTimeline extends Component {
     for (let bin = 0; bin < 12; bin++) {
       ctx.fillText(pitchClasses[bin], 4, 12 + (11 - bin) * 12);
     }
-    ctx.fillText("Melody", 4, 167);
-    ctx.fillText("Hz (log)", 4, 180);
+    ctx.fillText("Melody (Hz, log)", 44, 157);
     for (const hz of [100, 1000, 10000]) {
       ctx.fillText(
         String(hz),
