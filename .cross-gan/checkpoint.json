@@ -4,7 +4,7 @@
   "base": "f0fb6ebe69e4626d5ab5cb7711125347af107423",
   "reviewHead": "95102827f6961c23acd5d4d7d7724809775d1d52",
   "branch": "codex/roadmap-integration",
-  "status": "merge-ready",
+  "status": "merged-local",
   "scope": {
     "allowed": "New/changed roadmap code, directly affected callers, additive regression tests, review evidence and docs",
     "immutable": "Existing test files and bench/baseline.json; no weakened assertions",
@@ -227,5 +227,13 @@
     "weighted-metering": "No confirmed defects; tests and native Z/A/B/C switching with unchanged peaks passed",
     "harmonic-pitch": "R1 and N1 fixed; real WASM edge tests and native timeline passed",
     "background-worker": "N1 fixed; native single-file and comparison Worker results passed"
+  },
+  "integration": {
+    "mergeCommit": "7c33163722fba1bf068c4c9e5b999d1265600634",
+    "branch": "main",
+    "rollbackBranch": "codex/pre-roadmap-merge-20261026",
+    "treeMatchesReviewedIntegration": true,
+    "pushed": false,
+    "released": false
   }
 }

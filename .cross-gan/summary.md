@@ -2,7 +2,7 @@
 
 Base: f0fb6ebe69e4626d5ab5cb7711125347af107423
 Reviewed initial head: 95102827f6961c23acd5d4d7d7724809775d1d52
-Status: merge-ready
+Status: merged-local
 Immutable existing tests/baselines: 123
 
 - Round 9: accepted; see round_9/summary.md
