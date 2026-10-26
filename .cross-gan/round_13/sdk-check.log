@@ -1,0 +1,300 @@
+
+> ear-audio-preview@0.6.1 sdk:check
+> npm run sdk:pack && node scripts/sdk-check.mjs
+
+
+> ear-audio-preview@0.6.1 sdk:pack
+> npm run sdk:build && node scripts/sdk-pack.mjs
+
+
+> ear-audio-preview@0.6.1 sdk:build
+> node scripts/sdk-build.mjs
+
+@ear-audio/core: @ear-audio/dsp
+@ear-audio/web-audio: @ear-audio/core
+@ear-audio/dsp: no runtime dependencies
+@ear-audio/level-meter: @ear-audio/core, @ear-audio/dsp
+@ear-audio/spectrum: @ear-audio/core, @ear-audio/dsp
+@ear-audio/stereo-field: @ear-audio/core, @ear-audio/dsp
+@ear-audio/phase-correlation: @ear-audio/core, @ear-audio/dsp
+@ear-audio/descriptors: @ear-audio/core, @ear-audio/dsp
+@ear-audio/live-panel: @ear-audio/core, @ear-audio/dsp
+npm notice
+npm notice 📦  @ear-audio/core@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 753B README.md
+npm notice 37B dist/index.d.ts
+npm notice 3.0kB dist/index.js
+npm notice 7.5kB dist/settings.js
+npm notice 1.4kB dist/types/sdk/core.d.ts
+npm notice 476B dist/types/sdk/settings.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 580B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/core
+npm notice version: 0.1.0
+npm notice filename: ear-audio-core-0.1.0.tgz
+npm notice package size: 6.7 kB
+npm notice unpacked size: 17.1 kB
+npm notice shasum: 48519f3fcedd741238a0b1d3d2ff4cd46b383e26
+npm notice integrity: sha512-ESjDFGyDSIUZY[...]GKj0xvDzFvEdw==
+npm notice total files: 10
+npm notice
+ear-audio-core-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/web-audio@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 818B README.md
+npm notice 41B dist/index.d.ts
+npm notice 2.3kB dist/index.js
+npm notice 552B dist/types/sdk/webAudio.d.ts
+npm notice 478B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/web-audio
+npm notice version: 0.1.0
+npm notice filename: ear-audio-web-audio-0.1.0.tgz
+npm notice package size: 3.2 kB
+npm notice unpacked size: 5.5 kB
+npm notice shasum: 187d93fccfafc99d91367e49e2fb4ed460f76050
+npm notice integrity: sha512-sxN/Wv9fGLPXG[...]v+ippYXXOLe7Q==
+npm notice total files: 7
+npm notice
+ear-audio-web-audio-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/dsp@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 796B README.md
+npm notice 363B dist/aWeighting.js
+npm notice 72.2kB dist/frequencyPhaseCorrelation.js
+npm notice 153B dist/frequencyPhaseCorrelation.js.LICENSE.txt
+npm notice 71.8kB dist/frequencyWeightedRms.js
+npm notice 153B dist/frequencyWeightedRms.js.LICENSE.txt
+npm notice 2.8kB dist/goertzelCqt.js
+npm notice 36B dist/index.d.ts
+npm notice 87.8kB dist/index.js
+npm notice 153B dist/index.js.LICENSE.txt
+npm notice 1.1kB dist/licenses/assert/LICENSE
+npm notice 1.1kB dist/licenses/available-typed-arrays/LICENSE
+npm notice 1.1kB dist/licenses/call-bind-apply-helpers/LICENSE
+npm notice 1.1kB dist/licenses/call-bind/LICENSE
+npm notice 1.1kB dist/licenses/define-properties/LICENSE
+npm notice 1.1kB dist/licenses/dunder-proto/LICENSE
+npm notice 1.1kB dist/licenses/es-abstract/LICENSE
+npm notice 1.1kB dist/licenses/es-define-property/LICENSE
+npm notice 1.1kB dist/licenses/es-errors/LICENSE
+npm notice 1.1kB dist/licenses/es-object-atoms/LICENSE
+npm notice 1.1kB dist/licenses/es6-object-assign/LICENSE
+npm notice 1.1kB dist/licenses/foreach/LICENSE
+npm notice 1.1kB dist/licenses/function-bind/LICENSE
+npm notice 1.1kB dist/licenses/get-intrinsic/LICENSE
+npm notice 1.1kB dist/licenses/get-proto/LICENSE
+npm notice 1.1kB dist/licenses/gopd/LICENSE
+npm notice 1.1kB dist/licenses/has-symbols/LICENSE
+npm notice 1.1kB dist/licenses/has-tostringtag/LICENSE
+npm notice 1.1kB dist/licenses/hasown/LICENSE
+npm notice 749B dist/licenses/inherits/LICENSE
+npm notice 1.1kB dist/licenses/is-arguments/LICENSE
+npm notice 1.1kB dist/licenses/is-generator-function/LICENSE
+npm notice 1.1kB dist/licenses/is-nan/LICENSE
+npm notice 1.1kB dist/licenses/is-typed-array/LICENSE
+npm notice 1.1kB dist/licenses/math-intrinsics/LICENSE
+npm notice 1.1kB dist/licenses/object-is/LICENSE
+npm notice 1.1kB dist/licenses/object-keys/LICENSE
+npm notice 725B dist/licenses/ooura/LICENSE
+npm notice 1.1kB dist/licenses/process/LICENSE
+npm notice 1.1kB dist/licenses/util/LICENSE
+npm notice 1.1kB dist/licenses/which-typed-array/LICENSE
+npm notice 1.8kB dist/liveBallistics.js
+npm notice 2.0kB dist/liveMonitoring.js
+npm notice 725B dist/OOURA-LICENSE.txt
+npm notice 71.6kB dist/spectralDescriptors.js
+npm notice 153B dist/spectralDescriptors.js.LICENSE.txt
+npm notice 5.7kB dist/stereoPolarField.js
+npm notice 507B dist/types/sdk/dsp.d.ts
+npm notice 55B dist/types/webview/utils/aWeighting.d.ts
+npm notice 1.3kB dist/types/webview/utils/frequencyPhaseCorrelation.d.ts
+npm notice 659B dist/types/webview/utils/frequencyWeightedRms.d.ts
+npm notice 2.6kB dist/types/webview/utils/goertzelCqt.d.ts
+npm notice 2.3kB dist/types/webview/utils/liveBallistics.d.ts
+npm notice 2.8kB dist/types/webview/utils/liveMonitoring.d.ts
+npm notice 677B dist/types/webview/utils/spectralDescriptors.d.ts
+npm notice 5.9kB dist/types/webview/utils/stereoPolarField.d.ts
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/dsp
+npm notice version: 0.1.0
+npm notice filename: ear-audio-dsp-0.1.0.tgz
+npm notice package size: 104.6 kB
+npm notice unpacked size: 370.8 kB
+npm notice shasum: 4352094eaccfc7af1f5e3fb06d2f213742761f4f
+npm notice integrity: sha512-MnYCm7kR3IDkq[...]GDVlBCAMS8T7g==
+npm notice total files: 59
+npm notice
+ear-audio-dsp-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/level-meter@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 49B dist/index.d.ts
+npm notice 19.2kB dist/index.js
+npm notice 651B dist/types/sdk/views/levelMeter.d.ts
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 513B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/level-meter
+npm notice version: 0.1.0
+npm notice filename: ear-audio-level-meter-0.1.0.tgz
+npm notice package size: 9.3 kB
+npm notice unpacked size: 26.6 kB
+npm notice shasum: 9d484adfafe2543cca27fea7044f3ee67783b9fa
+npm notice integrity: sha512-Urrv5JWB2if53[...]cELEiaezyBqHA==
+npm notice total files: 9
+npm notice
+ear-audio-level-meter-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/spectrum@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 47B dist/index.d.ts
+npm notice 27.2kB dist/index.js
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 244B dist/types/sdk/views/spectrum.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 507B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/spectrum
+npm notice version: 0.1.0
+npm notice filename: ear-audio-spectrum-0.1.0.tgz
+npm notice package size: 11.8 kB
+npm notice unpacked size: 34.1 kB
+npm notice shasum: 5632df7addb15f4fe029f5b3c032b1348fd67407
+npm notice integrity: sha512-7VC+l1WKRE44/[...]d5VeYeARc88SA==
+npm notice total files: 9
+npm notice
+ear-audio-spectrum-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/stereo-field@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 50B dist/index.d.ts
+npm notice 22.0kB dist/index.js
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 247B dist/types/sdk/views/stereoField.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 515B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/stereo-field
+npm notice version: 0.1.0
+npm notice filename: ear-audio-stereo-field-0.1.0.tgz
+npm notice package size: 9.9 kB
+npm notice unpacked size: 29.0 kB
+npm notice shasum: 1539790573c654b5dd56e3a0325bb22e6982cd75
+npm notice integrity: sha512-rjlPkybW0sVW7[...]uegGh7Y8UtQdQ==
+npm notice total files: 9
+npm notice
+ear-audio-stereo-field-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/phase-correlation@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 55B dist/index.d.ts
+npm notice 17.5kB dist/index.js
+npm notice 252B dist/types/sdk/views/phaseCorrelation.d.ts
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 525B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/phase-correlation
+npm notice version: 0.1.0
+npm notice filename: ear-audio-phase-correlation-0.1.0.tgz
+npm notice package size: 9.5 kB
+npm notice unpacked size: 24.6 kB
+npm notice shasum: 7297ccfd6c129f54f5de9199287dea2db98120b3
+npm notice integrity: sha512-zLqPQ5ro1z0Pt[...]mOLcF/9I/V5KQ==
+npm notice total files: 9
+npm notice
+ear-audio-phase-correlation-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/descriptors@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 50B dist/index.d.ts
+npm notice 9.1kB dist/index.js
+npm notice 247B dist/types/sdk/views/descriptors.d.ts
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 513B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/descriptors
+npm notice version: 0.1.0
+npm notice filename: ear-audio-descriptors-0.1.0.tgz
+npm notice package size: 6.5 kB
+npm notice unpacked size: 16.1 kB
+npm notice shasum: d4e54f06e6e3638d92d25ff89d4d79c47901536f
+npm notice integrity: sha512-cKGHM4aQPSnty[...]eccfZK0QogW7g==
+npm notice total files: 9
+npm notice
+ear-audio-descriptors-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/live-panel@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 283B NOTICE.md
+npm notice 1.8kB README.md
+npm notice 48B dist/index.d.ts
+npm notice 74.4kB dist/index.js
+npm notice 327B dist/types/sdk/views/livePanel.d.ts
+npm notice 1.0kB dist/types/sdk/views/shared.d.ts
+npm notice 2.0kB dist/types/webview/components/liveMeters/liveAnalysisInput.d.ts
+npm notice 511B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/live-panel
+npm notice version: 0.1.0
+npm notice filename: ear-audio-live-panel-0.1.0.tgz
+npm notice package size: 22.7 kB
+npm notice unpacked size: 81.5 kB
+npm notice shasum: dc0989fbb95fd2b860c4322c91aae4c8557553fe
+npm notice integrity: sha512-2zmDx0o4FTZ4T[...]Tmj+WL6FslJNg==
+npm notice total files: 9
+npm notice
+ear-audio-live-panel-0.1.0.tgz
+npm notice
+npm notice 📦  @ear-audio/theme@0.1.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 835B README.md
+npm notice 49B dist/index.d.ts
+npm notice 41B dist/index.js
+npm notice 31.6kB dist/styles.css
+npm notice 392B package.json
+npm notice Tarball Details
+npm notice name: @ear-audio/theme
+npm notice version: 0.1.0
+npm notice filename: ear-audio-theme-0.1.0.tgz
+npm notice package size: 8.2 kB
+npm notice unpacked size: 34.0 kB
+npm notice shasum: 81eb1797d6b6dd57cea75568993137020dede901
+npm notice integrity: sha512-WREr2kVbJci/P[...]+oL8qMf1wbC3A==
+npm notice total files: 6
+npm notice
+ear-audio-theme-0.1.0.tgz
+
+added 10 packages in 1s
+SDK tarballs install, import without DOM, and typecheck in an isolated consumer.

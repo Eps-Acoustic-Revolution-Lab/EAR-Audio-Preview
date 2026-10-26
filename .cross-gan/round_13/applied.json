@@ -1,0 +1,26 @@
+{
+  "round": 13,
+  "fixes": [
+    {
+      "id": "C1",
+      "dimension": "correctness",
+      "commit": "a571e4d"
+    },
+    {
+      "id": "D1",
+      "dimension": "correctness",
+      "commit": "a571e4d"
+    },
+    {
+      "id": "D2",
+      "dimension": "correctness",
+      "commit": "a571e4d"
+    },
+    {
+      "id": "R1",
+      "dimension": "robustness",
+      "commit": "a571e4d"
+    }
+  ],
+  "runtimeSourceChanges": false
+}

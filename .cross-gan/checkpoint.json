@@ -1,13 +1,12 @@
 {
   "schema": 2,
-  "review": "visualization-sdk-single-round",
-  "base": "e299991",
-  "reviewHead": "aed7302",
-  "status": "merged-local",
+  "review": "v0.6.1-final-code-and-docs",
+  "base": "v0.6.0",
+  "reviewHead": "f4a66ab",
+  "status": "verified-local",
   "requestedRounds": 1,
-  "firstRound": 12,
-  "scope": "SDK extraction and directly affected callers; additive regression tests; integration README. Existing tests and benchmark unchanged.",
-  "previousRun": "checkpoint.pre-sdk.json",
+  "previousRun": "checkpoint.pre-release.json",
+  "scope": "Code changed since v0.6.0, release docs, public repository and package hygiene; existing tests and benchmarks immutable. One round only. No publishing.",
   "immutable": {
     ".cross-gan/round_10/before/sequenceWorkerClient.test.ts": "7b0d4f877e88d67c8e8a1b55aacfc88e2d8f5c0444c16eb1b380a2722ff7a7aa",
     ".cross-gan/round_4/before/src/webview/utils/stereoPolarField.test.ts": "cf630ee76d5913b9c31e0ef3c89e7120fa904eead25beeac4e3558cd08158902",
@@ -34,6 +33,7 @@
     "src/extensionHost/comparisonAnalysisHost.test.ts": "516468bbf58e58a73f51d80b35d54dbcc5608d4dbb9c7e0bd3e27e1f70e7351a",
     "src/message.contract.test.ts": "334c066b552f2b17258bdaeeac7e1d3d50ea9366748679d570ef2600d09f3d5c",
     "src/sdk/core.test.ts": "e9f6350bdf9f237ce0308d264ca069e267e79499ca6e43b237ce0ab614b02178",
+    "src/sdk/views/dragLifecycle.test.ts": "f39087785cd331f5a7592f044215d3aaa7ed71a2143fb6d965fe923f80eb8408",
     "src/sdk/views/views.test.ts": "8f184932897266badc86c6b17c3606f8df6d9ecf868b899ad6b061cef6ef081f",
     "src/sdk/webAudio.test.ts": "c90388caee98941c2d2a5e7dc26591b5da92960f082139fe2ce4c543f7f46683",
     "src/shared/audioAlignment.test.ts": "542893748612389c6bc3b82933e981b9f87af8422daf80e13164527290d344a0",
@@ -141,39 +141,35 @@
     "src/webview/utils/timelineStripChart.test.ts": "3da1a4a2577d4395ca1fe0ffa3475acc77809d057dd258517afa47e82a6a641e",
     "src/webview/utils/volumeMapping.test.ts": "546cdab8a8c45217d646accff574d1bb246c9f7cdcb55d340f582f083df85128"
   },
+  "baseline": {
+    "suites": 116,
+    "passed": 918,
+    "skipped": 1
+  },
   "rounds": [
     {
-      "round": 12,
+      "round": 13,
       "status": "accepted",
-      "head": "862e1f0"
+      "head": "a571e4d"
     }
   ],
   "convergence": {
-    "correctness": 1,
-    "efficiency": 0,
+    "correctness": 0,
+    "efficiency": 1,
     "robustness": 0
   },
-  "baseline": {
-    "suites": 115,
-    "passed": 915,
-    "skipped": 1
-  },
-  "deferred": [],
+  "deferred": [
+    {
+      "id": "privacy-boundary",
+      "reason": "Retain historical build-path provenance and byte-identical upstream WASM paths; no current credential pattern detected; not a complete history audit."
+    }
+  ],
   "finalVerification": {
     "suites": 116,
     "passed": 918,
     "skipped": 1,
     "ci": "passed",
-    "native": "macOS VS Code 1.142.0 final smoke passed; scope and limits in report",
+    "native": "Historical round12 evidence only; this round changed docs and ignore rules, not runtime code",
     "report": "round_12/native/report.md"
-  },
-  "merge": {
-    "commit": "3579410",
-    "branch": "main",
-    "backupBranch": "codex/pre-sdk-merge-20261026",
-    "sourceBranch": "codex/modular-visualization-sdk",
-    "treeMatchesReviewedHead": true,
-    "pushed": false,
-    "published": false
   }
 }

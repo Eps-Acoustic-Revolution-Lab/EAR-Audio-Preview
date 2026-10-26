@@ -1,0 +1,32 @@
+{
+  "round": 13,
+  "status": "passed",
+  "tests": {
+    "exitCode": 0,
+    "suites": 116,
+    "passed": 918,
+    "skipped": 1,
+    "log": "final-ci.log"
+  },
+  "gates": {
+    "fullCI": "passed",
+    "productionVSIX": "31 files; package audit passed",
+    "SDKisolatedInstallAndTypes": "passed",
+    "sixReadmeQuickstarts": "real Chromium installed-tarball mount1/cleanup0/errors0 each",
+    "portableSessionIgnore": "passed",
+    "immutableTestsAndBaseline": "SHA256 validation",
+    "privacy": "No common credential patterns in current tracked tree or VSIX; historical repository paths and byte-identical upstream WASM paths explicitly retained"
+  },
+  "efficiency": {
+    "byteIdentical": true,
+    "comparisons": 264,
+    "newOptimization": false,
+    "evidence": "benchmark.jsonl"
+  },
+  "native": "Not rerun: no runtime code change. Prior round12 macOS smoke remains historical evidence.",
+  "limitations": [
+    "Pattern scanning is not an exhaustive git-history secret audit.",
+    "Historical internal logs retain development paths; they are excluded from VSIX.",
+    "Upstream ebur128 WASM includes upstream build paths; its bytes match dependency package."
+  ]
+}

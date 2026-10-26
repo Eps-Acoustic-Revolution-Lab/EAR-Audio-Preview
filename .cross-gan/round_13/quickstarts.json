@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "level-meter",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    },
+    {
+      "name": "spectrum",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    },
+    {
+      "name": "stereo-field",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    },
+    {
+      "name": "phase-correlation",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    },
+    {
+      "name": "descriptors",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    },
+    {
+      "name": "live-panel",
+      "mounted": 1,
+      "afterCleanup": 0,
+      "errors": []
+    }
+  ]
+}

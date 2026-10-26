@@ -1,0 +1,31 @@
+{
+  "scope": "Current tracked tree and rebuilt VSIX; pattern scan is not an exhaustive historical secret audit",
+  "trackedCredentialPatternHits": [],
+  "trackedPrivatePathFiles": [
+    ".cross-gan/round_10/final-ci.log",
+    ".cross-gan/round_10/native/result-before-fix.json",
+    ".cross-gan/round_10/worker-harmonic.log",
+    ".cross-gan/round_12/consumers.log",
+    ".cross-gan/round_12/final-ci.log",
+    ".cross-gan/round_9/ci-lint-attempt.log",
+    ".cross-gan/round_9/final-ci.log",
+    "doc/research/audio-alignment/.cross-gan/availability-last-check.log",
+    "doc/research/audio-alignment/.cross-gan/review-runner.mjs",
+    "doc/research/audio-alignment/.cross-gan/round_1/correctness-run.log",
+    "doc/research/audio-alignment/.cross-gan/round_1/efficiency-run.log",
+    "doc/research/audio-alignment/.cross-gan/round_1/robustness-run.log"
+  ],
+  "privatePathAssessment": "Historical development/research paths are provenance, not credentials. Retained; excluded from VSIX.",
+  "vsixEntryCount": 31,
+  "vsixCredentialPatternHits": [],
+  "vsixPrivatePathHits": [
+    "extension/dist/66533b7caefffaa4bcf4.module.wasm"
+  ],
+  "byteIdenticalUpstreamWasmPathFiles": [
+    "extension/dist/66533b7caefffaa4bcf4.module.wasm"
+  ],
+  "upstreamWasmSha256": "a84700a3ca722e8d32283bed6473cffd027d43c75de4093d34de44eb88c2c04d",
+  "unclassifiedShippedPathFiles": [],
+  "vsixDevelopmentAssets": [],
+  "newNativeSessionIgnored": true
+}

@@ -1,0 +1,46 @@
+{
+  "round": 13,
+  "model": "gpt-6.1-sol",
+  "candidates": [
+    {
+      "id": "C1",
+      "dimension": "correctness",
+      "generator": "release_correctness",
+      "severity": "P2",
+      "file": "doc/releases/0.6.1.md:7,15; CHANGELOG.md:10; README release blocks",
+      "finding": "Grouped worker fallback promise includes harmonic analysis, but sequenceFeatureService.ts:135-136 and150-153 reject harmonic failure/no-worker.",
+      "expected": "Only F0/onset can fall back; harmonic requires worker."
+    },
+    {
+      "id": "D1",
+      "dimension": "correctness",
+      "generator": "release_efficiency_docs",
+      "severity": "P2",
+      "file": "packages/{level-meter,spectrum,stereo-field,phase-correlation,descriptors,live-panel}/README.md:6",
+      "finding": "Primary registry install command contradicts unpublished local-tarball distribution."
+    },
+    {
+      "id": "D2",
+      "dimension": "correctness",
+      "generator": "root",
+      "severity": "P3",
+      "file": "six view package README quickstarts; src/sdk/views/shared.ts:126-134",
+      "finding": "Synchronous disposal removes view before quickstart can display; conceptual lifecycle comment exists but copied snippet is not runnable as a visible demo."
+    },
+    {
+      "id": "R1",
+      "dimension": "robustness",
+      "generator": "release_robustness_privacy",
+      "severity": "P3",
+      "file": ".cross-gan/round_12/native/launch.mjs:73-75; .gitignore",
+      "finding": "Generated bearer session in tracked evidence directory lacked portable ignore policy.",
+      "qualification": "Future accidental-add route only, no current credential found. Round10 is locally excluded via .git/info/exclude; original finder claim both unignored was corrected by discriminator."
+    }
+  ],
+  "efficiency": {
+    "generator": "release_efficiency_docs",
+    "result": "dry",
+    "evidence": "Existing immutable FFT benchmark rerun:264 byte-identical channel comparisons; no new measured optimization proposed."
+  },
+  "runtimeCode": "No new reproducible runtime defect after correctness/robustness coverage of SDK lifecycles and roadmap workers."
+}
