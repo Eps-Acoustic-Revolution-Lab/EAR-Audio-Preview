@@ -1,4 +1,4 @@
-# Chroma and predominant melody (unreleased)
+# Chroma and predominant melody (prepared for v0.6.1)
 
 In a single file's **Loudness** pane, choose **Analyze chroma & melody** to run the optional analysis. Existing loudness, F0 and onset calculations keep their defaults. Chroma and melody follow the current analysis time range; hovering shows melody frequency and confidence. Both the inline and fullscreen pane expose the control. The multi-file comparison view does not yet expose these timelines.
 

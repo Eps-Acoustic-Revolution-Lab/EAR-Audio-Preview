@@ -108,19 +108,13 @@ Seamlessly transition from casual playback to rigorous broadcast-grade diagnosti
 <a id="whats-new"></a>
 
 <!-- release:en:start -->
-## What's new in v0.6.0
+## What's new in v0.6.1
 
-- **Align before comparing.** Estimate a constant integer-sample delay between two same-rate files, review it, then apply or reset the session copy across playback, analysis and export. Polarity compensation is optional; source files stay unchanged.
-
-- **Eight files, one workspace.** Parallel playback, linked waveform/STFT zoom and independent track focus, mute and analysis controls.
-- **Live comparison at a glance.** Overlay FFT/CQT spectra, stereo fields and phase correlation; compare LUFS, F0 and onset timelines.
-- **Match levels and inspect differences.** Match shared-region RMS without boosting peaks; measure same-rate residual RMS and peak against a reference.
-- **Export the mix you choose.** Save a selected region with configurable sample rate, channels and PCM or float32 WAV encoding, with optional headphone EQ.
-- **A smoother daily workflow.** Unified controls, a floating Monitor with headphone correction, an interactive comparison guide and a 48% smaller package.
-
-- **More reliable diagnostics.** Correct sound-field direction and polarity handling, bound polar interpolation, and recover safely from malformed saved headphone EQ.
-
-Read the technical blog: [Why Audio Alignment Fails](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/audio-alignment-dsp.en.md) ([中文](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/audio-alignment-dsp.md)).
+- **Optional harmonic timelines.** Inspect Chroma and predominant melody in the single-file Loudness pane, including fullscreen. Supports 0.1-second to 5-minute clips at 8/32/44.1/48 kHz; this is melody estimation, not polyphonic transcription.
+- **More live analysis.** Enable spectral centroid, spread and 85% rolloff in single-file and comparison views. Choose Z/A/B/C RMS weighting on the level meter; A/B/C values are dBFS estimates, not calibrated sound-pressure measurements.
+- **Background feature analysis.** Run F0, onset and harmonic analysis in cancellable browser workers, with extension-host fallback when worker startup fails.
+- **Reusable visualization modules.** Build six standalone views—level meter, spectrum, stereo field, phase correlation, descriptors and a combined live panel—with shared PCM/Web Audio inputs, DSP and scoped styling. The experimental SDK packages remain version 0.1.0 and are available as locally built tarballs; they are not published to npm. See the [integration guide](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/packages/README.md).
+- **Reliability fixes.** Handle empty harmonic peak frames and DC offset in spectral descriptors, load worker WASM under the webview CSP, refresh comparison descriptors after track visibility changes, and end active panel drags on suspension or disposal. Cache PCM FFT coefficients without changing numerical output.
 <!-- release:en:end -->
 
 📜 [Explore Full Release History (CHANGELOG)](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md)
@@ -199,11 +193,11 @@ In multi-file comparison, each track is analyzed natively at its decoded sample 
 * [x] **v0.6:** Shared-region RMS level matching, same-rate residual diffing, and optional EQ baking in WAV exports.
 * [x] **v0.6:** Reversible same-rate integer-delay alignment with optional polarity compensation.
 
-### 🔭 Planned Next
+### 🔭 Prepared for v0.6.1
 
-The following features have initial implementations on the development branch and are not part of v0.6.0. Checkboxes remain open until release; see [implementation scope and validation](doc/roadmap-development.md).
+The following features are implemented and validated for the upcoming v0.6.1 release. Publication is pending; see [implementation scope and validation](doc/roadmap-development.md).
 
-* [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and predominant melody estimation via `PredominantPitchMelodia` ([unreleased implementation and limits](doc/harmonic-analysis.md)).
+* [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and predominant melody estimation via `PredominantPitchMelodia` ([implementation and limits](doc/harmonic-analysis.md)).
 * [ ] **Extended Spectral Descriptors:** Optional live Spectral Centroid, spread and 85% rolloff ([details](doc/live-monitoring.md)).
 * [ ] **Weighted Metering:** `A / B / C` frequency-weighted RMS estimates in dBFS ([measurement limits](doc/frequency-weighted-rms.md)).
 * [ ] **Background Worker Pipeline:** Off-thread Web Worker $F_0$ and onset computation for long-form recordings.

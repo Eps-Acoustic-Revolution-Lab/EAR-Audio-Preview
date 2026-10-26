@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.6.1] - Unreleased
+
+### Added
+
+- Optional single-file Chroma and predominant melody timelines, with fullscreen and explicit duration/sample-rate limits.
+- Optional live spectral centroid, spread and 85% rolloff in single-file and comparison views.
+- Z/A/B/C RMS weighting; A/B/C values are dBFS estimates, not calibrated SPL.
+- Cancellable browser workers for F0, onset and harmonic analysis, with host fallback on startup failure.
+- Experimental standalone visualization SDK: six views, PCM/Web Audio adapters, shared DSP, scoped theme, ESM/type declarations, local tarball packaging and an [integration guide](packages/README.md). SDK packages remain independently versioned at 0.1.0 and unpublished to npm.
+
+### Fixed
+
+- Handle empty native harmonic peak vectors and remove DC offset before spectral descriptor windowing.
+- Load and transfer analysis WASM through the webview to respect worker CSP/resource constraints.
+- Refresh comparison descriptors when track visibility changes.
+- Remove active row/column drag listeners when a live panel is suspended, reset or disposed.
+
+### Changed
+
+- Cache size-specific PCM FFT window and stage coefficients while preserving byte-identical output in the regression corpus.
+- Add isolated SDK consumer builds, lifecycle regressions and browser/native acceptance evidence.
+
 ## [0.6.0] - 2026-10-17
 
 - Decode AAC locally in a dedicated worker, preserve the final FLAC frame, and validate Ogg Opus and SPHERE playback. Include AAC library notices and corresponding sources in the VSIX.

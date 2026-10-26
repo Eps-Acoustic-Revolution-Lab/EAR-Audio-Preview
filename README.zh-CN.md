@@ -105,18 +105,13 @@ code --install-extension Eps-Acoustic-Revolution-Lab.ear-audio-preview
 <a id="whats-new"></a>
 
 <!-- release:zh:start -->
-## v0.6.0 更新
+## v0.6.1 更新
 
-- **先对齐，再比较。** 估计两份同采样率音频的整数样本固定延迟，确认后应用到播放、分析和导出的会话副本，也可随时重置；支持可选极性补偿，原文件保持不变。
-
-- **八文件同步比较。** 共用播放时钟，联动缩放波形与 STFT；每轨可独立聚焦、静音或停用分析。
-- **实时频谱叠加。** 同屏比对 FFT/CQT 频谱、立体声场与相位相关度，并查看 LUFS、基频和起音点曲线。
-- **电平匹配与差异测量。** 按共用选区匹配 RMS，只衰减、不放大，避免削波；以聚焦文件为参考，测量同采样率音频的残差 RMS 与峰值。
-- **选区混音导出。** 选择片段、采样率、声道及 PCM 或 float32 WAV 编码，导出多轨混音，也可将已启用的耳机 EQ 写入导出文件。
-- **界面与体积优化。** 统一控件与监听入口，提供悬浮 Monitor、耳机频响校准和交互式比较引导，安装包缩小 48%。
-- **诊断更可靠。** 修正声场图的方向、信号极性与边界插值；损坏的耳机 EQ 配置会安全回退，不再中断音频预览。
-
-技术博客：[音频对齐为什么会失败](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/audio-alignment-dsp.md)（[English](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/audio-alignment-dsp.en.md)）。
+- **可选谐波时间线。** 单文件 Loudness 面板新增 Chroma 和主旋律估计，支持全屏。适用于 0.1 秒至 5 分钟、8/32/44.1/48 kHz 音频；主旋律估计不等于多音符转录。
+- **更丰富的实时分析。** 单文件与比较视图可显示频谱质心、展宽和 85% 滚降频率；电平表支持 Z/A/B/C RMS 权重。A/B/C 数值为 dBFS 估计，不是校准声压级。
+- **后台特征分析。** F0、起音点和谐波分析移入可取消的浏览器 Worker；Worker 启动失败时可回退到扩展宿主。
+- **可独立接入的可视化模块。** 提供电平表、频谱、声场、相位相关、描述符与组合面板六类视图，以及共用的 PCM/Web Audio 输入、DSP 和局部样式。SDK 保持实验版 0.1.0，通过本地构建 tarball 安装，尚未发布到 npm。参见[接入指南](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/packages/README.md)。
+- **稳定性修复。** 处理谐波空峰帧和频谱描述符的直流偏移，修复 webview CSP 下的 Worker WASM 加载，及时刷新轨道显隐后的比较读数，并在面板暂停或销毁时结束拖拽。缓存 PCM FFT 系数，保持数值输出一致。
 <!-- release:zh:end -->
 
 📜 [查看完整版本历史 (CHANGELOG)](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md)
@@ -196,9 +191,9 @@ code --install-extension Eps-Acoustic-Revolution-Lab.ear-audio-preview
 - [x] **v0.6：** 共享区域 RMS 匹配、同采样率残差测量及 WAV 导出可选写入耳机 EQ。
 - [x] **v0.6：** 贯穿回放、分析与导出的可逆同采样率整数延迟对齐（含可选极性补偿）。
 
-### 🔭 规划中
+### 🔭 v0.6.1 发布准备
 
-以下功能已在开发分支实现初版，尚未包含在 v0.6.0 中；发布前保留未勾选状态。具体范围和验证边界见[开发记录](doc/roadmap-development.md)。
+以下功能已实现并通过验收，纳入待发布的 v0.6.1。具体范围和验证边界见[开发记录](doc/roadmap-development.md)。
 
 - [ ] 色度（Chroma）时间线及基于 `PredominantPitchMelodia` 的主旋律估计，非多音符转录（[支持范围](doc/harmonic-analysis.md)）。
 - [ ] 可选实时特征读数：频谱质心 Spectral Centroid、频谱展宽和 85% 滚降频率。
