@@ -1,6 +1,6 @@
 # Roadmap development after v0.6.0
 
-These changes are included in the **0.6.1 release preparation**, not yet published. The extension package version is 0.6.1. Feature worktrees were integrated into local `main` after adversarial review and native acceptance; see the [release notes](releases/0.6.1.md).
+These changes shipped in **0.6.1** on 2026-10-26. The extension package version is 0.6.1. Feature worktrees were integrated into local `main` after adversarial review and native acceptance; see the [release notes](releases/0.6.1.md).
 
 The subsequent pre-merge adversarial review is recorded in the
 [roadmap review summary](../.cross-gan/summary.pre-sdk.md). The validation below is the

@@ -11,6 +11,7 @@
 
 ## Release and comparisons / 发布与对比
 
+- [v0.6.1 bilingual highlights / 双语更新摘要](releases/0.6.1.md)
 - [v0.6.0 bilingual highlights / 双语更新摘要](releases/0.6.0.md)
 - [Changelog / 更新历史](../CHANGELOG.md)
 - [Extension comparison](comparison.md) · [插件能力与性能对比](comparison.zh-CN.md)

@@ -1,4 +1,4 @@
-# Background sequence analysis (unreleased)
+# Background sequence analysis
 
 F0 and onset analysis use a dedicated Web Worker in both the single-file and comparison Loudness panes. Chroma and predominant melody use the same worker on explicit request in the single-file pane. Each job receives its own mono PCM copy through transferable storage; playback channels are never detached. The comparison controller processes tracks sequentially, so an eight-file session does not create eight analysis runtimes at once.
 

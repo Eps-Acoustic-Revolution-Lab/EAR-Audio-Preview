@@ -190,15 +190,10 @@ code --install-extension Eps-Acoustic-Revolution-Lab.ear-audio-preview
 - [x] **v0.6：** 独立文件响度/特征提取、共享监听控制面板与选区混音导出。
 - [x] **v0.6：** 共享区域 RMS 匹配、同采样率残差测量及 WAV 导出可选写入耳机 EQ。
 - [x] **v0.6：** 贯穿回放、分析与导出的可逆同采样率整数延迟对齐（含可选极性补偿）。
-
-### 🔭 v0.6.1 发布准备
-
-以下功能已实现并通过验收，纳入待发布的 v0.6.1。具体范围和验证边界见[开发记录](doc/roadmap-development.md)。
-
-- [ ] 色度（Chroma）时间线及基于 `PredominantPitchMelodia` 的主旋律估计，非多音符转录（[支持范围](doc/harmonic-analysis.md)）。
-- [ ] 可选实时特征读数：频谱质心 Spectral Centroid、频谱展宽和 85% 滚降频率。
-- [ ] `A / B / C` 计权 RMS 的 dBFS 估计（[测量边界](doc/frequency-weighted-rms.md)）。
-- [ ] 基于 Web Worker 的长音频文件后台 $F_0$ 与起音点分析。
+- [x] **v0.6.1：** 可选 Chroma 与主旋律时间线（[支持范围](doc/harmonic-analysis.md)）。
+- [x] **v0.6.1：** 可选实时频谱质心、展宽和 85% 滚降频率（[说明](doc/live-monitoring.md)）。
+- [x] **v0.6.1：** A/B/C 计权 RMS 的 dBFS 估计（[测量边界](doc/frequency-weighted-rms.md)）。
+- [x] **v0.6.1：** F0、起音点与谐波分析的后台 Worker（[说明](doc/background-analysis.md)）。
 
 📋 [版本历史](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md) · 💡 [提交功能建议](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/issues)
 

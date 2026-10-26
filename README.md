@@ -192,15 +192,10 @@ In multi-file comparison, each track is analyzed natively at its decoded sample 
 * [x] **v0.6:** Per-file loudness/feature extraction, shared Monitor deck, and selection mix bounce.
 * [x] **v0.6:** Shared-region RMS level matching, same-rate residual diffing, and optional EQ baking in WAV exports.
 * [x] **v0.6:** Reversible same-rate integer-delay alignment with optional polarity compensation.
-
-### 🔭 Prepared for v0.6.1
-
-The following features are implemented and validated for the upcoming v0.6.1 release. Publication is pending; see [implementation scope and validation](doc/roadmap-development.md).
-
-* [ ] **Harmonic & Pitch Intelligence:** Chroma timelines and predominant melody estimation via `PredominantPitchMelodia` ([implementation and limits](doc/harmonic-analysis.md)).
-* [ ] **Extended Spectral Descriptors:** Optional live Spectral Centroid, spread and 85% rolloff ([details](doc/live-monitoring.md)).
-* [ ] **Weighted Metering:** `A / B / C` frequency-weighted RMS estimates in dBFS ([measurement limits](doc/frequency-weighted-rms.md)).
-* [ ] **Background Worker Pipeline:** Off-thread Web Worker $F_0$ and onset computation for long-form recordings.
+* [x] **v0.6.1:** Optional Chroma and predominant melody timelines ([limits](doc/harmonic-analysis.md)).
+* [x] **v0.6.1:** Optional live spectral centroid, spread and 85% rolloff ([details](doc/live-monitoring.md)).
+* [x] **v0.6.1:** A/B/C weighted RMS estimates in dBFS ([limits](doc/frequency-weighted-rms.md)).
+* [x] **v0.6.1:** Background analysis for F0, onset and harmonic timelines ([details](doc/background-analysis.md)).
 
 📋 [Release History](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md) · 💡 [Request a Feature](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/issues)
 
