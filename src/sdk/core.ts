@@ -38,15 +38,44 @@ export function validateSampleRate(sampleRate: number): void {
     throw new RangeError("sampleRate must be finite and positive");
   }
 }
+interface FftTables {
+  window: Float64Array;
+  cosine: Float64Array;
+  sine: Float64Array;
+}
+// Input validation limits this cache to 11 sizes, under 1.6 MiB in total.
+const fftTables = new Map<number, FftTables>();
+function tablesForSize(size: number): FftTables {
+  let table = fftTables.get(size);
+  if (!table) {
+    const window = new Float64Array(size);
+    const cosine = new Float64Array(size);
+    const sine = new Float64Array(size);
+    for (let i = 0; i < size; i++) {
+      const phase = (2 * Math.PI * i) / size;
+      window[i] = 0.42 - 0.5 * Math.cos(phase) + 0.08 * Math.cos(2 * phase);
+    }
+    for (let span = 2; span <= size; span *= 2) {
+      for (let j = 0; j < span / 2; j++) {
+        const phase = (-2 * Math.PI * j) / span;
+        const index = span / 2 - 1 + j;
+        cosine[index] = Math.cos(phase);
+        sine[index] = Math.sin(phase);
+      }
+    }
+    table = { window, cosine, sine };
+    fftTables.set(size, table);
+  }
+  return table;
+}
 /** Blackman-windowed FFT with Web Audio AnalyserNode normalization (1/N). */
 function spectrum(samples: Float32Array): Float32Array {
   const size = samples.length;
+  const table = tablesForSize(size);
   const real = new Float64Array(size);
   const imaginary = new Float64Array(size);
   for (let i = 0; i < size; i++) {
-    const phase = (2 * Math.PI * i) / size;
-    const window = 0.42 - 0.5 * Math.cos(phase) + 0.08 * Math.cos(2 * phase);
-    real[i] = samples[i] * window;
+    real[i] = samples[i] * table.window[i];
   }
   for (let i = 1, j = 0; i < size; i++) {
     let bit = size >> 1;
@@ -64,11 +93,13 @@ function spectrum(samples: Float32Array): Float32Array {
   for (let span = 2; span <= size; span *= 2) {
     for (let start = 0; start < size; start += span) {
       for (let j = 0; j < span / 2; j++) {
-        const phase = (-2 * Math.PI * j) / span;
+        const index = span / 2 - 1 + j;
         const a = start + j;
         const b = a + span / 2;
-        const re = real[b] * Math.cos(phase) - imaginary[b] * Math.sin(phase);
-        const im = real[b] * Math.sin(phase) + imaginary[b] * Math.cos(phase);
+        const re =
+          real[b] * table.cosine[index] - imaginary[b] * table.sine[index];
+        const im =
+          real[b] * table.sine[index] + imaginary[b] * table.cosine[index];
         real[b] = real[a] - re;
         imaginary[b] = imaginary[a] - im;
         real[a] += re;
