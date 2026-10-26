@@ -1,0 +1,1 @@
+Derived from EAR Audio Preview (MIT), originally forked from sukumo28/vscode-audio-preview (MIT). The original copyright notice is retained in LICENSE. This package bundles only its reachable visualization and DSP code; optional host, decoder and Essentia integrations are excluded.

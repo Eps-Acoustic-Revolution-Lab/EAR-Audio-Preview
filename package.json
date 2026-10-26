@@ -154,7 +154,11 @@
     "typecheck": "tsc --noEmit",
     "test:tooling": "node --test scripts/*.test.mjs",
     "docs:sync": "node scripts/release-notes.mjs --write",
-    "docs:check": "node scripts/release-notes.mjs"
+    "docs:check": "node scripts/release-notes.mjs",
+    "sdk:build": "node scripts/sdk-build.mjs",
+    "sdk:pack": "npm run sdk:build && node scripts/sdk-pack.mjs",
+    "sdk:check": "npm run sdk:pack && node scripts/sdk-check.mjs",
+    "sdk:check:consumers": "node scripts/sdk-consumers.mjs"
   },
   "//": "All runtime code is webpack-bundled into dist/; node_modules is never shipped. Keep packages in devDependencies so vsce/marketplace tooling does not process a runtime dependency tree.",
   "devDependencies": {
@@ -191,6 +195,7 @@
     "twgl.js": "^7.0.0",
     "typescript": "^5.3.3",
     "webpack": "^5.64.0",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "postcss": "^8.4.31"
   }
 }

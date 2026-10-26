@@ -1,0 +1,30 @@
+{
+  "name": "@ear-audio/core",
+  "version": "0.1.0",
+  "description": "EAR standalone audio visualization core",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./settings": {
+      "types": "./dist/types/sdk/settings.d.ts",
+      "import": "./dist/settings.js"
+    }
+  },
+  "dependencies": {
+    "@ear-audio/dsp": "0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

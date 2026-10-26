@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": { "serve": "python3 -m http.server 8080" },
+  "description": "Install the SDK tarballs in this directory, then serve this native ESM example."
+}

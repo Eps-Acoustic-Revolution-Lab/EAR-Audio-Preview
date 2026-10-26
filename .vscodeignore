@@ -36,3 +36,8 @@ earlab.png
 node_modules
 package-lock.json
 webpack.config.js
+
+packages/**
+examples/**
+.sdk-types/**
+tsconfig.sdk.json
