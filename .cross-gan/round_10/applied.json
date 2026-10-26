@@ -1,0 +1,10 @@
+{
+  "fixes": [
+    {
+      "id": "N1",
+      "dimension": "correctness",
+      "commit": "5d22f0e",
+      "description": "Webview loads WASM with abort/timeout; worker initializes transferred binary directly."
+    }
+  ]
+}

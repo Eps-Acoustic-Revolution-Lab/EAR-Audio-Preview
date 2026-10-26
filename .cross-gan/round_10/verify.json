@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "tests": {
+    "exitCode": 0,
+    "suites": 111,
+    "passed": 890,
+    "skipped": 1,
+    "log": "final-ci.log"
+  },
+  "regressions": {
+    "before": "red-resource-tests.log",
+    "after": "resource-tests.log",
+    "newTests": 3
+  },
+  "ci": {
+    "exitCode": 0,
+    "types": true,
+    "lint": true,
+    "format": true,
+    "tooling": true,
+    "docs": true,
+    "vsix": true,
+    "packageAudit": {
+      "files": 31,
+      "downloadMiB": 3.44,
+      "installedMiB": 9.97
+    }
+  },
+  "independentPatchReview": "cgr_discriminator_a: 2 suites/6 tests passed; contract migration preserves every previous behavior assertion",
+  "native": {
+    "status": "passed",
+    "head": "5d22f0e",
+    "evidence": "native/result-after-fix.json",
+    "report": "native/report.md",
+    "scope": "macOS VS Code synthetic tone; single F0/harmonic and two comparison workers, descriptors, weighted meters"
+  },
+  "workerBrowser": {
+    "status": "passed",
+    "log": "worker-harmonic-final.log",
+    "meanHz": 440.0054
+  }
+}

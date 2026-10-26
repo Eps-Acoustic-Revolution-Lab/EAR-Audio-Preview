@@ -1,0 +1,97 @@
+FAIL src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
+  ● real Essentia handles empty spectral peaks in impulse without losing analysis
+
+    thrown: "Empty vector input"
+
+      3 | import { computeHarmonicFeatures } from "./harmonicFeatureCompute";
+      4 |
+    > 5 | test.each(["impulse", "quiet tone", "tone then silence"])(
+        |                                                          ^
+      6 |   "real Essentia handles empty spectral peaks in %s without losing analysis",
+      7 |   async (kind) => {
+      8 |     const essentia = new Essentia(EssentiaWASM);
+
+      at ../node_modules/jest-each/build/bind.js:47:15
+          at Array.forEach (<anonymous>)
+      at Object.<anonymous> (shared/harmonicFeatureCompute.unvoiced.integration.test.ts:5:58)
+
+  ● real Essentia handles empty spectral peaks in quiet tone without losing analysis
+
+    thrown: "Empty vector input"
+
+      3 | import { computeHarmonicFeatures } from "./harmonicFeatureCompute";
+      4 |
+    > 5 | test.each(["impulse", "quiet tone", "tone then silence"])(
+        |                                                          ^
+      6 |   "real Essentia handles empty spectral peaks in %s without losing analysis",
+      7 |   async (kind) => {
+      8 |     const essentia = new Essentia(EssentiaWASM);
+
+      at ../node_modules/jest-each/build/bind.js:47:15
+          at Array.forEach (<anonymous>)
+      at Object.<anonymous> (shared/harmonicFeatureCompute.unvoiced.integration.test.ts:5:58)
+
+  ● real Essentia handles empty spectral peaks in tone then silence without losing analysis
+
+    thrown: "Empty vector input"
+
+      3 | import { computeHarmonicFeatures } from "./harmonicFeatureCompute";
+      4 |
+    > 5 | test.each(["impulse", "quiet tone", "tone then silence"])(
+        |                                                          ^
+      6 |   "real Essentia handles empty spectral peaks in %s without losing analysis",
+      7 |   async (kind) => {
+      8 |     const essentia = new Essentia(EssentiaWASM);
+
+      at ../node_modules/jest-each/build/bind.js:47:15
+          at Array.forEach (<anonymous>)
+      at Object.<anonymous> (shared/harmonicFeatureCompute.unvoiced.integration.test.ts:5:58)
+
+FAIL src/webview/utils/spectralDescriptors.dc.test.ts
+  ● DC offsets do not hide a quiet AC tone or create false spectral energy
+
+    expect(received).toBeCloseTo(expected, precision)
+
+    Expected: 2999.9999999986026
+    Received: 26.289482107099076
+
+    Expected precision:    2
+    Expected difference: < 0.005
+    Received difference:   2973.7105178915035
+
+      12 |   const right = Float32Array.from(tone, (value) => -value - 0.25);
+      13 |   const actual = analyzer.compute(left, right, 48000)!;
+    > 14 |   expect(actual.centroidHz).toBeCloseTo(expected.centroidHz, 2);
+         |                             ^
+      15 |   expect(actual.spreadHz).toBeCloseTo(expected.spreadHz, 2);
+      16 |   expect(actual.rolloffHz).toBe(expected.rolloffHz);
+      17 |   expect(
+
+      at Object.<anonymous> (webview/utils/spectralDescriptors.dc.test.ts:14:29)
+
+  ● finite-frame DC removal preserves an off-bin low tone with an offset
+
+    expect(received).toBeCloseTo(expected, precision)
+
+    Expected: 137.00004094585785
+    Received: 29.363183972014628
+
+    Expected precision:    2
+    Expected difference: < 0.005
+    Received difference:   107.63685697384322
+
+      35 |   expect(expected.centroidHz).toBeGreaterThan(120);
+      36 |   expect(expected.centroidHz).toBeLessThan(150);
+    > 37 |   expect(actual.centroidHz).toBeCloseTo(expected.centroidHz, 2);
+         |                             ^
+      38 |   expect(actual.spreadHz).toBeCloseTo(expected.spreadHz, 2);
+      39 |   expect(actual.rolloffHz).toBe(expected.rolloffHz);
+      40 | });
+
+      at Object.<anonymous> (webview/utils/spectralDescriptors.dc.test.ts:37:29)
+
+Test Suites: 2 failed, 2 total
+Tests:       5 failed, 1 passed, 6 total
+Snapshots:   0 total
+Time:        0.831 s, estimated 1 s
+Ran all test suites within paths "src/webview/utils/spectralDescriptors.dc.test.ts", "src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts".

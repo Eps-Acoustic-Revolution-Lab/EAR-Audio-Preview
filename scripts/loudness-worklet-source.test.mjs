@@ -141,6 +141,12 @@ test("asset emission fails without dependency and removes stale outputs", () => 
       path.join(comparison, "loudnessWorkerAdapter.js"),
       "adapter",
     );
+    const wasmDirectory = path.join(temporary, "node_modules/essentia.js/dist");
+    fs.mkdirSync(wasmDirectory, { recursive: true });
+    fs.writeFileSync(
+      path.join(wasmDirectory, "essentia-wasm.web.wasm"),
+      "wasm",
+    );
     writeLoudnessWorkletAssets(temporary);
     assert.equal(
       fs.readFileSync(path.join(dist, "loudness.worklet.js"), "utf8"),

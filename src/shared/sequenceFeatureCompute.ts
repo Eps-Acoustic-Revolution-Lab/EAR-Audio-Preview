@@ -1,7 +1,14 @@
+import {
+  type HarmonicProfile,
+  type HarmonicProfileWire,
+  harmonicToWire,
+  harmonicFromWire,
+} from "./harmonicFeatureCompute";
 import type { EssentiaInstance } from "./essentiaTypes";
 import { freeEssentiaVector } from "./essentiaTypes";
 
 export interface SequenceFeatureProfile {
+  harmonic?: HarmonicProfile;
   timeSec: Float32Array;
   f0Hz: Float32Array;
   f0Confidence: Float32Array;
@@ -11,6 +18,7 @@ export interface SequenceFeatureProfile {
 }
 
 export interface SequenceFeatureProfileWire {
+  harmonic?: HarmonicProfileWire;
   timeSec: ArrayBuffer;
   f0Hz: ArrayBuffer;
   f0Confidence: ArrayBuffer;
@@ -50,6 +58,7 @@ export function profileToWire(
   profile: SequenceFeatureProfile,
 ): SequenceFeatureProfileWire {
   return {
+    ...(profile.harmonic ? { harmonic: harmonicToWire(profile.harmonic) } : {}),
     timeSec: profile.timeSec.buffer.slice(
       profile.timeSec.byteOffset,
       profile.timeSec.byteOffset + profile.timeSec.byteLength,
@@ -75,6 +84,7 @@ export function profileFromWire(
   wire: SequenceFeatureProfileWire,
 ): SequenceFeatureProfile {
   return {
+    ...(wire.harmonic ? { harmonic: harmonicFromWire(wire.harmonic) } : {}),
     timeSec: new Float32Array(wire.timeSec),
     f0Hz: new Float32Array(wire.f0Hz),
     f0Confidence: new Float32Array(wire.f0Confidence),

@@ -1,0 +1,302 @@
+
+> ear-audio-preview@0.6.0 ci
+> npm run typecheck && npm run lint-check && npm run format-check && npm run test:tooling && npm run docs:check && npm test -- --maxWorkers=2 --workerIdleMemoryLimit=512MB && npm run vsix && npm run package:audit
+
+
+> ear-audio-preview@0.6.0 typecheck
+> tsc --noEmit
+
+
+> ear-audio-preview@0.6.0 lint-check
+> eslint "src/**/*.{js,ts}" || (echo "Lint errors found" && exit 1)
+
+
+> ear-audio-preview@0.6.0 format-check
+> prettier --check "src/**/*.ts" || (echo "Formatting errors found" && exit 1)
+
+Checking formatting...
+All matched files use Prettier code style!
+
+> ear-audio-preview@0.6.0 test:tooling
+> node --test scripts/*.test.mjs
+
+✔ pinned worker runtime has no dynamic code generation and compiles under CSP (36.661625ms)
+✔ changed runtime refuses unreviewed binding adaptation (0.384792ms)
+✔ CSP-safe runtime initializes real WASM and executes bound DSP (41.612625ms)
+✔ pinned bundle produces byte-identical processor output (18.300167ms)
+✔ extracts string and template sources without relying on variable names (0.32425ms)
+✔ rejects unsupported, absent, ambiguous and invalid processor sources (0.809833ms)
+✔ asset emission fails without dependency and removes stale outputs (4.522708ms)
+✔ versions reject invalid tags and path traversal (0.83375ms)
+✔ localized release extraction stops at the next language (0.162959ms)
+✔ README syncing is idempotent and refuses missing or duplicate blocks (0.103958ms)
+✔ releasing a different package version fails instead of using current highlights (0.925333ms)
+✔ a tagged release uses its bilingual notes and rejects lockfile drift (1.400708ms)
+✔ each architecture boundary routes to its intended group (0.954083ms)
+✔ real-dependency integration is selected once, outside its module group (0.602583ms)
+✔ Windows separators and future tests in existing modules are supported (0.057084ms)
+✔ unmapped architectural locations fail instead of silently dropping tests (0.169417ms)
+✔ group selection deduplicates paths and rejects invalid or empty groups (0.103666ms)
+✔ current source inventory is complete and unique without pinning a growing count (193.719042ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 242.414375
+
+> ear-audio-preview@0.6.0 docs:check
+> node scripts/release-notes.mjs
+
+Release notes and bilingual READMEs match v0.6.0
+
+> ear-audio-preview@0.6.0 test
+> jest --maxWorkers=2 --workerIdleMemoryLimit=512MB
+
+PASS src/webview/comparison/comparisonApp.test.ts
+PASS src/shared/audioAlignment.test.ts
+PASS src/webview/comparison/loudnessWorker.test.ts
+PASS src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
+PASS src/webview/comparison/comparisonDsp.test.ts
+PASS src/webview/comparison/comparisonLiveView.test.ts
+PASS src/webview/comparison/comparisonMeasurements.test.ts
+PASS src/webview/services/headphoneEqService.test.ts
+PASS src/webview/decoders/wasmDecoder.integration.test.ts
+PASS src/webview/utils/spectralDescriptors.dc.test.ts
+PASS src/shared/harmonicFeatureCompute.integration.test.ts
+PASS src/webview/utils/goertzelCqt.test.ts
+PASS src/webview/utils/frequencyWeightedRms.test.ts
+PASS src/webview/components/webview/webview.test.ts
+  ● Console
+
+    console.log
+      error in webview
+
+      at HTMLDivElement.webviewMessageTarget.addEventListener.once (__mocks__/helper.ts:45:19)
+
+PASS src/webview/comparison/comparisonAlignment.test.ts
+PASS src/webview/utils/quinticBSpline.test.ts
+PASS src/webview/utils/stereoPolarField.test.ts
+PASS src/webview/decoders/ogg.integration.test.ts
+PASS src/webview/services/sequenceFeatureService.test.ts
+PASS src/webview/components/liveMeters/spectralDescriptorLane.test.ts
+PASS src/audioPreviewEditor.test.ts
+PASS src/webview/utils/stereoPolarField.regression.test.ts
+PASS src/webview/utils/spectralDescriptors.test.ts
+PASS src/webview/components/loudness/harmonicTimeline.test.ts
+PASS src/webview/services/playerService.test.ts
+PASS src/webview/decoders/flac.integration.test.ts
+PASS src/comparison/comparisonHost.test.ts
+PASS src/webview/services/editListenService.test.ts
+PASS src/shared/sequenceFeatureCompute.integration.test.ts
+PASS src/webview/decoders/oggOpusLength.test.ts
+PASS src/webview/comparison/stftColor.test.ts
+PASS src/webview/components/transportFab/transportFabComponent.test.ts
+PASS src/webview/services/analyzeSettingsService.test.ts
+PASS src/webview/decoders/aac.integration.test.ts
+PASS src/webview/components/onboarding/onboardingTourComponent.test.ts
+PASS src/shared/harmonicFeatureCompute.test.ts
+PASS src/webview/components/settingsOverlay/settingsOverlayComponent.test.ts
+PASS src/extensionHost/autoEqHost.test.ts
+PASS src/webview/comparison/essentiaSpectrum.test.ts
+PASS src/webview/components/liveMeters/levelMeterComponent.test.ts
+PASS src/webview/comparison/alignmentClient.test.ts
+PASS src/webview/components/analyzeSettings/analyzeSettingsComponent.test.ts
+PASS src/webview/components/settingTab/settingTabComponent.test.ts
+PASS src/webview/components/infoTable/infoTableComponent.test.ts
+PASS src/webview/decoders/sphereDecoder.test.ts
+PASS src/webview/services/headphoneEqSettingsService.test.ts
+PASS src/webview/comparison/comparisonSession.test.ts
+PASS src/webview/decoders/m4aPresentation.test.ts
+PASS src/webview/components/playerSettings/playerSettingsComponent.test.ts
+PASS src/shared/stftEssentiaCompute.test.ts
+PASS src/webview/components/liveMeters/liveMonitoringBarComponent.test.ts
+PASS src/webview/components/waveform/waveFormComponent.test.ts
+PASS src/webview/components/metaFab/metaFabComponent.test.ts
+PASS src/webview/components/contextMenu/contextMenu.test.ts
+PASS src/extensionHost/comparisonAnalysisHost.test.ts
+PASS src/webview/components/player/playerComponent.test.ts
+PASS src/webview/components/knob/knobComponent.test.ts
+PASS src/webview/services/analyzeService.test.ts
+PASS src/webview/comparison/comparisonTransport.test.ts
+PASS src/webview/comparison/comparisonOnboarding.test.ts
+PASS src/webview/decoders/wasmDecoder.test.ts
+PASS src/webview/decoders/aacDecoder.test.ts
+PASS src/webview/spectrogramFrequencyLayout.test.ts
+PASS src/webview/components/curveCorrection/curveCorrectionOverlayComponent.test.ts
+PASS src/webview/utils/spectralPeakDisplay.test.ts
+PASS src/webview/utils/frequencyPhaseCorrelation.test.ts
+PASS src/webview/utils/eqCanvasMath.test.ts
+PASS src/webview/services/pageRpcClient.test.ts
+PASS src/webview/services/audioExportService.test.ts
+PASS src/webview/comparison/trackTheme.test.ts
+PASS src/webview/decoders/decoderFactory.test.ts
+PASS src/webview/utils/timelinePlotLayout.test.ts
+PASS src/webview/utils/modifiedAkima.test.ts
+PASS src/webview/utils/liveMonitoring.test.ts
+PASS src/webview/utils/liveLogSpectrumAxis.test.ts
+PASS src/webview/services/wavExportFormat.test.ts
+PASS src/webview/services/sequenceWorkerClient.test.ts
+PASS src/webview/services/autoEqApiClient.test.ts
+PASS src/webview/comparison/scrollState.test.ts
+PASS src/webview/comparison/computeAnalysisJob.test.ts
+PASS src/message.contract.test.ts
+PASS src/webview/utils/timelineStripChart.test.ts
+PASS src/webview/utils/liveStereoFrame.test.ts
+PASS src/webview/utils/ebur128Loader.test.ts
+PASS src/webview/utils/audioFileBitDepth.test.ts
+PASS src/webview/services/loudnessService.test.ts
+PASS src/webview/comparison/stftCache.test.ts
+PASS src/webview/comparison/comparisonStftController.test.ts
+PASS src/shared/sequenceFeatureCompute.test.ts
+PASS src/shared/parseEqPreset.test.ts
+PASS src/shared/autoEqEqualizePayload.test.ts
+PASS src/webview/encoder.test.ts
+PASS src/extensionHost/analysisTaskQueue.test.ts
+PASS src/comparison/comparisonEqHost.test.ts
+PASS src/webview/components/liveMeters/eqMonitorStripComponent.test.ts
+PASS src/webview/utils/volumeMapping.test.ts
+PASS src/webview/utils/loudnessWorkletLoader.test.ts
+PASS src/webview/utils/earEqSegmentedControl.test.ts
+PASS src/webview/services/playerSettingsService.test.ts
+PASS src/webview/services/essentiaHostClient.test.ts
+PASS src/webview/services/editExportSettingsService.test.ts
+PASS src/webview/comparison/analysisClient.test.ts
+PASS src/webview/decoders/sphere.integration.test.ts
+PASS src/eslintPolicy.test.ts
+PASS src/webview/utils/liveBallistics.test.ts
+PASS src/webview/comparison/comparisonFileLoader.test.ts
+PASS src/shared/sequenceHop.test.ts
+PASS src/webview/service.test.ts
+PASS src/webview/decoders/webAudioDecoder.test.ts
+PASS src/webview/components/analyzer/analyzerComponent.test.ts (18.748 s)
+
+Test Suites: 110 passed, 110 total
+Tests:       1 skipped, 887 passed, 888 total
+Snapshots:   0 total
+Time:        19.069 s
+Ran all test suites.
+
+> ear-audio-preview@0.6.0 vsix
+> vsce package --no-dependencies
+
+Executing prepublish script 'npm run vscode:prepublish'...
+
+> ear-audio-preview@0.6.0 vscode:prepublish
+> node -e "require('fs').rmSync('dist',{recursive:true,force:true})" && webpack --mode production --devtool hidden-source-map
+
+asset extension.js 2.49 MiB [emitted] [minimized] (name: main) 2 related assets
+modules by path ./src/ 129 KiB
+  modules by path ./src/extensionHost/*.ts 22.3 KiB 7 modules
+  modules by path ./src/shared/*.ts 22.9 KiB 6 modules
+  modules by path ./src/webview/ 18.4 KiB 6 modules
+  modules by path ./src/*.ts 37.5 KiB 5 modules
+  modules by path ./src/comparison/*.ts 27.6 KiB 3 modules
+modules by path ./node_modules/ 2.79 MiB
+  modules by path ./node_modules/ooura/*.js 19.4 KiB 4 modules
+  modules by path ./node_modules/essentia.js/dist/*.js 2.77 MiB
+    ./node_modules/essentia.js/dist/essentia.js-core.umd.js 332 KiB [built] [code generated]
+    ./node_modules/essentia.js/dist/essentia-wasm.umd.js 2.44 MiB [built] [code generated]
++ 7 modules
+webpack 5.90.3 compiled successfully in 5493 ms
+
+assets by status 1.98 MiB [big]
+  asset audioPreview.js 1.07 MiB [emitted] [minimized] [big] (name: audioPreview) 2 related assets
+  asset comparison.js 931 KiB [emitted] [minimized] [big] (name: comparison) 2 related assets
+asset sequenceWorker.js 191 KiB [emitted] [minimized] (name: sequenceWorker) 2 related assets
+asset aacDecoderWorker.js 122 KiB [emitted] [minimized] (name: aacDecoderWorker) 1 related asset
+asset 4062d505493786e728bb.module.wasm 85.5 KiB [emitted] [immutable] (auxiliary name: audioPreview, comparison)
+asset comparisonWorker.js 83.7 KiB [emitted] [minimized] (name: comparisonWorker) 2 related assets
+orphan modules 426 KiB [orphan] 45 modules
+runtime modules 12.1 KiB 24 modules
+javascript modules 3.04 MiB
+  modules by path ./src/ 1.29 MiB
+    modules by path ./src/webview/ 1.25 MiB 172 modules
+    modules by path ./src/shared/*.ts 37.6 KiB 9 modules
+    modules by path ./src/*.ts 9.83 KiB 3 modules
+    ./src/comparison/limits.ts 213 bytes [built] [code generated]
+  modules by path ./node_modules/ 1.73 MiB 117 modules
+  modules by path ./scripts/*.cjs 706 bytes
+    ./scripts/aurora-runtime.cjs 488 bytes [built] [code generated]
+    ./scripts/aurora-local-source.cjs 218 bytes [built] [code generated]
+  ./third-party/aac/ics.js 13 KiB [built] [code generated]
+data:image/svg+xml,%3Csvg xmlns=%27.. 291 bytes [built] [code generated]
+./node_modules/ebur128-wasm/ebur128_wasm_bg.wasm 90 bytes (javascript) 85.5 KiB (webassembly) [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets:
+  audioPreview.js (1.07 MiB)
+  comparison.js (931 KiB)
+
+WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  audioPreview (1.07 MiB)
+      audioPreview.js
+  comparison (931 KiB)
+      comparison.js
+
+WARNING in webpack performance recommendations:
+You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+For more info visit https://webpack.js.org/guides/code-splitting/
+
+webpack 5.90.3 compiled with 3 warnings in 5953 ms
+
+asset extension.js 2.56 MiB [emitted] [minimized] [big] (name: extension) 2 related assets
+runtime modules 221 bytes 1 module
+modules by path ./node_modules/ 2.94 MiB 73 modules
+modules by path ./src/ 129 KiB
+  modules by path ./src/extensionHost/*.ts 22.3 KiB 7 modules
+  modules by path ./src/shared/*.ts 22.9 KiB 6 modules
+  modules by path ./src/webview/ 18.4 KiB 6 modules
+  modules by path ./src/*.ts 37.5 KiB 5 modules
+  modules by path ./src/comparison/*.ts 27.6 KiB
+    ./src/comparison/comparisonHost.ts 22.3 KiB [built] [code generated]
+    + 2 modules
+external "vscode" 42 bytes [built] [code generated]
+https (ignored) 15 bytes [built] [code generated]
+./scripts/essentia-runtime.cjs 294 bytes [built] [code generated]
+fs (ignored) 15 bytes [built] [code generated]
+crypto (ignored) 15 bytes [optional] [built] [code generated]
+webpack 5.90.3 compiled successfully in 6325 ms
+ INFO  Files included in the VSIX:
+ear-audio-preview-0.6.0.vsix
+├─ [Content_Types].xml
+├─ extension.vsixmanifest
+└─ extension/
+   ├─ LICENSE.txt [1.04 KB]
+   ├─ README.zh-CN.md [16.58 KB]
+   ├─ changelog.md [18.15 KB]
+   ├─ ear_audio.png [338.85 KB]
+   ├─ package.json [6.33 KB]
+   ├─ readme.md [17.18 KB]
+   ├─ dist/
+   │  ├─ 4062d505493786e728bb.module.wasm [85.47 KB]
+   │  ├─ aacDecoderWorker.js [121.96 KB]
+   │  ├─ audioPreview.js [1.07 MB]
+   │  ├─ audioPreview.js.LICENSE.txt [0.31 KB]
+   │  ├─ comparison.js [930.59 KB]
+   │  ├─ comparison.js.LICENSE.txt [0.15 KB]
+   │  ├─ comparisonLoudnessWorker.js [16.62 KB]
+   │  ├─ comparisonWorker.js [83.7 KB]
+   │  ├─ comparisonWorker.js.LICENSE.txt [0.15 KB]
+   │  ├─ essentia-wasm.web.wasm [1.9 MB]
+   │  ├─ extension.js [2.49 MB]
+   │  ├─ extension.js.LICENSE.txt [1.69 KB]
+   │  ├─ loudness.worklet.js [14.34 KB]
+   │  ├─ sequenceWorker.js [191.29 KB]
+   │  ├─ sequenceWorker.js.LICENSE.txt [1.69 KB]
+   │  └─ web/ (2 files) [2.56 MB]
+   └─ third-party/
+      └─ aac/ (6 files) [146.11 KB]
+
+=> Run vsce ls --tree to see all included files.
+
+ DONE  Packaged: /Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/ear-audio-preview-0.6.0.vsix (31 files, 3.44 MB)
+
+> ear-audio-preview@0.6.0 package:audit
+> node scripts/package-audit.mjs
+
+31 files; 3.44 MiB download; 9.97 MiB installed. Package contents passed.

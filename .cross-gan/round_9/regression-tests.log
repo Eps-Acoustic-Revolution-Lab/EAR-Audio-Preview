@@ -1,0 +1,40 @@
+FAIL src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
+  ● real Essentia retains chroma for no-contour impulse
+
+    thrown: "Empty vector input"
+
+      3 | import { computeHarmonicFeatures } from "./harmonicFeatureCompute";
+      4 |
+    > 5 | test.each(["impulse", "quiet tone"])(
+        |                                     ^
+      6 |   "real Essentia retains chroma for no-contour %s",
+      7 |   async (kind) => {
+      8 |     const essentia = new Essentia(EssentiaWASM);
+
+      at ../node_modules/jest-each/build/bind.js:47:15
+          at Array.forEach (<anonymous>)
+      at Object.<anonymous> (shared/harmonicFeatureCompute.unvoiced.integration.test.ts:5:37)
+
+  ● real Essentia retains chroma for no-contour quiet tone
+
+    thrown: "Empty vector input"
+
+      3 | import { computeHarmonicFeatures } from "./harmonicFeatureCompute";
+      4 |
+    > 5 | test.each(["impulse", "quiet tone"])(
+        |                                     ^
+      6 |   "real Essentia retains chroma for no-contour %s",
+      7 |   async (kind) => {
+      8 |     const essentia = new Essentia(EssentiaWASM);
+
+      at ../node_modules/jest-each/build/bind.js:47:15
+          at Array.forEach (<anonymous>)
+      at Object.<anonymous> (shared/harmonicFeatureCompute.unvoiced.integration.test.ts:5:37)
+
+PASS src/webview/utils/spectralDescriptors.dc.test.ts
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       2 failed, 3 passed, 5 total
+Snapshots:   0 total
+Time:        0.857 s, estimated 1 s
+Ran all test suites within paths "src/webview/utils/spectralDescriptors.dc.test.ts", "src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts".

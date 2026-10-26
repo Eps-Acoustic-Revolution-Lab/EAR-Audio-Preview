@@ -319,6 +319,24 @@ export class AudioPreviewEditorProvider
           headphoneEq,
           onboardingSeen:
             this._context.globalState.get(onboardingSeenKey) === true,
+          sequenceWorkerUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "sequenceWorker.js",
+              ),
+            )
+            .toString(),
+          essentiaWasmUri: webview
+            .asWebviewUri(
+              vscode.Uri.joinPath(
+                this._context.extensionUri,
+                "dist",
+                "essentia-wasm.web.wasm",
+              ),
+            )
+            .toString(),
           loudnessWorkletUri: webview
             .asWebviewUri(
               vscode.Uri.joinPath(
@@ -547,7 +565,7 @@ export class AudioPreviewEditorProvider
 
       case WebviewMessageType.ANALYZE_SEQUENCE_FEATURES:
         if (WebviewMessageType.isAnalyzeSequenceFeatures(msg)) {
-          const { requestId, samples, sampleRate, hopSec } = msg.data;
+          const { requestId, samples, sampleRate, hopSec, harmonic } = msg.data;
           const buf = samples as ArrayBuffer;
           const mono = new Float32Array(buf, 0, buf.byteLength / 4);
           await this.analysisTasks.run(
@@ -561,6 +579,7 @@ export class AudioPreviewEditorProvider
                   hopSec,
                   undefined,
                   shouldCancel,
+                  harmonic,
                 );
                 if (shouldCancel()) {
                   return;

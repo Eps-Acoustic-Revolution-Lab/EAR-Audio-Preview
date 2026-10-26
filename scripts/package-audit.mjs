@@ -63,6 +63,8 @@ for (const entry of [
   "dist/audioPreview.js",
   "dist/comparison.js",
   "dist/comparisonWorker.js",
+  "dist/sequenceWorker.js",
+  "dist/essentia-wasm.web.wasm",
   "dist/aacDecoderWorker.js",
   "dist/comparisonLoudnessWorker.js",
   "dist/loudness.worklet.js",

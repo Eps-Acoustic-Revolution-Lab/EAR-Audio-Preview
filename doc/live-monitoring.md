@@ -112,3 +112,21 @@ Split handles are draggable (`ns-resize` cursor). The **↗** button opens a fix
 Live analyser FFT size is configurable (512, 1024, 2048, or 4096). Larger sizes give finer frequency resolution at the cost of reduced time resolution. The analyser nodes use `smoothingTimeConstant = 0` (no time smoothing) — all smoothing is handled in the application-layer ballistics for precise control.
 
 Changing the FFT size does not glitch playback since analyser nodes are not in the signal path (they tap, not block).
+
+### Optional spectral descriptor lane
+
+Open **Spectral descriptors** in the spectrum plot to show live power-weighted
+centroid, spectral spread (standard deviation), and 85% energy rolloff in Hz.
+The lane is closed by default and performs no FFT work while closed. Single-file
+playback updates at up to 10 Hz; comparison mode reports each published track,
+including paused seeks. Closing the editor resets this local display choice.
+
+Measurements use a Hann-windowed FFT of the current stereo time-domain frame,
+subtracting each channel's finite-frame mean before windowing and summing channel
+powers rather than summing waveforms. DC is excluded; silence
+shows a dash. They follow the monitoring matrix, but not spectrum display tilt,
+A-weighting, smoothing, or peak hold. They remain FFT-based when the plot uses
+CQT. Frame length and sample rate determine resolution; these are instantaneous
+spectral measurements, not an offline whole-file analysis or pitch estimate.
+Removing a finite-frame mean also affects signals whose period is longer than
+the frame; low-frequency readings remain dependent on frame length.

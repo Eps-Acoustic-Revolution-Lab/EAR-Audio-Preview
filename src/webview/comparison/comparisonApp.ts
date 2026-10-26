@@ -447,6 +447,7 @@ export class ComparisonApp {
     switch (message.type) {
       case "compare.files": {
         this._alignment.client.workerUri = message.workerUri;
+        this._loudness.sequenceResources = message;
         if (!this._headphoneEqLoaded && message.headphoneEq) {
           this._headphoneEqLoaded = true;
           this._headphoneEq.loadPersisted(message.headphoneEq);

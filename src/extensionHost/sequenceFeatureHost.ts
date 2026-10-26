@@ -1,3 +1,4 @@
+import { computeHarmonicFeatures } from "../shared/harmonicFeatureCompute";
 import {
   computeSequenceFeatures,
   profileToWire,
@@ -12,6 +13,7 @@ export async function analyzeSequenceFeaturesInHost(
   hopSec: number,
   onProgress?: SequenceAnalysisProgress,
   shouldCancel?: () => boolean,
+  harmonic = false,
 ): Promise<SequenceFeatureProfileWire | null> {
   const essentia = await loadEssentiaInNode();
   if (!essentia || shouldCancel?.()) {
@@ -26,6 +28,14 @@ export async function analyzeSequenceFeaturesInHost(
       onProgress,
       shouldCancel,
     );
+    if (harmonic) {
+      profile.harmonic = await computeHarmonicFeatures(
+        essentia,
+        monoSamples,
+        sampleRate,
+        shouldCancel,
+      );
+    }
     return profileToWire(profile);
   } catch (err) {
     if (shouldCancel?.()) {

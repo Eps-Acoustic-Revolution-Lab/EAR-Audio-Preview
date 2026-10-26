@@ -1047,6 +1047,8 @@ export default class WebView extends Component {
       const sequenceFeatureService = new SequenceFeatureService(
         audioBuffer,
         this._rpc,
+        undefined,
+        this._config,
       );
       this._disposables.push(sequenceFeatureService);
       loudnessGraphMount.removeAttribute("hidden");

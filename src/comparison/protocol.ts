@@ -62,6 +62,8 @@ export type ComparisonResponse =
       initial: boolean;
       onboardingSeen?: boolean;
       workerUri: string;
+      sequenceWorkerUri?: string;
+      essentiaWasmUri?: string;
       loudnessWorkerUri: string;
       loudnessWorkletUri: string;
       headphoneEq?: HeadphoneEqPersistedState;

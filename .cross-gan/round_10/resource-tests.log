@@ -1,0 +1,8 @@
+PASS src/webview/services/sequenceWorkerClient.resources.test.ts
+PASS src/webview/services/sequenceWorkerClient.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        0.738 s, estimated 1 s
+Ran all test suites within paths "src/webview/services/sequenceWorkerClient.test.ts", "src/webview/services/sequenceWorkerClient.resources.test.ts".

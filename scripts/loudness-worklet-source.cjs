@@ -97,9 +97,11 @@ function extractLoudnessWorkletSource(source, version) {
 }
 
 function writeLoudnessWorkletAssets(root) {
-  const outputs = ["loudness.worklet.js", "comparisonLoudnessWorker.js"].map(
-    (name) => path.join(root, "dist", name),
-  );
+  const outputs = [
+    "loudness.worklet.js",
+    "comparisonLoudnessWorker.js",
+    "essentia-wasm.web.wasm",
+  ].map((name) => path.join(root, "dist", name));
   // A failed extraction must never leave a previous successful processor behind.
   outputs.forEach((file) => fs.rmSync(file, { force: true }));
   try {
@@ -124,6 +126,10 @@ function writeLoudnessWorkletAssets(root) {
       "utf8",
     );
     fs.mkdirSync(path.join(root, "dist"), { recursive: true });
+    fs.copyFileSync(
+      path.join(root, "node_modules/essentia.js/dist/essentia-wasm.web.wasm"),
+      path.join(root, "dist/essentia-wasm.web.wasm"),
+    );
     fs.writeFileSync(outputs[0], body, "utf8");
     fs.writeFileSync(
       outputs[1],

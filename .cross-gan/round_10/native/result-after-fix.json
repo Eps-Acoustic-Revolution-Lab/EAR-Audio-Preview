@@ -1,0 +1,963 @@
+{
+  "editor": {
+    "vscode": "1.142.0",
+    "extensions": [
+      {
+        "id": "TypeScriptTeam.jsts-chat-features",
+        "active": false,
+        "version": "0.0.4"
+      },
+      {
+        "id": "ms-vscode.js-debug",
+        "active": false,
+        "version": "1.140.0"
+      },
+      {
+        "id": "ms-vscode.js-debug-companion",
+        "active": false,
+        "version": "1.1.3"
+      },
+      {
+        "id": "ms-vscode.vscode-js-profile-table",
+        "active": false,
+        "version": "1.0.11"
+      },
+      {
+        "id": "Eps-Acoustic-Revolution-Lab.ear-audio-preview",
+        "active": true,
+        "version": "0.6.0"
+      },
+      {
+        "id": "local-benchmark.ear-benchmark-controller",
+        "active": true,
+        "version": "0.0.1"
+      }
+    ],
+    "memory": {
+      "rss": 170180608,
+      "heapTotal": 41091072,
+      "heapUsed": 39245928,
+      "external": 6924612,
+      "arrayBuffers": 0
+    }
+  },
+  "single": {
+    "workers": [
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmBytes": 1987689,
+        "replies": [
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "result",
+            "frames": 718,
+            "f0": [
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375
+            ]
+          }
+        ]
+      },
+      {
+        "harmonic": true,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmBytes": 1987689,
+        "replies": [
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "result",
+            "frames": 240,
+            "f0": [
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719,
+              440.3315124511719
+            ],
+            "harmonic": {
+              "chromaFrames": 240,
+              "melodyFrames": 4136,
+              "voicedMelody": [
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281,
+                440.0054016113281
+              ],
+              "melodyKeys": [
+                "chroma",
+                "chromaTimeSec",
+                "melodyHz",
+                "melodyConfidence",
+                "melodyHopSec"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "harmonic": "Chroma & melody analyzedChroma: relative strength · Melody: predominant pitch (Hz), gaps are unvoiced",
+    "f0Placeholder": "loudnessComponent__stripPlaceholder js-f0Placeholder hidden"
+  },
+  "live": {
+    "Z": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nR -13.3\nP -10.3\nR\nR -13.3\nP -10.3"
+    },
+    "A": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRA -17.4\nP -10.3\nR\nRA -17.4\nP -10.3"
+    },
+    "B": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 12 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRB -13.7\nP -10.3\nR\nRB -13.7\nP -10.3"
+    },
+    "C": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRC -13.3\nP -10.3\nR\nRC -13.3\nP -10.3"
+    }
+  },
+  "singleErrors": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "other",
+          "level": "warning",
+          "text": "Unrecognized feature: 'local-network-access'.",
+          "timestamp": 1793001634118.101,
+          "url": "vscode-webview://1n6p7fk1rvib4r8dkheiumvmi21ksf4mrcq5bsqs6b4iraehnv8v/index.html?id=994fb357-183a-4a6a-b013-720fcf2b9a2d&parentId=1&origin=c6e2f524-9e5b-4f3e-864d-9c20f77859b7&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=54404e82-1661-4587-b6a4-b20ef8bd5e09",
+          "lineNumber": 1047,
+          "stackTrace": {
+            "callFrames": [
+              {
+                "functionName": "",
+                "scriptId": "5",
+                "url": "vscode-webview://1n6p7fk1rvib4r8dkheiumvmi21ksf4mrcq5bsqs6b4iraehnv8v/index.html?id=994fb357-183a-4a6a-b013-720fcf2b9a2d&parentId=1&origin=c6e2f524-9e5b-4f3e-864d-9c20f77859b7&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=54404e82-1661-4587-b6a4-b20ef8bd5e09",
+                "lineNumber": 1047,
+                "columnNumber": 13
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "comparison": {
+    "workers": [
+      {
+        "replies": []
+      },
+      {
+        "replies": []
+      },
+      {
+        "rate": 44100,
+        "replies": [
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmBytes": 1987689,
+        "replies": [
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "result",
+            "frames": 718,
+            "f0": [
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375
+            ]
+          }
+        ]
+      },
+      {
+        "rate": 44100,
+        "replies": [
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmBytes": 1987689,
+        "replies": [
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "progress"
+          },
+          {
+            "kind": "result",
+            "frames": 718,
+            "f0": [
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375,
+              440.3315124511719,
+              440.3315124511719,
+              440.33148193359375
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "Track\tLUFS-I\tLRA · LU\tTP · dBTP\ntone440.wav\t-11.0\t0.0\t-10.3\ntone440-copy.wav\t-11.0\t0.0\t-10.3\nLoudness · short-term LUFS\nF0 · Hz\nOnset · positive spectral flux\ntone440.wav\ntone440-copy.wav · muted"
+  },
+  "comparisonErrors": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "other",
+          "level": "warning",
+          "text": "Unrecognized feature: 'local-network-access'.",
+          "timestamp": 1793001640166.558,
+          "url": "vscode-webview://066cdkfr5vomi8tlpme28mbe5p2iukci22gqekbjlh9aq2nbbgfg/index.html?id=fc3abf7a-3d8a-4d9c-aa10-4d2d952b754b&parentId=1&origin=fdb34465-f1bd-4388-bd0d-cf6025e021b7&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=62c609e7-50a2-4db5-bd2d-7e1a2319f5c9",
+          "lineNumber": 1047,
+          "stackTrace": {
+            "callFrames": [
+              {
+                "functionName": "",
+                "scriptId": "15",
+                "url": "vscode-webview://066cdkfr5vomi8tlpme28mbe5p2iukci22gqekbjlh9aq2nbbgfg/index.html?id=fc3abf7a-3d8a-4d9c-aa10-4d2d952b754b&parentId=1&origin=fdb34465-f1bd-4388-bd0d-cf6025e021b7&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=62c609e7-50a2-4db5-bd2d-7e1a2319f5c9",
+                "lineNumber": 1047,
+                "columnNumber": 13
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "passed": true,
+  "build": "5d22f0e",
+  "fixture": "12s stereo 440Hz PCM16 at 44100Hz"
+}
