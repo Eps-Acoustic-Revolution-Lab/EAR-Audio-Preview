@@ -22,5 +22,7 @@ CLAUDE.md
 /.sdk-types
 /packages/*/dist
 
-# Native acceptance control sessions contain temporary bearer capabilities.
-/.cross-gan/**/native/session.json
+# Local agent reviews, editor preferences and historical design drafts.
+.cross-gan/
+/AGENTS.md
+/.vscode/

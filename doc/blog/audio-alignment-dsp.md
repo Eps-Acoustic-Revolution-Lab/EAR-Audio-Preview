@@ -185,7 +185,7 @@ $$\text{Null Depth (dB)} = 10\log_{10}\!\left(\frac{\sum A_{c,n}^2}{\sum e_{c,n}
 
 **算子在初版中因高阶 FIR 和全量检查比基线慢约 40%；通过引入短分析窗、提前退出和循环展开，最终在 30 秒长音频上达到基线 2.8 倍以上的速度。**
 
-我们定义加速比为 `基线耗时 / 原型耗时`（大于 1 表示原型更快）。四个迭代阶段的性能变化如下（数据见 [历史计时](../research/audio-alignment/.cross-gan/baseline/) 至 [最终验证](../research/audio-alignment/results/final-verification.json)）：
+我们定义加速比为 `基线耗时 / 原型耗时`（大于 1 表示原型更快）。四个迭代阶段的性能变化如下（数据见 [历史计时](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/baseline/) 至 [最终验证](../research/audio-alignment/results/final-verification.json)）：
 
 1. **第一版（30s: ~0.63x | 3s: ~0.58x）**：修复了声道与极性缺陷，但由于使用高阶 Blackman-sinc FIR 处理全长信号，整体速度比基线慢。
 2. **第二版（30s: ~1.03x | 3s: ~0.75x）**：优化了 PCM 合法性检查，并加入精修提前退出机制，长音频耗时追平基线。
@@ -196,7 +196,7 @@ $$\text{Null Depth (dB)} = 10\log_{10}\!\left(\frac{\sum A_{c,n}^2}{\sum e_{c,n}
 
 ## 9. 五轮对抗审查：边界缺陷与热点优化
 
-**通过“独立构造反例 + 独立修复验证”的五轮审查，我们修复了稀疏信号漏检、窗口步进盲区、底噪干扰等 4 个边界 Bug，并通过循环展开降低了约 25% 的长音频检查开销。**（完整记录见 [审查记录](../research/audio-alignment/.cross-gan/checkpoint.json)）
+**通过“独立构造反例 + 独立修复验证”的五轮审查，我们修复了稀疏信号漏检、窗口步进盲区、底噪干扰等 4 个边界 Bug，并通过循环展开降低了约 25% 的长音频检查开销。**（完整记录见 [审查记录](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/checkpoint.json)）
 
 ### 第 1 轮：跨步采样探针漏检周期性稀疏信号
 
@@ -333,5 +333,5 @@ node ablation/run.mjs report > ablation/report.log
 
 * **核心实现**：[operator.mjs](../research/audio-alignment/operator.mjs) ｜ [fft.mjs](../research/audio-alignment/fft.mjs)
 * **测试套件**：[operator.test.mjs](../research/audio-alignment/operator.test.mjs) ｜ [review-regressions.test.mjs](../research/audio-alignment/review-regressions.test.mjs) ｜ [corpus.mjs](../research/audio-alignment/corpus.mjs)
-* **迭代记录**：[results/dev-round-1.json](../research/audio-alignment/results/dev-round-1.json) ｜ [.cross-gan/checkpoint.json](../research/audio-alignment/.cross-gan/checkpoint.json) ｜ [results/final-verification.json](../research/audio-alignment/results/final-verification.json)
+* **迭代记录**：[results/dev-round-1.json](../research/audio-alignment/results/dev-round-1.json) ｜ [.cross-gan/checkpoint.json](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/checkpoint.json) ｜ [results/final-verification.json](../research/audio-alignment/results/final-verification.json)
 * **消融数据**：[ablation/accuracy.json](../research/audio-alignment/ablation/accuracy.json) ｜ [ablation/timing.json](../research/audio-alignment/ablation/timing.json) ｜ [ablation/summary.json](../research/audio-alignment/ablation/summary.json) ｜ [ablation/verification.json](../research/audio-alignment/ablation/verification.json)

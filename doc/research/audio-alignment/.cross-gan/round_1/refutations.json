@@ -1,5 +1,0 @@
-{
-  "status": "unavailable",
-  "independentDiscriminatorCompleted": false,
-  "reason": "Built-in delegation failed with missing side-thread context; default Codex CLI model unsupported; Cursor read-only probe returned no result before 120-second cutoff; alternate Codex availability probe also returned no result."
-}

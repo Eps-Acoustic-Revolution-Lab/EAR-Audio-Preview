@@ -1,9 +1,0 @@
-{
-  "status": "dry",
-  "finders": {
-    "correctness": "correctness_review",
-    "efficiency": "bug_discriminator",
-    "robustness": "robustness_review"
-  },
-  "findings": []
-}

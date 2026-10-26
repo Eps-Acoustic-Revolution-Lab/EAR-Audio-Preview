@@ -198,7 +198,7 @@ We define speedup as `baseline time / prototype time`; values above 1 mean the p
 
 ## 9. Five review rounds: edge cases and expensive loops
 
-**Five rounds of independently built counterexamples and fix checks found four edge-case bugs: missed sparse signals, gaps in window coverage, and failures caused by very quiet background noise. Loop unrolling also cut total runtime for long inputs by about 25%.** Full records are in [.cross-gan/](../research/audio-alignment/.cross-gan/); see [research source access](audio-alignment-research.md).
+**Five rounds of independently built counterexamples and fix checks found four edge-case bugs: missed sparse signals, gaps in window coverage, and failures caused by very quiet background noise. Loop unrolling also cut total runtime for long inputs by about 25%.** Full records are in [.cross-gan/](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/); see [research source access](audio-alignment-research.md).
 
 ### Round 1: a spaced sampling probe missed sparse signals
 
@@ -335,5 +335,5 @@ The following links open files in the [frozen research snapshot](audio-alignment
 
 - **Core implementation:** [operator.mjs](../research/audio-alignment/operator.mjs) and [fft.mjs](../research/audio-alignment/fft.mjs).
 - **Tests:** [operator.test.mjs](../research/audio-alignment/operator.test.mjs), [review-regressions.test.mjs](../research/audio-alignment/review-regressions.test.mjs), and [corpus.mjs](../research/audio-alignment/corpus.mjs).
-- **Development records:** [results/dev-round-1.json](../research/audio-alignment/results/dev-round-1.json), [results/final-verification.json](../research/audio-alignment/results/final-verification.json), and [.cross-gan/](../research/audio-alignment/.cross-gan/).
+- **Development records:** [results/dev-round-1.json](../research/audio-alignment/results/dev-round-1.json), [results/final-verification.json](../research/audio-alignment/results/final-verification.json), and [.cross-gan/](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/).
 - **Ablation data:** [ablation/README.md](../research/audio-alignment/ablation/README.md), [accuracy.json](../research/audio-alignment/ablation/accuracy.json), [timing.json](../research/audio-alignment/ablation/timing.json), and [summary.json](../research/audio-alignment/ablation/summary.json).

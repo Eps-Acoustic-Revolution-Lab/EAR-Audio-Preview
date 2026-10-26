@@ -1,7 +1,0 @@
-{
-  "status": "accepted",
-  "fixes": [
-    "trailing-window-coverage"
-  ],
-  "commit": "f58049e7020aa402306cd89be75747c47a32d916"
-}

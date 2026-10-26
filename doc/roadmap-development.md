@@ -3,7 +3,7 @@
 These changes shipped in **0.6.1** on 2026-10-26. The extension package version is 0.6.1. Feature worktrees were integrated into local `main` after adversarial review and native acceptance; see the [release notes](releases/0.6.1.md).
 
 The subsequent pre-merge adversarial review is recorded in the
-[roadmap review summary](../.cross-gan/summary.pre-sdk.md). The validation below is the
+[roadmap review summary](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/.cross-gan/summary.pre-sdk.md). The validation below is the
 initial implementation snapshot; use the review record for post-fix results.
 
 | Feature | Implemented scope | Remaining limits |
@@ -36,7 +36,7 @@ node bench/roadmapAcceptance.mjs
 
 For isolated Worker probes, run `NODE_PATH=/path/to/node_modules CHROME_PATH=/path/to/chrome node bench/sequence-worker-browser.cjs long`, substituting `harmonic` or `cancel` for the other probes.
 
-This browser check establishes rendering and runtime behavior under Chromium. It does not establish native VS Code webview URI transport, other operating systems, or musical pitch-estimation accuracy. Subsequent native macOS VS Code acceptance found and fixed Worker resource loading, then passed single-file and comparison Worker checks. See the [review record](../.cross-gan/summary.md) and [native report](../.cross-gan/round_10/native/report.md). Release approval remains a separate step.
+This browser check establishes rendering and runtime behavior under Chromium. It does not establish native VS Code webview URI transport, other operating systems, or musical pitch-estimation accuracy. Subsequent native macOS VS Code acceptance found and fixed Worker resource loading, then passed single-file and comparison Worker checks. See the [review record](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/.cross-gan/summary.md) and [native report](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/.cross-gan/round_10/native/report.md). Release approval remains a separate step.
 
 ## Existing test stabilization
 

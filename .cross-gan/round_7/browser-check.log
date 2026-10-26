@@ -1,7 +1,0 @@
-page.evaluate: Error: Hidden Side monitor did not cancel equal channels: stereo=0.17677669361398096 side=0.014204201553794031
-    at check (eval at evaluate (:311:30), <anonymous>:4:48)
-    at eval (eval at evaluate (:311:30), <anonymous>:73:7)
-    at async <anonymous>:337:30
-    at /private/tmp/ear-refine-fixes-20261016/browser-check.cjs:24:29 {
-  log: []
-}

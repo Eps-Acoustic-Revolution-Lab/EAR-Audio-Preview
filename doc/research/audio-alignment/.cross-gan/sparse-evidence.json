@@ -1,1 +1,0 @@
-{"expected":"Identical nonconstant broadband pulse sequences should align at 0 with high confidence","actual":{"accepted":false,"offsetSamples":0,"polarity":1,"confidence":0,"reason":"silent-or-constant"}}

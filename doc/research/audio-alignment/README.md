@@ -24,7 +24,7 @@
 - 修复四类误拒绝：稀疏样本被能量探针漏掉、稀疏音频精修窗口落在静音区、尾部有效音频未被窗口覆盖、极小非零背景阻止尾部回退。新增五个测试组，包含大量非法值位置检查；默认 `npm test` 运行原六组、新五组及竞品原八组测试。
 - 合并 FFT 和融合 FIR 的候选均未保留：前者端到端收益落在噪声范围；后者在实际算子中两轮变慢。没有用微基准或临时内存实现的收益替代实际实现证据。
 
-逐轮发现、独立证伪、提交及验证见 [唯一检查点](.cross-gan/checkpoint.json) 与 [本次复现工具](.cross-gan/run-20261016/harness.mjs)。最终竞品复测见 [验证结果](results/final-verification.json)；相对初始算子的交替计时见 [原型前后对照](.cross-gan/run-20261016/round_5/bench-original.json)。未接入产品，仍仅支持整数固定延迟。
+逐轮发现、独立证伪、提交及验证见 [唯一检查点](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/checkpoint.json) 与 [本次复现工具](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/run-20261016/harness.mjs)。最终竞品复测见 [验证结果](results/final-verification.json)；相对初始算子的交替计时见 [原型前后对照](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/run-20261016/round_5/bench-original.json)。未接入产品，仍仅支持整数固定延迟。
 
 ## 首次交付实测结果（优化前，保留历史口径）
 
@@ -38,7 +38,7 @@
 - **追加确认：58/58 通过。** 新种子的 52 个案例与 6 组不同真实录音配对。另有 6 个立体声／Side-only、正负增益案例，偏移准确、增益误差小于 1e-5、残差相消深度超过 100 dB。
 - 当时原型单元测试 **6/6**；竞品原有测试 **8/8**，只重定向导入路径，没有修改断言。
 
-这组历史数据保存在 [.cross-gan/baseline/](.cross-gan/baseline/)。`results/` 现为五轮审查后重新生成的当前结果。
+这组历史数据保存在 [.cross-gan/baseline/](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/tree/4f0a2361c10f89a881d52d118b43761cbd1840a7/doc/research/audio-alignment/.cross-gan/baseline/)。`results/` 现为五轮审查后重新生成的当前结果。
 
 ## DSP 设计
 

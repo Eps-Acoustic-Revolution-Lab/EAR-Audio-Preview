@@ -1,8 +1,0 @@
-PASS src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
-PASS src/webview/utils/spectralDescriptors.dc.test.ts
-
-Test Suites: 2 passed, 2 total
-Tests:       6 passed, 6 total
-Snapshots:   0 total
-Time:        1.07 s
-Ran all test suites within paths "src/webview/utils/spectralDescriptors.dc.test.ts", "src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts".

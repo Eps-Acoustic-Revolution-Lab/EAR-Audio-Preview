@@ -1,9 +1,0 @@
-PASS src/audioPreviewEditor.test.ts
-PASS src/comparison/comparisonHost.test.ts
-PASS src/comparison/comparisonEqHost.test.ts
-
-Test Suites: 3 passed, 3 total
-Tests:       28 passed, 28 total
-Snapshots:   0 total
-Time:        0.645 s, estimated 1 s
-Ran all test suites matching /src\/audioPreviewEditor.test.ts|src\/comparison\/comparisonHost.test.ts|src\/comparison\/comparisonEqHost.test.ts/i.

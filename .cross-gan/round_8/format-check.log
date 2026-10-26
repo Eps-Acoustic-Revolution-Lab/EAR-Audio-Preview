@@ -1,6 +1,0 @@
-
-> ear-audio-preview@0.6.0 format-check
-> prettier --check "src/**/*.ts" || (echo "Formatting errors found" && exit 1)
-
-Checking formatting...
-All matched files use Prettier code style!

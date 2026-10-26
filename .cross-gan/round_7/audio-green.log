@@ -1,8 +1,0 @@
-PASS src/webview/services/playerService.test.ts
-PASS src/webview/services/editListenService.test.ts
-
-Test Suites: 2 passed, 2 total
-Tests:       27 passed, 27 total
-Snapshots:   0 total
-Time:        0.925 s, estimated 1 s
-Ran all test suites within paths "src/webview/services/playerService.test.ts", "src/webview/services/editListenService.test.ts".

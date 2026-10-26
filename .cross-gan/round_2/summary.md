@@ -1,3 +1,0 @@
-# Performance review
-
-Accepted E1 after independent refutation and before/after validation. The 4,096 deterministic output frames are byte-identical to immutable commit 06705d4. Complete Ooura DSP throughput improved about 7–8% for A-weighted 80 ms STFT, 54% for A-weighted short-window mono STFT and 10–11% for A-weighted Live. The unweighted 256-bin case is near noise and not counted as a meaningful gain. Existing single-file benchmark thresholds were unchanged; an initial texture-flatten GC/noise outlier was recorded and the uncontended serial rerun passed every gate. All runtime tests, static checks, builds and VSIX packaging passed. No commits or publication.

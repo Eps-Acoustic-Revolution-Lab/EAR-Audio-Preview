@@ -1,9 +1,0 @@
-{
-  "status": "dry",
-  "finders": {
-    "correctness": "release_correctness",
-    "efficiency": "release_efficiency",
-    "robustness": "release_robustness"
-  },
-  "findings": []
-}

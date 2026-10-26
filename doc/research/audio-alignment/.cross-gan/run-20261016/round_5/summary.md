@@ -1,2 +1,0 @@
-# Round 5
-Fixed quiet nonzero background preventing informative tail fallback; use same1e-12 threshold as existing silence detection. Added signed delay/polarity regressions. Rejected fused FIR despite405 raw buffer equivalence cases: two actual pipeline benchmark passes regress, overriding favorable finder in-memory evidence. Archived implementation under rejected-fir; retained original FIR. Full frozen gates rerun after restoring.

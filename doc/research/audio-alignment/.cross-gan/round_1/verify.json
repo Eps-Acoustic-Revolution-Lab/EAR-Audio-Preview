@@ -1,9 +1,0 @@
-{
-  "status": "baseline-only",
-  "baselineUnitPassed": true,
-  "baselineOfficialTestsPassed": true,
-  "baselineVerificationPassed": true,
-  "frozenInputsUnchanged": true,
-  "operatorUnchanged": true,
-  "roundComplete": false
-}

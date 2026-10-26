@@ -1,6 +1,0 @@
-{
-  "src/webview/services/playerService.ts": "9b60bd8f027a5cc9e52cac5d3feb65d635b7c57ad3f7aef39d15a28db750ab2d",
-  "src/webview/services/playerService.test.ts": "6d54a7fce017cdedf971936a2b58ceaf6e564d95f29e49d60c670b1918e94602",
-  "bench/monitorStartupValidation.mjs": "65101ed0b8149e10b450d63cc764552e44439b24d019a7288291ad5c0a4a0661",
-  "bench/monitorStartupValidationEntry.ts": "c9c8130fe62aba3d34992e554c5ea18807cef7e316be87827eeb14951a64ca2b"
-}
