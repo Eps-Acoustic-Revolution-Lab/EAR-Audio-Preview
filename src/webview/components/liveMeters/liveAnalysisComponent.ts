@@ -49,6 +49,8 @@ export default class LiveAnalysisComponent extends Component {
 
   private _inlineSplits: LiveAnalysisSplits = { ...defaultSplits };
   private _overlaySplits: LiveAnalysisSplits = { ...defaultSplits };
+  private _endResize?: () => void;
+  private _suspended = false;
   private _draggingRow = false;
   private _draggingCol = false;
 
@@ -239,11 +241,14 @@ export default class LiveAnalysisComponent extends Component {
     ];
   }
   suspend(): void {
+    this._suspended = true;
+    this._endResize?.();
     for (const child of this._viewChildren()) {
       child.suspend();
     }
   }
   resume(): void {
+    this._suspended = false;
     for (const child of this._viewChildren()) {
       child.resume();
     }
@@ -363,6 +368,10 @@ export default class LiveAnalysisComponent extends Component {
     mode: LiveAnalysisLayoutMode,
   ) {
     this._addEventlistener(handle, "mousedown", (e: MouseEvent) => {
+      if (this._isDisposed || this._suspended) {
+        return;
+      }
+      this._endResize?.();
       e.preventDefault();
       this._draggingRow = true;
       const splits = this._splitsFor(mode);
@@ -392,7 +401,11 @@ export default class LiveAnalysisComponent extends Component {
         this._draggingRow = false;
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("mouseup", onUp);
+        window.removeEventListener("blur", onUp);
+        this._endResize = undefined;
       };
+      this._endResize = onUp;
+      window.addEventListener("blur", onUp);
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
@@ -403,6 +416,10 @@ export default class LiveAnalysisComponent extends Component {
     mode: LiveAnalysisLayoutMode,
   ) {
     this._addEventlistener(handle, "mousedown", (e: MouseEvent) => {
+      if (this._isDisposed || this._suspended) {
+        return;
+      }
+      this._endResize?.();
       e.preventDefault();
       e.stopPropagation();
       this._draggingCol = true;
@@ -433,10 +450,19 @@ export default class LiveAnalysisComponent extends Component {
         this._draggingCol = false;
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("mouseup", onUp);
+        window.removeEventListener("blur", onUp);
+        this._endResize = undefined;
       };
+      this._endResize = onUp;
+      window.addEventListener("blur", onUp);
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
+  }
+
+  override dispose(): void {
+    this._endResize?.();
+    super.dispose();
   }
 
   private _openOverlay() {
