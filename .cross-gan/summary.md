@@ -2,7 +2,7 @@
 
 Base: e299991
 Reviewed initial head: aed7302
-Status: merge-ready
+Status: merged-local
 Immutable existing tests/baselines: 131
 
 - Round 12: accepted; see round_12/summary.md

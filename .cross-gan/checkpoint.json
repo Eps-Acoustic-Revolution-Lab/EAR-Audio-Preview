@@ -3,7 +3,7 @@
   "review": "visualization-sdk-single-round",
   "base": "e299991",
   "reviewHead": "aed7302",
-  "status": "merge-ready",
+  "status": "merged-local",
   "requestedRounds": 1,
   "firstRound": 12,
   "scope": "SDK extraction and directly affected callers; additive regression tests; integration README. Existing tests and benchmark unchanged.",
@@ -166,5 +166,14 @@
     "ci": "passed",
     "native": "macOS VS Code 1.142.0 final smoke passed; scope and limits in report",
     "report": "round_12/native/report.md"
+  },
+  "merge": {
+    "commit": "3579410",
+    "branch": "main",
+    "backupBranch": "codex/pre-sdk-merge-20261026",
+    "sourceBranch": "codex/modular-visualization-sdk",
+    "treeMatchesReviewedHead": true,
+    "pushed": false,
+    "published": false
   }
 }
