@@ -1,0 +1,256 @@
+{
+  "scope": "First-phase six visualization modules plus core, web-audio, dsp and theme",
+  "base": "e299991",
+  "branch": "codex/modular-visualization-sdk",
+  "models": [
+    "gpt-6.1-sol"
+  ],
+  "published": false,
+  "merged": false,
+  "ci": {
+    "suites": 115,
+    "passed": 915,
+    "skipped": 1,
+    "vsixFiles": 31
+  },
+  "installedPackages": {
+    "domFreeImport": true,
+    "strictNodeNextTypes": true,
+    "builds": {
+      "vite@6.4.3": {
+        "index-CGk9jQt2.js": 109361,
+        "index-DF2ueQk3.css": 23437
+      },
+      "webpack@5.90.3": {
+        "main.js": 145136
+      }
+    }
+  },
+  "browser": {
+    "passed": true,
+    "initial": {
+      "rms": "R -15.1",
+      "peak": "P -12.0",
+      "descriptors": "Spectral descriptorsLive · Centroid 1500 Hz · Spread 14 Hz · Rolloff 85% 1523 Hz",
+      "canvases": [
+        {
+          "width": 63,
+          "height": 237
+        },
+        {
+          "width": 63,
+          "height": 237
+        },
+        {
+          "width": 640,
+          "height": 300
+        },
+        {
+          "width": 640,
+          "height": 300
+        },
+        {
+          "width": 640,
+          "height": 300
+        },
+        {
+          "width": 33,
+          "height": 537
+        },
+        {
+          "width": 33,
+          "height": 537
+        },
+        {
+          "width": 230,
+          "height": 230
+        },
+        {
+          "width": 654,
+          "height": 250
+        },
+        {
+          "width": 888,
+          "height": 346
+        },
+        {
+          "width": 300,
+          "height": 150
+        },
+        {
+          "width": 1,
+          "height": 1
+        },
+        {
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "outsideFont": "14px"
+    },
+    "weighting": [
+      {
+        "weighting": "Z",
+        "rms": "R -15.1",
+        "peak": "P -12.0"
+      },
+      {
+        "weighting": "A",
+        "rms": "RA -14.2",
+        "peak": "P -12.0"
+      },
+      {
+        "weighting": "B",
+        "rms": "RB -15.1",
+        "peak": "P -12.0"
+      },
+      {
+        "weighting": "C",
+        "rms": "RC -15.1",
+        "peak": "P -12.0"
+      }
+    ],
+    "lifecycle": {
+      "unchanged": true,
+      "rootCount": 0,
+      "sourceAlive": true
+    },
+    "errors": [],
+    "packages": [
+      "ear-audio-core-0.1.0.tgz",
+      "ear-audio-descriptors-0.1.0.tgz",
+      "ear-audio-dsp-0.1.0.tgz",
+      "ear-audio-level-meter-0.1.0.tgz",
+      "ear-audio-live-panel-0.1.0.tgz",
+      "ear-audio-phase-correlation-0.1.0.tgz",
+      "ear-audio-spectrum-0.1.0.tgz",
+      "ear-audio-stereo-field-0.1.0.tgz",
+      "ear-audio-theme-0.1.0.tgz",
+      "ear-audio-web-audio-0.1.0.tgz"
+    ]
+  },
+  "audio": {
+    "passed": true,
+    "checkedAt": "2026-10-26T08:24:20.181Z",
+    "browser": "156.0.8078.47",
+    "source": "isolated npm tarball consumer",
+    "result": {
+      "monoRms": 0.7046574002613514,
+      "measuredHz": 445.3125,
+      "stereoPeakBins": [
+        32,
+        64
+      ],
+      "webAudioPeakDb": -13.555614471435547,
+      "pcmPeakDb": -13.555614471435547,
+      "amplitudeDeltaDb": 0,
+      "offlineSamplesCompared": 32768,
+      "offlineMaxDifference": 0,
+      "hostOutputSurvivedDispose": true,
+      "hostDisconnectedTapDisposed": true
+    }
+  },
+  "packages": [
+    {
+      "file": "ear-audio-core-0.1.0.tgz",
+      "sha256": "55cbd3d3efa8ac17aaaf878bd3f9bc1daff61521c4c2703e4848fe1e90e8c313"
+    },
+    {
+      "file": "ear-audio-descriptors-0.1.0.tgz",
+      "sha256": "1f16592a368de41928b3fa990cdc3a7aa9d531694f577d1509f2a948b3030cdc"
+    },
+    {
+      "file": "ear-audio-dsp-0.1.0.tgz",
+      "sha256": "eff995db3bf43c560173becb0eaff05b8940c86435d8121eb31cc36e4ca4e2ba"
+    },
+    {
+      "file": "ear-audio-level-meter-0.1.0.tgz",
+      "sha256": "76cca9453d29d9210ec598520a7d83eba2232087d5cb9568390fbfbc6d537f80"
+    },
+    {
+      "file": "ear-audio-live-panel-0.1.0.tgz",
+      "sha256": "abd37258c548ff99e5670e9e35099c905601029c72fec8ce4cb2447ace196c76"
+    },
+    {
+      "file": "ear-audio-phase-correlation-0.1.0.tgz",
+      "sha256": "be7a018b83209ae7a3122a7f9bc141aa5823b7e080367e6254b3ec87807c39bc"
+    },
+    {
+      "file": "ear-audio-spectrum-0.1.0.tgz",
+      "sha256": "7a76ffb20c0fc4dc32b9b4c3ef4144b4096faa2fe1ede4949135138fb92b252b"
+    },
+    {
+      "file": "ear-audio-stereo-field-0.1.0.tgz",
+      "sha256": "110531e432a2b55a5dfe983795055693782c67d22eaff56440c524a9d48e3bae"
+    },
+    {
+      "file": "ear-audio-theme-0.1.0.tgz",
+      "sha256": "38cf771cf637890c298697fe9593607a9c53ae45a32b1c5b931a047ac916fba7"
+    },
+    {
+      "file": "ear-audio-web-audio-0.1.0.tgz",
+      "sha256": "1f4c7f1d04ff2c999c56b7460d925c54c66f6eaeb10f0ca88bd7e287e6b91f51"
+    }
+  ],
+  "native": {
+    "passed": true,
+    "platform": "macOS VS Code",
+    "report": "native-report.md",
+    "single": "F0, chroma, melody, three live views and Z/A/B/C meter passed",
+    "comparison": "Two worker results; seek to 3 seconds gives two 440 Hz descriptor rows and overlaid spectrum; fullscreen and Escape passed",
+    "runtimeExceptions": 0,
+    "temporaryProcessAndProfileRemoved": true,
+    "live": {
+      "liveDescriptors": "Spectral descriptors\ntone440.wav · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz\ntone440-copy.wav · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "canvases": [
+        {
+          "className": "goniometer__canvas",
+          "width": 394,
+          "height": 394,
+          "cssWidth": 197,
+          "cssHeight": 197
+        },
+        {
+          "className": "phaseCorrelationSpectrum__canvas",
+          "width": 2270,
+          "height": 434,
+          "cssWidth": 1135,
+          "cssHeight": 216.71875
+        },
+        {
+          "className": "spectralAnalyzer__canvas",
+          "width": 2672,
+          "height": 598,
+          "cssWidth": 1336,
+          "cssHeight": 299.28125
+        }
+      ],
+      "menu": "✓ Overlay\n　 Fullscreen",
+      "fullscreen": true,
+      "escapeRestored": true,
+      "passed": true
+    }
+  },
+  "limits": [
+    "Synthetic PCM and browser/native smoke acceptance; not subjective listening or a cross-platform certification",
+    "No registry publication; local tarballs only",
+    "Core DSP/render code is shared with EAR; EAR is not switched to registry packages",
+    "React/Vue wrappers and offline timeline modules remain outside this first-phase scope"
+  ],
+  "implementationCommits": [
+    "ec8a89a",
+    "d2b614f"
+  ],
+  "review": {
+    "independentCrossReview": true,
+    "fixed": [
+      "WebAudio disposal after host disconnect",
+      "Comparison goniometer refresh on resume",
+      "Web Audio compatible PCM FFT amplitude",
+      "Standalone stylesheet dimensions and containment",
+      "Browser process shim and host-free declarations"
+    ],
+    "existingTestsUnchanged": true
+  },
+  "status": "accepted-and-stopped"
+}
