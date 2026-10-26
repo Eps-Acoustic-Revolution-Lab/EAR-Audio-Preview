@@ -1,0 +1,52 @@
+{
+  "round": 12,
+  "status": "passed",
+  "tests": {
+    "exitCode": 0,
+    "suites": 116,
+    "passed": 918,
+    "skipped": 1,
+    "log": "final-ci.log"
+  },
+  "ci": {
+    "exitCode": 0,
+    "gates": [
+      "types",
+      "lint",
+      "format",
+      "tooling",
+      "docs",
+      "all tests",
+      "production VSIX",
+      "package audit"
+    ],
+    "vsixFiles": 31
+  },
+  "sdk": {
+    "packAndIsolatedInstall": "passed",
+    "DOMFreeImport": "passed",
+    "strictTypes": "passed",
+    "Vite6.4.3": "passed",
+    "Webpack5.90.3": "passed",
+    "sixModuleBrowser": "passed",
+    "audioBrowser": "passed",
+    "readmeQuickstartTypes": "passed"
+  },
+  "efficiency": {
+    "byteIdentical": true,
+    "comparisons": 264,
+    "sizes": 11,
+    "beforeMs": 7.61057085,
+    "afterMs": 3.13031045,
+    "speedup": 2.431251139962811,
+    "scope": "Local Node steady-state PCM push plus two frequency reads, FFT32768; not browser FPS",
+    "evidence": "benchmark.jsonl"
+  },
+  "native": {
+    "status": "passed",
+    "report": "native/report.md",
+    "platform": "macOS VS Code1.142.0",
+    "scope": "single-file live panel/meter, pause/resume,row/col drag,pane switch; synthetic DOM mouse events; no listening claims"
+  },
+  "existingTests": "SHA256 frozen; no modifications"
+}

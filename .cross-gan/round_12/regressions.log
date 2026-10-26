@@ -1,0 +1,8 @@
+PASS src/sdk/views/dragLifecycle.test.ts
+PASS src/sdk/core.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       7 passed, 7 total
+Snapshots:   0 total
+Time:        1.011 s
+Ran all test suites within paths "src/sdk/views/dragLifecycle.test.ts", "src/sdk/core.test.ts".

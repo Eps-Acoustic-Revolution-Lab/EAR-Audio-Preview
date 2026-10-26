@@ -1,0 +1,17 @@
+{
+  "round": 12,
+  "fixes": [
+    {
+      "id": "EFF-01",
+      "dimension": "efficiency",
+      "commit": "69aa9cc",
+      "description": "Cache exact size-specific FFT coefficients, bounded under 1.6 MiB."
+    },
+    {
+      "id": "R1",
+      "dimension": "robustness",
+      "commit": "9a84777",
+      "description": "End drag on lifecycle cleanup; additive row/column regressions for dispose/reset/suspend."
+    }
+  ]
+}

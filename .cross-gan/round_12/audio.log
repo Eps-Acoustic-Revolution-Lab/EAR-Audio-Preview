@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "checkedAt": "2026-10-26T08:41:38.706Z",
+  "browser": "156.0.8078.47",
+  "source": "isolated npm tarball consumer",
+  "result": {
+    "monoRms": 0.7063834070337721,
+    "measuredHz": 445.3125,
+    "stereoPeakBins": [
+      32,
+      64
+    ],
+    "webAudioPeakDb": -13.555614471435547,
+    "pcmPeakDb": -13.555614471435547,
+    "amplitudeDeltaDb": 0,
+    "offlineSamplesCompared": 32768,
+    "offlineMaxDifference": 0,
+    "hostOutputSurvivedDispose": true,
+    "hostDisconnectedTapDisposed": true
+  }
+}
