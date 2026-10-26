@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "tests": {
+    "exitCode": 0,
+    "suites": 110,
+    "passed": 887,
+    "skipped": 1,
+    "log": "final-ci.log"
+  },
+  "regressions": {
+    "original": "red-final-tests.log",
+    "fixed": "regression-final-tests.log",
+    "passed": 6
+  },
+  "ci": {
+    "exitCode": 0,
+    "types": true,
+    "lint": true,
+    "format": true,
+    "tooling": true,
+    "docs": true,
+    "vsix": true,
+    "packageAudit": {
+      "files": 31,
+      "downloadMiB": 3.44,
+      "installedMiB": 9.97
+    }
+  },
+  "independentPatchReview": "cgr_discriminator_a: source review and six regressions passed; no existing tests changed"
+}

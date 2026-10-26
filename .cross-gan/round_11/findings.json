@@ -1,0 +1,27 @@
+{
+  "head": "5d22f0e",
+  "candidates": [],
+  "reviews": [
+    {
+      "agent": "cgr_correctness",
+      "dimension": "correctness",
+      "status": "dry",
+      "coverage": "All four features: DSP contracts, finite-frame DC removal, empty peak cleanup, weighted normalization, worker transfer/cancellation/fallback",
+      "validation": "7 suites/42 tests and 3 real-WASM CSP loader tests passed"
+    },
+    {
+      "agent": "cgr_efficiency",
+      "dimension": "efficiency",
+      "status": "dry",
+      "coverage": "All four features: buffer/cache reuse, opt-in work, WASM transfer, isolated worker lifecycle",
+      "validation": "Read-only source/test inspection; no new timing claim; optional E1 remains deferred"
+    },
+    {
+      "agent": "cgr_robustness",
+      "dimension": "robustness",
+      "status": "dry",
+      "coverage": "All four features: input boundaries, cancellation, cleanup, failed loads, service and UI lifecycle",
+      "validation": "10 suites/58 tests passed; 48 actual Essentia cases across four rates, three lengths, impulse/DC/quiet inputs completed with finite outputs"
+    }
+  ]
+}

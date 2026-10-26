@@ -1,6 +1,10 @@
 # Roadmap development after v0.6.0
 
-These changes are **unreleased**. The package version remains 0.6.0; the development VSIX must not be confused with the published v0.6.0 artifact. Development uses separate feature worktrees and an integration branch, without changing `main`.
+These changes are **unreleased**. The package version remains 0.6.0; the development VSIX must not be confused with the published v0.6.0 artifact. Initial development used separate feature worktrees and an integration branch; local `main` integration is gated by the subsequent adversarial review.
+
+The subsequent pre-merge adversarial review is recorded in the
+[active review summary](../.cross-gan/summary.md). The validation below is the
+initial implementation snapshot; use the review record for post-fix results.
 
 | Feature | Implemented scope | Remaining limits |
 | --- | --- | --- |
@@ -32,7 +36,7 @@ node bench/roadmapAcceptance.mjs
 
 For isolated Worker probes, run `NODE_PATH=/path/to/node_modules CHROME_PATH=/path/to/chrome node bench/sequence-worker-browser.cjs long`, substituting `harmonic` or `cancel` for the other probes.
 
-This browser check establishes rendering and runtime behavior under Chromium. It does not establish native VS Code webview URI transport, other operating systems, or musical pitch-estimation accuracy. Native VS Code acceptance and release approval remain separate steps.
+This browser check establishes rendering and runtime behavior under Chromium. It does not establish native VS Code webview URI transport, other operating systems, or musical pitch-estimation accuracy. Subsequent native macOS VS Code acceptance found and fixed Worker resource loading, then passed single-file and comparison Worker checks. See the [review record](../.cross-gan/summary.md) and [native report](../.cross-gan/round_10/native/report.md). Release approval remains a separate step.
 
 ## Existing test stabilization
 

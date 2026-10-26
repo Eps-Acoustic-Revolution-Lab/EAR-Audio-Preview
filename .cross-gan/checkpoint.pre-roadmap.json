@@ -1,0 +1,315 @@
+{
+  "schema": 1,
+  "branch": "task/unify-board-ui_2026-10-16_1",
+  "base": "139f281",
+  "reviewHead": "06705d4",
+  "status": "final-local-acceptance-verified-uncommitted",
+  "scope": {
+    "allowed": [
+      "branch-introduced runtime code and directly affected callers",
+      "add regression tests and benchmarks",
+      "README.md",
+      "CHANGELOG.md",
+      ".tasks/2026-10-16_1_unify-board-ui.md",
+      ".cross-gan/**"
+    ],
+    "immutable": [
+      "existing test assertion strength",
+      "bench/baseline.json",
+      "existing benchmark criteria"
+    ],
+    "commits": "forbidden by user; applied commits remain null"
+  },
+  "baseline": {
+    "suites": 71,
+    "passed": 567,
+    "skipped": 1,
+    "command": "NODE_OPTIONS=--max-old-space-size=4096 npx jest --maxWorkers=2 --workerIdleMemoryLimit=512MB"
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "dimension": "correctness,robustness",
+      "status": "accepted",
+      "verify": ".cross-gan/round_1/verify.json"
+    },
+    {
+      "round": 2,
+      "dimension": "correctness,efficiency,robustness",
+      "status": "accepted",
+      "verify": ".cross-gan/round_2/verify.json"
+    },
+    {
+      "round": 3,
+      "dimension": "correctness,efficiency,robustness",
+      "status": "dry",
+      "verify": ".cross-gan/round_3/verify.json"
+    },
+    {
+      "round": 4,
+      "dimension": "correctness,efficiency,robustness",
+      "status": "accepted",
+      "verify": ".cross-gan/round_4/verify.json"
+    },
+    {
+      "round": 5,
+      "dimension": "correctness,efficiency,robustness",
+      "status": "dry",
+      "verify": ".cross-gan/round_5/verify.json"
+    },
+    {
+      "round": 6,
+      "dimension": "correctness,efficiency,robustness",
+      "status": "accepted",
+      "verify": ".cross-gan/round_6/verify.json"
+    },
+    {
+      "round": 7,
+      "dimension": "correctness,robustness",
+      "status": "accepted",
+      "verify": ".cross-gan/round_7/verify.json"
+    },
+    {
+      "round": 8,
+      "dimension": "correctness,installed-package-acceptance",
+      "status": "accepted",
+      "verify": ".cross-gan/round_8/verify.json"
+    }
+  ],
+  "confirmed": [
+    {
+      "id": "C1",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R1",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R2",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "C2",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "E1",
+      "status": "optimized",
+      "commit": null
+    },
+    {
+      "id": "C4-1",
+      "title": "Align polar projection and lookup with angular deposition",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "C4-2",
+      "title": "Fold negative-mid PCM without false anti-phase classification",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "C4-3",
+      "title": "Bound polar interpolation at first and last bin centers",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R4-R1",
+      "title": "Validate external headphone EQ before restoring or installing profiles",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R6-E1",
+      "title": "Bound measurement yielding by work time; exact Float64 parity",
+      "status": "fixed"
+    },
+    {
+      "id": "R6-R1",
+      "title": "Keep eight-file header focus and reload controls reachable",
+      "status": "fixed"
+    },
+    {
+      "id": "R7-1",
+      "title": "Latest single-file reload owns document data",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-2",
+      "title": "Entering Edit replaces full-file playback with the selected loop",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-3",
+      "title": "Live display changes preserve playback position",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-4",
+      "title": "Measurement endpoints retain exact boundary samples",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-5",
+      "title": "Channel and band monitoring works with analysis panels hidden",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-6",
+      "title": "Measurement cancellation follows captured inputs and clears status",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R7-7",
+      "title": "Source-directory export preserves filesystem provider identity",
+      "status": "fixed",
+      "commit": null
+    },
+    {
+      "id": "R8-1",
+      "title": "Explicit mono analysers preserve monitoring PCM from the first frame",
+      "status": "fixed",
+      "commit": null
+    }
+  ],
+  "convergence": {
+    "correctness": 1,
+    "efficiency": 1,
+    "robustness": 1
+  },
+  "harness": {
+    "maximumRounds": 3,
+    "requiredConsecutiveDryRounds": 1,
+    "actualRounds": 3
+  },
+  "finalTests": {
+    "suites": 79,
+    "passed": 712,
+    "skipped": 1
+  },
+  "performance": [
+    {
+      "name": "stft.stereo.48k.80ms.256.none",
+      "rootSpeedup": 1.015164361418704,
+      "independentSpeedup": 1.01733991003007,
+      "claimed": false
+    },
+    {
+      "name": "stft.stereo.48k.80ms.512.a",
+      "rootSpeedup": 1.0814351935710147,
+      "independentSpeedup": 1.0743198322733958,
+      "claimed": true
+    },
+    {
+      "name": "stft.mono.48k.8ms.512.a",
+      "rootSpeedup": 1.5443603117806288,
+      "independentSpeedup": 1.544323158803247,
+      "claimed": true
+    },
+    {
+      "name": "live.stereo.48k.80ms.1024.a",
+      "rootSpeedup": 1.1057728975737005,
+      "independentSpeedup": 1.1037260115443128,
+      "claimed": true
+    }
+  ],
+  "boundary": "Current round 6 additionally verified eight audible sources in native VS Code, six rapid reopens without notifications, browser FFT/CQT stress, real Web Audio gain/EQ rendering and menu actions. Four original full recordings loaded twice; not eight distinct recordings. Cursor was not separately benchmarked. Earlier polar correctness changes intentionally differ from inherited wrong geometry; historical baselines remain unchanged.",
+  "integration": {
+    "branch": "main",
+    "mode": "fast-forward-existing-commit",
+    "previousMain": "139f28124d66a7ddbe54553ded3ae24074c5a83a",
+    "head": "06705d4807e121e60737a080daa0a2d6bd2827dd",
+    "newCommitCreated": false,
+    "pushed": false,
+    "workingTree": "review fixes, optimization, tests, benchmark and docs remain uncommitted",
+    "trackedPatchPreservedSha256": "dc523fc780630a631d540b260dab63676b07771be152e922fd19341a2c4a9a29"
+  },
+  "prerelease": {
+    "rounds": [
+      4,
+      5,
+      6
+    ],
+    "maximumRounds": 3,
+    "requiredConsecutiveDryRounds": 1,
+    "scope": "Current working tree runtime, directly affected callers, packaging, release tooling and documentation; no unrelated feature redesign",
+    "immutable": [
+      "existing assertion strength",
+      "bench/baseline.json",
+      "existing benchmark criteria"
+    ],
+    "baseline": {
+      "suites": 76,
+      "passed": 622,
+      "skipped": 1,
+      "log": "/tmp/ear-prerelease-review/baseline-tests.log",
+      "snapshot": "/tmp/ear-prerelease-review/snapshot.json"
+    },
+    "newCommitsAllowed": false,
+    "status": "complete",
+    "actualRounds": 2,
+    "completedRounds": [
+      4,
+      5
+    ],
+    "finalSourceSha256": {
+      "src/webview/utils/stereoPolarField.ts": "c015f1dd84cbd59ab46354b112c24cf6db6339d61cb5ca0a9ddb3d241cc37ff0",
+      "src/webview/utils/stereoPolarField.test.ts": "ac91ca6afcbc5de82865d8d33f936ad76ec4f95de513771b08bf46b2fb893078",
+      "src/webview/utils/stereoPolarField.regression.test.ts": "8395c38d56f4b9ddca028661afa4ae47b166fc8b1686dcf2b65136ceab455972",
+      "src/shared/headphoneEqValidation.ts": "2402eaf0e9a0d31e7cb08c21fc3249e0842b72ad14b9258b07d97a329dea6c8d",
+      "src/webview/services/headphoneEqSettingsService.ts": "13e74959a270aa021471430cca144e8b1006c1ec45acc7f69977a532fef95f98",
+      "src/webview/services/headphoneEqSettingsService.test.ts": "e444719945a4fbd610ef75ff835951ab3aa1dd379b03f0af1df275f02024f6a1"
+    },
+    "verification": ".cross-gan/round_4/verify.json",
+    "package": {
+      "archiveBytes": 3605292,
+      "fileCount": 21
+    }
+  },
+  "capacityAndTools": {
+    "status": "complete",
+    "scope": "Eight files; RMS matching; residual statistics; optional exported headphone EQ",
+    "verify": ".cross-gan/round_6/verify.json",
+    "deferred": "Automatic alignment and remaining roadmap DSP/worker tasks",
+    "noCommits": true
+  },
+  "architectureRefinement": {
+    "status": "complete",
+    "round": 7,
+    "scope": "Seven confirmed findings only; prior reviewed areas excluded",
+    "baseline": {
+      "suites": 79,
+      "passed": 654,
+      "skipped": 1
+    },
+    "verify": ".cross-gan/round_7/verify.json",
+    "nonAuthorReviewsPerFix": 2,
+    "noCommits": true,
+    "knownLimit": "Historical round_7 first-128-frame transient reproduced in real-time, fixed and verified in round_8; historical failures retained."
+  },
+  "localAcceptance": {
+    "status": "complete",
+    "round": 8,
+    "verify": ".cross-gan/round_8/verify.json",
+    "packageSha256": "19ef0bc3f429b0fd0a0c22e9996a3df50514321a722139310a9b4807ca0662fd",
+    "noCommits": true,
+    "limits": [
+      "Real-time PCM sampled before a muted sink; no subjective listening or physical speaker measurement.",
+      "Background native runtime acceptance does not establish foreground pointer hit-testing or display performance.",
+      "Seven targeted installed-package contracts complement broader unit coverage; not an exhaustive new repository review."
+    ]
+  }
+}

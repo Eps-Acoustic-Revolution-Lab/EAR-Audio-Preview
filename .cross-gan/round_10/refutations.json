@@ -1,0 +1,18 @@
+{
+  "verdicts": [
+    {
+      "id": "N1",
+      "agent": "cgr_discriminator_a",
+      "verdict": "CONFIRMED",
+      "evidence": "Independent source and native evidence inspection matches exact error before WASM initialization. Specific internal VS Code routing mechanism remains inference.",
+      "recommendation": "Fetch WASM bytes in webview under existing abort/timeout, transfer independent binary with PCM, preserve cleanup and harmonic no-fallback policy."
+    },
+    {
+      "id": "N1",
+      "agent": "cgr_discriminator_b",
+      "verdict": "CONFIRMED",
+      "evidence": "Independent source and native evidence inspection matches exact error before WASM initialization. Specific internal VS Code routing mechanism remains inference.",
+      "recommendation": "Fetch WASM bytes in webview under existing abort/timeout, transfer independent binary with PCM, preserve cleanup and harmonic no-fallback policy."
+    }
+  ]
+}

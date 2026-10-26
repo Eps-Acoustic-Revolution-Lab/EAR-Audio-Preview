@@ -1,0 +1,255 @@
+{
+  "editor": {
+    "vscode": "1.142.0",
+    "extensions": [
+      {
+        "id": "TypeScriptTeam.jsts-chat-features",
+        "active": false,
+        "version": "0.0.4"
+      },
+      {
+        "id": "ms-vscode.js-debug",
+        "active": false,
+        "version": "1.140.0"
+      },
+      {
+        "id": "ms-vscode.js-debug-companion",
+        "active": false,
+        "version": "1.1.3"
+      },
+      {
+        "id": "ms-vscode.vscode-js-profile-table",
+        "active": false,
+        "version": "1.0.11"
+      },
+      {
+        "id": "Eps-Acoustic-Revolution-Lab.ear-audio-preview",
+        "active": true,
+        "version": "0.6.0"
+      },
+      {
+        "id": "local-benchmark.ear-benchmark-controller",
+        "active": true,
+        "version": "0.0.1"
+      }
+    ],
+    "memory": {
+      "rss": 185860096,
+      "heapTotal": 47710208,
+      "heapUsed": 43233516,
+      "external": 9041171,
+      "arrayBuffers": 0
+    }
+  },
+  "single": {
+    "workers": [
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmUri": "https://file%2B.vscode-resource.vscode-cdn.net/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/.cross-gan/round_10/native/extensions/ear/dist/essentia-wasm.web.wasm",
+        "replies": [
+          {
+            "kind": "error",
+            "error": "Cannot load analysis WASM: 408"
+          }
+        ]
+      },
+      {
+        "harmonic": true,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmUri": "https://file%2B.vscode-resource.vscode-cdn.net/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/.cross-gan/round_10/native/extensions/ear/dist/essentia-wasm.web.wasm",
+        "replies": [
+          {
+            "kind": "error",
+            "error": "Cannot load analysis WASM: 408"
+          }
+        ]
+      }
+    ],
+    "harmonic": "Analyze chroma & melodyHarmonic analysis unavailable. Try again.",
+    "f0Placeholder": "loudnessComponent__stripPlaceholder js-f0Placeholder hidden"
+  },
+  "live": {
+    "Z": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nR -13.3\nP -10.3\nR\nR -13.3\nP -10.3"
+    },
+    "A": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRA -17.4\nP -10.3\nR\nRA -17.4\nP -10.3"
+    },
+    "B": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRB -13.7\nP -10.3\nR\nRB -13.7\nP -10.3"
+    },
+    "C": {
+      "descriptors": "Spectral descriptors\nLive · Centroid 440 Hz · Spread 13 Hz · Rolloff 85% 452 Hz",
+      "meter": "RMS Z\nRMS A\nRMS B\nRMS C\n+6\n0\n-3\n-6\n-12\n-18\n-24\n-36\n-48\n-60\nL\nRC -13.3\nP -10.3\nR\nRC -13.3\nP -10.3"
+    }
+  },
+  "singleErrors": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "other",
+          "level": "warning",
+          "text": "Unrecognized feature: 'local-network-access'.",
+          "timestamp": 1792664716876.214,
+          "url": "vscode-webview://17lmo9ff67nr7t68edu41neo9s90uvj4rfaquvfoevbfcu0457on/index.html?id=b633c957-6156-4bd7-b02d-72a551d292d1&parentId=1&origin=fd4be27a-040e-4661-812a-6ae0bbed5660&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=e6fef9c8-d8b4-4717-ba42-1fa4e22e284e",
+          "lineNumber": 1047,
+          "stackTrace": {
+            "callFrames": [
+              {
+                "functionName": "",
+                "scriptId": "19",
+                "url": "vscode-webview://17lmo9ff67nr7t68edu41neo9s90uvj4rfaquvfoevbfcu0457on/index.html?id=b633c957-6156-4bd7-b02d-72a551d292d1&parentId=1&origin=fd4be27a-040e-4661-812a-6ae0bbed5660&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=e6fef9c8-d8b4-4717-ba42-1fa4e22e284e",
+                "lineNumber": 1047,
+                "columnNumber": 13
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "comparison": {
+    "workers": [
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "rate": 44100,
+        "replies": [
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmUri": "https://file%2B.vscode-resource.vscode-cdn.net/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/.cross-gan/round_10/native/extensions/ear/dist/essentia-wasm.web.wasm",
+        "replies": [
+          {
+            "kind": "error",
+            "error": "Cannot load analysis WASM: 408"
+          }
+        ]
+      },
+      {
+        "rate": 44100,
+        "replies": [
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {},
+          {}
+        ]
+      },
+      {
+        "replies": [
+          {}
+        ]
+      },
+      {
+        "harmonic": false,
+        "rate": 44100,
+        "bytes": 2116800,
+        "wasmUri": "https://file%2B.vscode-resource.vscode-cdn.net/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/.cross-gan/round_10/native/extensions/ear/dist/essentia-wasm.web.wasm",
+        "replies": [
+          {
+            "kind": "error",
+            "error": "Cannot load analysis WASM: 408"
+          }
+        ]
+      }
+    ],
+    "text": "Track\tLUFS-I\tLRA · LU\tTP · dBTP\ntone440.wav\t-11.0\t0.0\t-10.3\ntone440-copy.wav\tAnalyzing…\nLoudness · short-term LUFS\nF0 · Hz\nOnset · positive spectral flux\ntone440.wav\ntone440-copy.wav · muted"
+  },
+  "comparisonErrors": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "other",
+          "level": "warning",
+          "text": "Unrecognized feature: 'local-network-access'.",
+          "timestamp": 1792664751175.827,
+          "url": "vscode-webview://019mfa8mac2li2mog0l9t7fjnacbq57r3hj0chj6dqv621a28p3v/index.html?id=36a9a247-e5ba-4d0a-a2b6-69864c50d395&parentId=1&origin=a9ed983c-9e40-48b8-96fb-b0a00038ca7f&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=32681e3f-4c1c-4aa1-9a67-20337970aaa3",
+          "lineNumber": 1047,
+          "stackTrace": {
+            "callFrames": [
+              {
+                "functionName": "",
+                "scriptId": "5",
+                "url": "vscode-webview://019mfa8mac2li2mog0l9t7fjnacbq57r3hj0chj6dqv621a28p3v/index.html?id=36a9a247-e5ba-4d0a-a2b6-69864c50d395&parentId=1&origin=a9ed983c-9e40-48b8-96fb-b0a00038ca7f&swVersion=6&extensionId=Eps-Acoustic-Revolution-Lab.ear-audio-preview&platform=electron&vscode-resource-base-authority=vscode-resource.vscode-cdn.net&parentOrigin=vscode-file%3A%2F%2Fvscode-app&mountId=32681e3f-4c1c-4aa1-9a67-20337970aaa3",
+                "lineNumber": 1047,
+                "columnNumber": 13
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

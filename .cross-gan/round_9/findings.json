@@ -1,0 +1,58 @@
+{
+  "reviewHead": "9510282",
+  "features": [
+    "harmonic-pitch",
+    "spectral-descriptors",
+    "weighted-metering",
+    "background-worker"
+  ],
+  "coverage": {
+    "correctness": "all four",
+    "efficiency": "all four",
+    "robustness": "all four"
+  },
+  "candidates": [
+    {
+      "id": "C1",
+      "generator": "cgr_correctness",
+      "feature": "spectral-descriptors",
+      "dimension": "correctness",
+      "severity": "P2",
+      "file": "src/webview/utils/spectralDescriptors.ts:75-84",
+      "claim": "Hann window leaks DC offset into nonzero bins despite DC-excluded measurement contract",
+      "repro": "2048 samples/48kHz, 0.01*sin(2*pi*3000*i/48000)+0.5 in both channels",
+      "expected": "AC centroid near 3000 Hz",
+      "actual": "25.220631 Hz; pure DC 23.437504 Hz"
+    },
+    {
+      "id": "R1",
+      "generator": "cgr_robustness",
+      "feature": "harmonic-pitch",
+      "dimension": "robustness",
+      "severity": "P2",
+      "file": "src/shared/harmonicFeatureCompute.ts:178",
+      "claim": "Empty native SpectralPeaks vector is converted before checking its length",
+      "repro": "1 second/48kHz samples[24000]=0.5, otherwise zero; also 440Hz amplitude1e-15",
+      "expected": "Zero chroma for no-peak frames; retain actual Melodia result",
+      "actual": "vectorToArray throws Empty vector input before Melodia is reached",
+      "localizationCorrection": "Both independent discriminators refuted initial Melodia attribution; native size()===0 guard verified. Quiet periodic signal is legitimately voiced."
+    },
+    {
+      "id": "E1",
+      "generator": "cgr_efficiency",
+      "feature": "spectral-descriptors",
+      "dimension": "efficiency",
+      "severity": "P3",
+      "file": "src/webview/utils/spectralDescriptors.ts:72-74",
+      "claim": "Hann coefficients recomputed for unchanged length",
+      "baseline": {
+        "rounds": 7,
+        "snapshots": 600,
+        "ms32768": 392.632292,
+        "candidateMs32768": 302.916875,
+        "exactEquality": "n,n-1,n,n/2,n"
+      },
+      "disposition": "deferred: no demonstrated application bottleneck; conservative merge avoids nonessential optimization"
+    }
+  ]
+}

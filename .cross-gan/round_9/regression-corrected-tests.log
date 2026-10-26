@@ -1,0 +1,25 @@
+FAIL src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
+  ● real Essentia handles empty spectral peaks in impulse without losing analysis
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |       expect(result.chromaTimeSec.length).toBe(20);
+      18 |       if (kind === "impulse")
+    > 19 |         expect(Array.from(result.chroma).some((x) => x > 0)).toBe(true);
+         |                                                              ^
+      20 |       expect(result.melodyHz.length).toBe(Math.ceil(samples.length / 128) + 1);
+      21 |       if (kind === "impulse") {
+      22 |         expect(Array.from(result.melodyHz).every(Number.isNaN)).toBe(true);
+
+      at shared/harmonicFeatureCompute.unvoiced.integration.test.ts:19:62
+
+PASS src/webview/utils/spectralDescriptors.dc.test.ts
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       1 failed, 4 passed, 5 total
+Snapshots:   0 total
+Time:        1.018 s
+Ran all test suites within paths "src/webview/utils/spectralDescriptors.dc.test.ts", "src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts".

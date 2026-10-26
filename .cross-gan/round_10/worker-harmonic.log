@@ -1,0 +1,24 @@
+node:internal/modules/cjs/loader:1423
+  throw err;
+  ^
+
+Error: Cannot find module 'playwright'
+Require stack:
+- /Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/bench/sequence-worker-browser.cjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1420:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1058:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1063:22)
+    at Module._load (node:internal/modules/cjs/loader:1226:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:244:24)
+    at Module.require (node:internal/modules/cjs/loader:1503:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/bench/sequence-worker-browser.cjs:7:22)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/lertoon/.codex/worktrees/roadmap-integration/EAR-Audio-Preview/bench/sequence-worker-browser.cjs'
+  ]
+}
+
+Node.js v24.9.0
