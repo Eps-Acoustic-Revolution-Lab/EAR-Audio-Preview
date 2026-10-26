@@ -16,3 +16,5 @@ SDK checks from the repository root:
 - `npm run sdk:check`: builds, packs, installs all tarballs in a temporary consumer, checks DOM-free ESM imports and strict TypeScript declarations.
 - `npm run sdk:check:consumers`: builds a real minimum meter consumer with Vite 6.4.3 and Webpack 5.90.3, recording output sizes under `artifacts/sdk/consumer-builds.json`. It installs Vite in a temporary directory and uses the repository Webpack tooling; SDK imports resolve only from installed tarballs.
 - Browser and audio-graph acceptance live in `bench/sdkAcceptance.mjs` and `bench/sdkAudioAcceptance.mjs`; they require Playwright and a browser. Use `EAR_PLAYWRIGHT_MODULE` for an existing external Playwright installation.
+
+For module selection, PCM input, shared-source ownership and troubleshooting, see the [SDK integration guide](../../packages/README.md).

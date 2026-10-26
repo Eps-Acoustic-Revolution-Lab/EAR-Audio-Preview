@@ -243,3 +243,7 @@ Crafted with passion by **[Eps Acoustic Revolution Lab](https://github.com/Eps-A
 Powered by `Ooura` · `Essentia.js` · `twgl.js` · `wasm-audio-decoders` · `loudness-worklet` · `ebur128-wasm`.
 
 Released under the **[MIT License](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/LICENSE)**. All third-party libraries retain their respective licenses.
+
+## Standalone visualization SDK
+
+Embed the live spectrum, stereo field, phase correlation, level meter and descriptors in your own application. See the [SDK integration guide (中文)](packages/README.md) for package selection, local installation, lifecycle and examples. The experimental packages are not yet published to npm.
