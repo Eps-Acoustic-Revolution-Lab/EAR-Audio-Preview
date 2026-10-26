@@ -34,6 +34,14 @@ export class SequenceWorkerClient {
         throw new Error(`Cannot load sequence worker: ${response.status}`);
       }
       const source = await response.text();
+      // VS Code resource URLs must be fetched by the webview, not a blob worker.
+      const wasmResponse = await fetch(resources.essentiaWasmUri, {
+        signal: this._abort.signal,
+      });
+      if (!wasmResponse.ok) {
+        throw new Error(`Cannot load analysis WASM: ${wasmResponse.status}`);
+      }
+      const wasmBinary = await wasmResponse.arrayBuffer();
       if (this._abort.signal.aborted) {
         throw new Error("Sequence analysis cancelled");
       }
@@ -94,10 +102,10 @@ export class SequenceWorkerClient {
               samples: samples.buffer,
               sampleRate,
               hopSec,
-              wasmUri: resources.essentiaWasmUri,
+              wasmBinary,
               harmonic,
             },
-            [samples.buffer],
+            [samples.buffer, wasmBinary],
           );
         } catch (error) {
           finish(

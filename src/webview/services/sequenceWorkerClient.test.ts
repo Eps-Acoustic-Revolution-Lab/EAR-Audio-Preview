@@ -5,6 +5,7 @@ const resources = {
   essentiaWasmUri: "runtime.wasm",
 };
 describe("SequenceWorkerClient", () => {
+  const wasmBinary = new ArrayBuffer(8);
   let worker: {
     terminate: jest.Mock;
     postMessage: jest.Mock;
@@ -16,7 +17,11 @@ describe("SequenceWorkerClient", () => {
     global.Worker = jest.fn(() => worker) as unknown as typeof Worker;
     global.fetch = jest
       .fn()
-      .mockResolvedValue({ ok: true, text: async () => "worker source" });
+      .mockImplementation(async (uri) =>
+        uri === resources.sequenceWorkerUri
+          ? { ok: true, text: async () => "worker source" }
+          : { ok: true, arrayBuffer: async () => wasmBinary },
+      );
     URL.createObjectURL = jest.fn(() => "blob:worker");
     URL.revokeObjectURL = jest.fn();
   });
@@ -31,7 +36,10 @@ describe("SequenceWorkerClient", () => {
     const progress = jest.fn();
     const pending = client.analyze(samples, 48000, 0.05, resources, progress);
     await started();
-    expect(worker.postMessage.mock.calls[0][1]).toEqual([samples.buffer]);
+    expect(worker.postMessage.mock.calls[0][1]).toEqual([
+      samples.buffer,
+      wasmBinary,
+    ]);
     worker.onmessage({ data: { kind: "progress", percent: 20 } });
     expect(progress).toHaveBeenCalledWith(20);
     worker.onmessage({ data: { kind: "result", profile: { hopSec: 0.05 } } });

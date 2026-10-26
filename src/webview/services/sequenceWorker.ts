@@ -19,12 +19,8 @@ const scope = self as unknown as {
 };
 scope.onmessage = async (event) => {
   try {
-    const { samples, sampleRate, hopSec, wasmUri, harmonic } = event.data;
-    const response = await fetch(wasmUri);
-    if (!response.ok) {
-      throw new Error(`Cannot load analysis WASM: ${response.status}`);
-    }
-    const wasm = await createWasm({ wasmBinary: await response.arrayBuffer() });
+    const { samples, sampleRate, hopSec, wasmBinary, harmonic } = event.data;
+    const wasm = await createWasm({ wasmBinary });
     const essentia = new Essentia(wasm);
     const profile = await computeSequenceFeatures(
       essentia,

@@ -42,6 +42,7 @@ const { chromium } = require("playwright");
     }
     const result = await page.evaluate(async (mode) => {
       const source = await (await fetch("/dist/sequenceWorker.js")).text();
+      const wasmBinary = await (await fetch("/dist/essentia-wasm.web.wasm")).arrayBuffer();
       const url = URL.createObjectURL(
         new Blob([source], { type: "text/javascript" }),
       );
@@ -108,9 +109,9 @@ const { chromium } = require("playwright");
             sampleRate: mode === "harmonic" ? 44100 : 16000,
             hopSec: mode === "harmonic" ? 0.05 : 600 / 7200,
             harmonic: mode === "harmonic",
-            wasmUri: location.origin + "/dist/essentia-wasm.web.wasm",
+            wasmBinary,
           },
-          [samples.buffer],
+          [samples.buffer, wasmBinary],
         );
       });
     }, mode);
