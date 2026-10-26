@@ -1,0 +1,26 @@
+{
+  "name": "@ear-audio/web-audio",
+  "version": "0.1.0",
+  "description": "EAR standalone audio visualization web-audio",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@ear-audio/core": "0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

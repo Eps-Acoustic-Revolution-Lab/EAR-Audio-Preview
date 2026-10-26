@@ -1,0 +1,61 @@
+FAIL src/sdk/views/dragLifecycle.test.ts
+  ✕ dispose ends active row and column drags without waiting for mouseup (16 ms)
+  ✕ reset ends active row and column drags without waiting for mouseup (18 ms)
+  ✕ suspend ends active row and column drags without waiting for mouseup (4 ms)
+
+  ● dispose ends active row and column drags without waiting for mouseup
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      34 |                 removedName === name && removed === listener,
+      35 |             ),
+    > 36 |           ).toBe(true);
+         |             ^
+      37 |         }
+      38 |       } finally {
+      39 |         document.dispatchEvent(new MouseEvent("mouseup"));
+
+      at sdk/views/dragLifecycle.test.ts:36:13
+
+  ● reset ends active row and column drags without waiting for mouseup
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      34 |                 removedName === name && removed === listener,
+      35 |             ),
+    > 36 |           ).toBe(true);
+         |             ^
+      37 |         }
+      38 |       } finally {
+      39 |         document.dispatchEvent(new MouseEvent("mouseup"));
+
+      at sdk/views/dragLifecycle.test.ts:36:13
+
+  ● suspend ends active row and column drags without waiting for mouseup
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      34 |                 removedName === name && removed === listener,
+      35 |             ),
+    > 36 |           ).toBe(true);
+         |             ^
+      37 |         }
+      38 |       } finally {
+      39 |         document.dispatchEvent(new MouseEvent("mouseup"));
+
+      at sdk/views/dragLifecycle.test.ts:36:13
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 3 total
+Snapshots:   0 total
+Time:        0.756 s
+Ran all test suites within paths "src/sdk/views/dragLifecycle.test.ts".

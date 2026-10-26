@@ -237,3 +237,7 @@ npm run webpack-dev
 `Ooura` · `Essentia.js` · `twgl.js` · `wasm-audio-decoders` · `loudness-worklet` · `ebur128-wasm`
 
 本项目基于 **[MIT 协议](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/LICENSE)** 开源，第三方依赖库各自保留其原有开源协议。
+
+## 独立可视化模块 SDK
+
+在自己的应用中接入实时频谱、声场、相关性、电平表和描述符，见 [SDK 接入指南](packages/README.md)。指南包含模块选择、本地安装、生命周期、样式与可运行示例；实验包尚未发布到 npm。

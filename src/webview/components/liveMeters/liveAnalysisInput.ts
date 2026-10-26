@@ -1,8 +1,31 @@
-import type PlayerService from "../../services/playerService";
+import type { AnalysisAnalyser } from "../../../sdk/core";
 
-/** The existing meters need playback state, not ownership of a playback engine. */
-export type LivePlayback = EventTarget &
-  Pick<PlayerService, "isPlaying" | "sampleRate" | "getAnalysers">;
+export interface LivePlayback extends EventTarget {
+  readonly isPlaying: boolean;
+  readonly sampleRate: number;
+  getAnalysers(): { left: AnalysisAnalyser; right: AnalysisAnalyser } | null;
+  acquireFftSize?(size: number): () => void;
+  readonly hearingProtectionActive?: boolean;
+  setHearingProtectionActive?(active: boolean): void;
+}
+/** Display-only settings shared by EAR and standalone visualizations. */
+export interface LiveSettings extends EventTarget {
+  hearingProtectionEnabled: boolean;
+  hearingProtectionPeakDbFs: number;
+  liveAnalysisFftSize: 512 | 1024 | 2048 | 4096;
+  liveCqtLfRes: 40 | 20 | 10;
+  liveLevelMeterReleaseDbPerSec: number;
+  liveMonitoringMode: "lr" | "swap" | "l" | "r" | "m" | "s";
+  livePolarFieldReleaseDbPerSec: number;
+  livePolarLevelGatePct: number;
+  livePolarSampleFillBrightnessPct: number;
+  livePolarSampleRadiusGamma: number;
+  liveSoundFieldMode: "polarSample" | "polarLevel" | "lissajous";
+  liveSpectrumMode: "fft" | "cqt";
+  liveSpectrumPeakHoldSec: number;
+  liveSpectrumReleaseDbPerSec: number;
+  liveSpectrumTiltDbPerOct: 0 | 1.5 | 3 | 4.5 | 6;
+}
 export interface LiveTrackFrame {
   id: string;
   revision: string;

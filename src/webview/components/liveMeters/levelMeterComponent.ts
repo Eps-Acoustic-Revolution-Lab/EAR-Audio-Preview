@@ -1,7 +1,7 @@
 import { EventType } from "../../events";
 import Component from "../../component";
-import PlayerService from "../../services/playerService";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LivePlayback } from "./liveAnalysisInput";
+import type { LiveSettings } from "./liveAnalysisInput";
 import {
   emaDecayFromTimeConstant,
   releaseTimeConstantSec,
@@ -11,7 +11,12 @@ import {
   applyMonitoringToTimeDomain,
   type LiveMonitoringMode,
 } from "../../utils/liveMonitoring";
-import { formatDbFs } from "../../services/loudnessService";
+function formatDbFs(value: number, digits = 1): string {
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
+  return `${value > 0 ? "+" : ""}${value.toFixed(digits)} dBFS`;
+}
 
 import {
   FrequencyWeightedRms,
@@ -111,8 +116,8 @@ export default class LevelMeterComponent extends Component {
   private _labelR: HTMLElement;
   private _scaleCol: HTMLElement | null;
 
-  private _playerService: PlayerService;
-  private _analyzeSettingsService: AnalyzeSettingsService;
+  private _playerService: LivePlayback;
+  private _analyzeSettingsService: LiveSettings;
   private _rafId: number = 0;
   private _bufL: Float32Array = new Float32Array(meterTapSizeMax);
   private _bufR: Float32Array = new Float32Array(meterTapSizeMax);
@@ -155,10 +160,41 @@ export default class LevelMeterComponent extends Component {
 
   private _paintCache = new WeakMap<HTMLCanvasElement, MeterPaintCache>();
 
+  setWeighting(value: RmsWeighting): void {
+    if (!["Z", "A", "B", "C"].includes(value)) {
+      throw new RangeError("Invalid RMS weighting");
+    }
+    this._weighting = value;
+    this._stateL.smoothedRms = dbMin;
+    this._stateR.smoothedRms = dbMin;
+    this._inner.querySelector<HTMLSelectElement>(
+      ".levelMeter__weighting",
+    ).value = value;
+    this._rmsTextL.textContent =
+      this._rmsTextR.textContent = `R${value === "Z" ? "" : value} —`;
+  }
+  private _sdkSuspended = false;
+  suspend(): void {
+    this._sdkSuspended = true;
+    this._stopRaf();
+  }
+  resume(): void {
+    this._sdkSuspended = false;
+    if (this._playerService.isPlaying) {
+      this._startRaf();
+    }
+    this.resize();
+  }
+  resize(): void {
+    if (!this._sdkSuspended) {
+      this._tick(performance.now());
+    }
+  }
+
   constructor(
     containerEl: HTMLElement,
-    playerService: PlayerService,
-    analyzeSettingsService: AnalyzeSettingsService,
+    playerService: LivePlayback,
+    analyzeSettingsService: LiveSettings,
   ) {
     super();
     this._playerService = playerService;
@@ -204,11 +240,7 @@ export default class LevelMeterComponent extends Component {
       ".levelMeter__weighting",
     );
     this._addEventlistener(weightingSelect, "change", () => {
-      this._weighting = weightingSelect.value as RmsWeighting;
-      this._stateL.smoothedRms = dbMin;
-      this._stateR.smoothedRms = dbMin;
-      this._rmsTextL.textContent =
-        this._rmsTextR.textContent = `R${this._weighting === "Z" ? "" : this._weighting} —`;
+      this.setWeighting(weightingSelect.value as RmsWeighting);
     });
     this._inner = containerEl.querySelector("#levelMeterInner");
     this._wrapL = containerEl.querySelector(".js-meterWrapL");
@@ -303,6 +335,9 @@ export default class LevelMeterComponent extends Component {
   }
 
   private _startRaf() {
+    if (this._sdkSuspended) {
+      return;
+    }
     if (this._rafId) {
       return;
     }
@@ -340,6 +375,9 @@ export default class LevelMeterComponent extends Component {
   }
 
   private _tick(nowMs: number) {
+    if (this._sdkSuspended) {
+      return;
+    }
     const analysers = this._playerService.getAnalysers();
     if (!analysers) {
       return;
@@ -482,7 +520,7 @@ export default class LevelMeterComponent extends Component {
     const settings = this._analyzeSettingsService;
     if (!settings.hearingProtectionEnabled) {
       if (this._playerService.hearingProtectionActive) {
-        this._playerService.setHearingProtectionActive(false);
+        this._playerService.setHearingProtectionActive?.(false);
       }
       return;
     }
@@ -490,9 +528,9 @@ export default class LevelMeterComponent extends Component {
     const release = threshold - 3;
     const maxPeak = Math.max(this._stateL.peakDb, this._stateR.peakDb);
     if (maxPeak > threshold) {
-      this._playerService.setHearingProtectionActive(true);
+      this._playerService.setHearingProtectionActive?.(true);
     } else if (maxPeak < release) {
-      this._playerService.setHearingProtectionActive(false);
+      this._playerService.setHearingProtectionActive?.(false);
     }
   }
 
@@ -748,6 +786,7 @@ export default class LevelMeterComponent extends Component {
   }
 
   override dispose() {
+    this._sdkSuspended = true;
     this._stopRaf();
     super.dispose();
   }

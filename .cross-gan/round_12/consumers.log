@@ -1,0 +1,41 @@
+
+> ear-audio-preview@0.6.0 sdk:check:consumers
+> node scripts/sdk-consumers.mjs
+
+
+added 74 packages in 2s
+vite v6.4.3 building for production...
+transforming...
+✓ 11 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.22 kB │ gzip:  0.18 kB
+dist/assets/index-DF2ueQk3.css   23.44 kB │ gzip:  4.87 kB
+dist/assets/index-BptOK575.js   109.68 kB │ gzip: 34.21 kB
+✓ built in 411ms
+asset main.js 142 KiB [emitted] [minimized] (name: main)
+orphan modules 110 KiB [orphan] 8 modules
+runtime modules 698 bytes 4 modules
+cacheable modules 150 KiB
+  modules by path ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/ 8.15 KiB
+    modules by path ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/st...(truncated) 5.84 KiB
+      ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/st...(truncated) 2.42 KiB [built] [code generated]
+      ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/st...(truncated) 1.5 KiB [built] [code generated]
+      ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/st...(truncated) 1000 bytes [built] [code generated]
+      + 3 modules
+    modules by path ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/cs...(truncated) 2.31 KiB
+      ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/cs...(truncated) 64 bytes [built] [code generated]
+      ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/cs...(truncated) 2.25 KiB [built] [code generated]
+  modules by path ./ 142 KiB
+    ./main.js + 8 modules 110 KiB [built] [code generated]
+    ../../../../../../../Users/lertoon/vscProjects/EAR-Audio-Preview/node_modules/css-loader/dist/cjs.js!./node_modules/@ear-audio/theme/dist/styles.css 31.5 KiB [built] [code generated]
+webpack 5.90.3 compiled successfully in 453 ms
+{
+  "vite@6.4.3": {
+    "index-BptOK575.js": 109677,
+    "index-DF2ueQk3.css": 23437
+  },
+  "webpack@5.90.3": {
+    "main.js": 145450
+  }
+}

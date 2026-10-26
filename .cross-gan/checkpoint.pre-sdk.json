@@ -1,0 +1,239 @@
+{
+  "schema": 2,
+  "review": "roadmap-v060-followup",
+  "base": "f0fb6ebe69e4626d5ab5cb7711125347af107423",
+  "reviewHead": "95102827f6961c23acd5d4d7d7724809775d1d52",
+  "branch": "codex/roadmap-integration",
+  "status": "merged-local",
+  "scope": {
+    "allowed": "New/changed roadmap code, directly affected callers, additive regression tests, review evidence and docs",
+    "immutable": "Existing test files and bench/baseline.json; no weakened assertions",
+    "merge": "Local main only after verified gate; no push or release"
+  },
+  "features": [
+    "harmonic-pitch",
+    "spectral-descriptors",
+    "weighted-metering",
+    "background-worker"
+  ],
+  "previousRun": "checkpoint.pre-roadmap.json",
+  "firstRound": 9,
+  "maxRounds": 4,
+  "requiredDryRounds": 1,
+  "convergence": {
+    "correctness": 1,
+    "efficiency": 1,
+    "robustness": 1
+  },
+  "immutable": {
+    ".cross-gan/round_4/before/src/webview/utils/stereoPolarField.test.ts": "cf630ee76d5913b9c31e0ef3c89e7120fa904eead25beeac4e3558cd08158902",
+    ".cross-gan/round_7/before/src/audioPreviewEditor.test.ts": "64dfa17e125fa13d1b410cbd47b4a42fb586273d21a4e0def1576b1a2ef99515",
+    ".cross-gan/round_7/before/src/webview/comparison/comparisonApp.test.ts": "bee2f08d34b42886bcb13fd7f2408ee170964c6f79fcf2bff4d1cf3c3370d863",
+    ".cross-gan/round_7/before/src/webview/comparison/comparisonMeasurements.test.ts": "e0cc67480ecad32e752cfe634bc7de2dd89eb572e699054ec6fe4589f3979e2e",
+    ".cross-gan/round_7/before/src/webview/services/editListenService.test.ts": "b5846dba241b8d0f51bc1d3be994863b97d8574740d5fe42fba81137a632a104",
+    ".cross-gan/round_7/before/src/webview/services/playerService.test.ts": "8a484ae8ba6b3de8ecd8b3845a3d3d61d313f6205a0b0e90fa203fe363bd4463",
+    "bench/baseline.json": "d12d5ce5f7482e4e47d9995823431eab11925befbffd0c968d11cb7ea62e3bb8",
+    "doc/research/audio-alignment/.cross-gan/run-20261016/round_2/rejected-fft/review-regressions.test.mjs": "632970a3fe1f5ebbf60633f591bd01e6bf316ee2cb36a943b8cd024e329f7a47",
+    "doc/research/audio-alignment/operator.test.mjs": "fbb1db7014d23b788a941070bb6d63ed7099077ce04cebf231b39182e3dd6730",
+    "doc/research/audio-alignment/review-regressions.test.mjs": "d54e6e55a9e562532fa4f955c211e57be89f69b2f29898a9f0a684ad2259921a",
+    "doc/research/audio-alignment/vendor/audioscope-compare-math.test.mts": "5a8ae96ee41236aac2936bc164a14bccaa7555bc32b0bbee40fc24fb8811cf1a",
+    "scripts/essentia-worker-loader.test.mjs": "701b324ff5b9384f4fef24958f07f228c7e16a7fa7d84ce9bcadd940085be796",
+    "scripts/loudness-worklet-source.test.mjs": "5e6a2d3c1809937200e14b5cd79c15d46776b17c1a328ea587f31fb0bc5bf4f8",
+    "scripts/release-notes.test.mjs": "5b9500a77551eb6301cd09d3e2926eafaa0b300984fb8a545558d549a35453d9",
+    "scripts/test-groups.test.mjs": "48aeda72ea7080cc584557bf3079d4f8e90affa0f900dc9b9c636b9cd11856fe",
+    "src/audioPreviewEditor.test.ts": "e8b812f44a4aac1746940c8c61ffc55486a36e2305963e6f739f5594513fadd8",
+    "src/comparison/comparisonEqHost.test.ts": "61cdff9fda728732e08d23cb671a04e024f4648c9a1bcba15090bebbfdf0c545",
+    "src/comparison/comparisonHost.test.ts": "06fc285231f6a7ed2edb9104b9dbcb14f29bdc26093283395fb7f4956c1fcf2a",
+    "src/eslintPolicy.test.ts": "ce141400f4d7cdc4f97a36c125c1babe150486977f45ce0fed712091d1a2d892",
+    "src/extensionHost/analysisTaskQueue.test.ts": "b530bc360eca94b8b0a3a17f7200a9895913f16f8b348cb6e321ce1ff6ccdf10",
+    "src/extensionHost/autoEqHost.test.ts": "41f97048fc275bf2b3d5a6e911984418bb60ffa522ea44e22b142cd73913d266",
+    "src/extensionHost/comparisonAnalysisHost.test.ts": "516468bbf58e58a73f51d80b35d54dbcc5608d4dbb9c7e0bd3e27e1f70e7351a",
+    "src/message.contract.test.ts": "334c066b552f2b17258bdaeeac7e1d3d50ea9366748679d570ef2600d09f3d5c",
+    "src/shared/audioAlignment.test.ts": "542893748612389c6bc3b82933e981b9f87af8422daf80e13164527290d344a0",
+    "src/shared/autoEqEqualizePayload.test.ts": "ecdab0deb3ebfb7ff3c52ce39e92586e2db4f6ee52b81ad68e9aed8f918127e6",
+    "src/shared/harmonicFeatureCompute.integration.test.ts": "3ba0166e3154fd0b3f58f32d6782c596c079e3e3c84a22a619e83ad57fdd976a",
+    "src/shared/harmonicFeatureCompute.test.ts": "1a4fadfbd575f9b3c5584267c4effe8fad072c89422174759116ca1f5e8215ad",
+    "src/shared/parseEqPreset.test.ts": "e185a11edc0db2b3b3ed028ed09d50c903a54760b4755f162554aca5d186ad3c",
+    "src/shared/sequenceFeatureCompute.integration.test.ts": "4a84fc40248ded1b6fa5c346d001685d7889b8a00acf7a4fc061dd4ca420feca",
+    "src/shared/sequenceFeatureCompute.test.ts": "cd8a84296fee2536ff8c759d9fbd5d414f79586224679f833f40758c0d5ec927",
+    "src/shared/sequenceHop.test.ts": "d5db5f9983fd50f371bb52859c991a6568a66df893cbb3403ad691d2a298474a",
+    "src/shared/stftEssentiaCompute.test.ts": "23565b3ef0398ac16bf32b32c28d6cfcd4fc33543d3054a2750ebdb72c04ce31",
+    "src/webview/comparison/alignmentClient.test.ts": "9d95b2e2984ca09ab2d97b2206eb951b4515f438b4b4592fbb208b2334cfa50c",
+    "src/webview/comparison/analysisClient.test.ts": "3d7c6ed39da41b798b80ec7acd35a213b370ba17483a457c9a2cadb03312d70e",
+    "src/webview/comparison/comparisonAlignment.test.ts": "6186945c4d4018135ceb0cfedb151b1da95413a2ec6df5bf5507ee5da7e42d1c",
+    "src/webview/comparison/comparisonApp.test.ts": "b3993bf3823ca3d874cee97b78a1d976caf0dfe9dea90aff0fbfe3a289aae28d",
+    "src/webview/comparison/comparisonDsp.test.ts": "bbe2f59364cdc439c1e1411567c43a94ec231010f89a495895b3c2e1d03fc69f",
+    "src/webview/comparison/comparisonFileLoader.test.ts": "0b1fb83bb0485d13255e1f8729fb978389f9d3330afe22f2bb0bf9af99675ed3",
+    "src/webview/comparison/comparisonLiveView.test.ts": "7cf41728a2f0a414dcd528781004f00e452f898d1dfb9757255f1cd0c018bf8d",
+    "src/webview/comparison/comparisonMeasurements.test.ts": "e7513d510d0bc8186acd6b841d54a0c2dedb3bc6d4f3a030e87e7c8b262e12f7",
+    "src/webview/comparison/comparisonOnboarding.test.ts": "3e89f43cd12b9f3b8c1df4fe6a258171b26afd0ea7efd06c790ccc83a00f169b",
+    "src/webview/comparison/comparisonSession.test.ts": "23bf4362891f5dc6ecd0e3b16c2520472dfb8b0d26675202cdf83a88af767abe",
+    "src/webview/comparison/comparisonStftController.test.ts": "4625897731c74826805b05e08408efe3fd54a0817b69ee8ed00ea8ac22a21666",
+    "src/webview/comparison/comparisonTransport.test.ts": "2c197195ed47a4918be12e0714b537ceaf55961532ab942a80ba7bce2459e247",
+    "src/webview/comparison/computeAnalysisJob.test.ts": "cf961f9dcb58b1f1051a261f4e87680865eb5be290f079de51ca9a9d98ccf9f4",
+    "src/webview/comparison/essentiaSpectrum.test.ts": "ab7f84b33f7be84186879eee244fd62749b5fa85ced82a79ca4f4e46539f4e20",
+    "src/webview/comparison/loudnessWorker.test.ts": "793d1330407d43c8383b994af7f7166658838d419dd070e6a3d114fa16e58fe3",
+    "src/webview/comparison/scrollState.test.ts": "24d5c9933a0426000b5c575931360381ab01e04e30b03d7c1f9620b90b9d25d7",
+    "src/webview/comparison/stftCache.test.ts": "d5febd1ed0f66b06cab87547d459c56d64dc2d9334a6361cde8bfb695b1f8c76",
+    "src/webview/comparison/stftColor.test.ts": "2107920ae544931f1c0d2c9b8f48d3e9fddde0e59148dd3a22063534d8902b24",
+    "src/webview/comparison/trackTheme.test.ts": "37010c2a8eddd295995df07d7596712eefa8b7a4720a5210416fbc9e30e47769",
+    "src/webview/components/analyzeSettings/analyzeSettingsComponent.test.ts": "59c4ed171fa712ba3f4c0bc903d033d6c5517ffc70b9d0ba218d927356600132",
+    "src/webview/components/analyzer/analyzerComponent.test.ts": "15bd62e5b2db7bd6f4429a416990aecc3192ea7215128ac60fe83c4021ed3028",
+    "src/webview/components/contextMenu/contextMenu.test.ts": "123de96caf91b03dd72c0232e284efea0239903ff9e42e030e6b1e8edbc1f78e",
+    "src/webview/components/curveCorrection/curveCorrectionOverlayComponent.test.ts": "f3278af0bcca631228bdebd4783fba9bf6bb7b7f228021df878bee8b8a8ee3ca",
+    "src/webview/components/infoTable/infoTableComponent.test.ts": "c5af484b21d3a9e87f51f50bd572dfd76630ba35ea6db89dd481a67396d606fa",
+    "src/webview/components/knob/knobComponent.test.ts": "95c6fdb64094866e286f050db454222e5c69d5b24b57cdd763025a701bea98e0",
+    "src/webview/components/liveMeters/eqMonitorStripComponent.test.ts": "60c4455fad9e1d74ef0b735c96ffe01e090846b78c13bbded9487ea08586a6b2",
+    "src/webview/components/liveMeters/levelMeterComponent.test.ts": "f8f658979cefbcee86844a910dbebcefb4d63f1249eb39bb52770af8e2574f0c",
+    "src/webview/components/liveMeters/liveMonitoringBarComponent.test.ts": "b57ef299708ec6059840b71cb03ba1dba1adda054cebe0e9266322f2b62987f6",
+    "src/webview/components/liveMeters/spectralDescriptorLane.test.ts": "277509fe6d304d529e9b3323f56de3334e1df754c36fd8f78bbd4fcc34d998ad",
+    "src/webview/components/loudness/harmonicTimeline.test.ts": "f9df7f1c1d7d9e2063a5b30ea241f53b75a215e46934efb40df80f30c178c692",
+    "src/webview/components/metaFab/metaFabComponent.test.ts": "60742dd5d11f931d07cd66fefb207ebed27d890fd7f3ec9c19d1bf623cfe5cc7",
+    "src/webview/components/onboarding/onboardingTourComponent.test.ts": "dc94bc54b15c91b153ca5d1a813ca68b49db8a2b1fc28e3d9d2c8cfca277a943",
+    "src/webview/components/player/playerComponent.test.ts": "bd5f0758d6ffb24fbd02ee2cddd43cbec943561c7c714218e9fe298f8350b870",
+    "src/webview/components/playerSettings/playerSettingsComponent.test.ts": "a34a9f960334e777ffb80044bb93b8775a008e4e8c102aa70e4e94415feb59d4",
+    "src/webview/components/settingTab/settingTabComponent.test.ts": "eefbdd92273d757227fea622bd606dd85429994f848b1c942d4b84d01d8cea25",
+    "src/webview/components/settingsOverlay/settingsOverlayComponent.test.ts": "4747004d98cfb30e77bcde596f925afc74c52ccbc25850332429c38a2c2436ac",
+    "src/webview/components/transportFab/transportFabComponent.test.ts": "4510ecaa10eaf601eb3a6bef4f7d1e8654432badc42c023d6592adea5c8277b7",
+    "src/webview/components/waveform/waveFormComponent.test.ts": "34d25e7e6a6a09e9ff4a302098ceac506d0d03f45462d8ee9d8d093958e0bce4",
+    "src/webview/components/webview/webview.test.ts": "dbc2ec34eaef65fd915f9bcc9dc7677d1da17a3402fd62fa187f357e7800ba09",
+    "src/webview/decoders/aac.integration.test.ts": "ceaddcfdfa632f2614def883861fe320b7cc8cfcfe8918d7f6e522c58740164a",
+    "src/webview/decoders/aacDecoder.test.ts": "ecb1db5602da6a3e34fd42e291828247fc57742a450794d5f6615e3f8efc48b4",
+    "src/webview/decoders/decoderFactory.test.ts": "e5949a09ad6bce8a2a1f21c2d20de72cd84de1bab843b2baf64c1aa4e21ce51b",
+    "src/webview/decoders/flac.integration.test.ts": "72ce7abe71c1f97e3ccdf16120ea33a8bc32ec22f3c5e8639ea6adb3f052b77f",
+    "src/webview/decoders/m4aPresentation.test.ts": "82d104c353569f0914da6bdf2d03bbd18a4202d5bf4c4052600e0fa7d3ad340b",
+    "src/webview/decoders/ogg.integration.test.ts": "b7c944fe66fedae779d88430e28dc16bcb73736fc99b806003172f24144d7c6f",
+    "src/webview/decoders/oggOpusLength.test.ts": "8ccde39d03cdeb8b63689bf3e6e0ca8b4ed4823aac3a470c6e17e8d2473b867c",
+    "src/webview/decoders/sphere.integration.test.ts": "c06fdee648b799c37a82f98cc7ca752eb152b0eb3d95ea0bbdfabb0e588bb009",
+    "src/webview/decoders/sphereDecoder.test.ts": "6fa6caf6fc58172bfe30328879ae5cbd8a77efd55b200aa888b218482d523e75",
+    "src/webview/decoders/wasmDecoder.integration.test.ts": "45075a83c98281aa8b03fd9f9102593351404c5a6beff35f76fad62826e58d1c",
+    "src/webview/decoders/wasmDecoder.test.ts": "28ba0d6871fbc65ae6c194a201303b32c28d4b2242ef3777fc52b8de4bb86952",
+    "src/webview/decoders/webAudioDecoder.test.ts": "2175483b7f418cb9f83cb96aa3d5edbe8231342583a9275483bcd244f7c0d3ed",
+    "src/webview/encoder.test.ts": "b5b5e0bdaa2befbb07cedc80214ec0696f088c9814f9eb36b68798729547fa5b",
+    "src/webview/service.test.ts": "6fa7d8512b5fa3907e9c8514b94cd183f72e7cbb6ab1a43a76727b12287101cb",
+    "src/webview/services/analyzeService.test.ts": "45b05800a132c5e84ebcc40e7284b089e6a2440f09348346cdc949ca4e3956da",
+    "src/webview/services/analyzeSettingsService.test.ts": "c0648fe47b0688421388cf9c52d387a29c2b78a14cb391b086f52333da4a63e3",
+    "src/webview/services/audioExportService.test.ts": "c77ad06aa4c1619e1e7407905024ebb79f559cd026f1d7bc36be0b3b0b28c896",
+    "src/webview/services/autoEqApiClient.test.ts": "755cb03d435a7c80264319b3dee5a538b5549261a75bd9fa4da06f75a65d1287",
+    "src/webview/services/editExportSettingsService.test.ts": "daa17b80fd3cd41ee7a0748eec1038833b5dc05d4451571a73fcdf394a8b1161",
+    "src/webview/services/editListenService.test.ts": "f93e7878d0352e4a5d1411f3b8c4ed568f5c582784fa333882ada71b26b7e63a",
+    "src/webview/services/essentiaHostClient.test.ts": "0e8121db6e40c29be174176e10c315839518188515839cd9bc3fb056ee360822",
+    "src/webview/services/headphoneEqService.test.ts": "0eaa54a189c7bfdf9aee47de48a3fdce1639ad1b93f20db8fc7f241492d900a5",
+    "src/webview/services/headphoneEqSettingsService.test.ts": "e444719945a4fbd610ef75ff835951ab3aa1dd379b03f0af1df275f02024f6a1",
+    "src/webview/services/loudnessService.test.ts": "b3d139a519750f6044dc18bbf7f52c9e5e0c7efcfad0002abb3230d3bdecf8b4",
+    "src/webview/services/pageRpcClient.test.ts": "9cdfcd1637891cef2c77ce2326e0c8e91d5cf234bdf8080d497f80149e0997d6",
+    "src/webview/services/playerService.test.ts": "6d54a7fce017cdedf971936a2b58ceaf6e564d95f29e49d60c670b1918e94602",
+    "src/webview/services/playerSettingsService.test.ts": "1e879324a96917ba63f1f1626303b5c5f0225e8fe4c753c47063dcbe5921f00c",
+    "src/webview/services/sequenceFeatureService.test.ts": "8e4a6e2346c5ddc231454504560459c8768e4133cf4fdea527bf96a2da4cff46",
+    "src/webview/services/sequenceWorkerClient.test.ts": "7b0d4f877e88d67c8e8a1b55aacfc88e2d8f5c0444c16eb1b380a2722ff7a7aa",
+    "src/webview/services/wavExportFormat.test.ts": "02eef00eb17639cccee6d675b0759ac44de25bc6e162d33eb1b3e2c5c28fd547",
+    "src/webview/spectrogramFrequencyLayout.test.ts": "91d98fece8f17a5a989ca6ea7d97b77ca2be9b8d5708670831a70b09d0709df8",
+    "src/webview/utils/audioFileBitDepth.test.ts": "c04811a06a944b4ee90251775d132171c526aab11c7b96053b07156585702937",
+    "src/webview/utils/earEqSegmentedControl.test.ts": "20aae43a8d949f3833acb05a36c10cdaf0c6c6cb5da74038c276c203264895a3",
+    "src/webview/utils/ebur128Loader.test.ts": "c7d4b2f8275b281f4b1fcf82840fce9d619211786130f1e63a6f0b6f985c4a2c",
+    "src/webview/utils/eqCanvasMath.test.ts": "14e030bda699e05fceb882bb831b805d12d5c5de8678fb510c7ae932559e3017",
+    "src/webview/utils/frequencyPhaseCorrelation.test.ts": "27b6bfcf511c214bb7e0ddd819977a40919a1cbdd240a6195508d02e46b626e6",
+    "src/webview/utils/frequencyWeightedRms.test.ts": "2d1f8f79e31ad4c5376fe1f0869f0f5951f30c1fb61dd3c6c925eda810d4b37f",
+    "src/webview/utils/goertzelCqt.test.ts": "95d4434f13f215c72c94115bd9393bb9c224a4bdcbd8351825c96b98d64af5c1",
+    "src/webview/utils/liveBallistics.test.ts": "98c34177bf2b1464a9d5d3dd3bb2906027d33925df12dcd018869a706c722049",
+    "src/webview/utils/liveLogSpectrumAxis.test.ts": "f45d206887740a79545512c775f4e243d56c56ab725346f128c1ae8db9711f11",
+    "src/webview/utils/liveMonitoring.test.ts": "fb7f801809fe8a164cff16e837e42492ef914597bbf82668347f5faa58620715",
+    "src/webview/utils/liveStereoFrame.test.ts": "2f2afaf98e0edab6989cac153fa1a39f5053c250fe7bb7e10bc037fc108e3a37",
+    "src/webview/utils/loudnessWorkletLoader.test.ts": "b676db1ee18cec7e21a9a75ada8aac85d255122711b2eb58fe0a8c0e6a22a9fe",
+    "src/webview/utils/modifiedAkima.test.ts": "04cdaa18068c4ba94d7e524752c57aa33d8492aef1472a35da516d06f2fa2ea2",
+    "src/webview/utils/quinticBSpline.test.ts": "d2930712dacc12cf8cf8fb53c126326e161a900f4e999c4ea0da4d40c08955f4",
+    "src/webview/utils/spectralDescriptors.test.ts": "a7d65ef44ba09a5a6f65327483d4807a1f2145557e454156b5aa78b1013037c5",
+    "src/webview/utils/spectralPeakDisplay.test.ts": "b5fcedbed5b5104ce483eecb9c2d3287886bff662d1429ad2b5b4b31d2a24cde",
+    "src/webview/utils/stereoPolarField.regression.test.ts": "8395c38d56f4b9ddca028661afa4ae47b166fc8b1686dcf2b65136ceab455972",
+    "src/webview/utils/stereoPolarField.test.ts": "ac91ca6afcbc5de82865d8d33f936ad76ec4f95de513771b08bf46b2fb893078",
+    "src/webview/utils/timelinePlotLayout.test.ts": "679022e327887d2b1630da0acbba05f1a85398cf856194b973843ae5bf1ff032",
+    "src/webview/utils/timelineStripChart.test.ts": "3da1a4a2577d4395ca1fe0ffa3475acc77809d057dd258517afa47e82a6a641e",
+    "src/webview/utils/volumeMapping.test.ts": "546cdab8a8c45217d646accff574d1bb246c9f7cdcb55d340f582f083df85128"
+  },
+  "rounds": [
+    {
+      "round": 9,
+      "status": "accepted",
+      "head": "a8bb4df"
+    },
+    {
+      "round": 10,
+      "status": "accepted",
+      "head": "5d22f0e"
+    },
+    {
+      "round": 11,
+      "status": "dry",
+      "head": "5d22f0e"
+    }
+  ],
+  "confirmed": [
+    "C1",
+    "R1",
+    "N1"
+  ],
+  "applied": [
+    {
+      "id": "C1",
+      "commit": "74567d5"
+    },
+    {
+      "id": "R1",
+      "commit": "a8bb4df"
+    },
+    {
+      "id": "N1",
+      "commit": "5d22f0e"
+    }
+  ],
+  "baseline": {
+    "suites": 108,
+    "passed": 881,
+    "skipped": 1,
+    "exitCode": 0,
+    "log": "baseline-tests.log"
+  },
+  "deferred": [
+    {
+      "id": "E1",
+      "severity": "P3",
+      "reason": "Optional optimization, no demonstrated application bottleneck"
+    }
+  ],
+  "contractMigrations": [
+    {
+      "file": "src/webview/services/sequenceWorkerClient.test.ts",
+      "originalSha256": "7b0d4f877e88d67c8e8a1b55aacfc88e2d8f5c0444c16eb1b380a2722ff7a7aa",
+      "originalCopy": "round_10/before/sequenceWorkerClient.test.ts",
+      "currentSha256": "49a34843ffde1776b08ed4723230f431833f95827c50ee2841746f99e91596a4",
+      "approvedBy": [
+        "cgr_discriminator_a",
+        "cgr_discriminator_b"
+      ],
+      "reason": "N1 adds WASM loading and transfer. Mock gains arrayBuffer; exact transfer assertion expands PCM to PCM plus WASM. All previous behavioral assertions retained."
+    }
+  ],
+  "finalVerification": {
+    "head": "5d22f0e",
+    "suites": 111,
+    "passed": 890,
+    "skipped": 1,
+    "ci": "passed",
+    "native": "macOS VS Code passed; synthetic tone only",
+    "report": "round_10/native/report.md"
+  },
+  "featureOutcomes": {
+    "spectral-descriptors": "C1 fixed; tests and native live readouts passed",
+    "weighted-metering": "No confirmed defects; tests and native Z/A/B/C switching with unchanged peaks passed",
+    "harmonic-pitch": "R1 and N1 fixed; real WASM edge tests and native timeline passed",
+    "background-worker": "N1 fixed; native single-file and comparison Worker results passed"
+  },
+  "integration": {
+    "mergeCommit": "7c33163722fba1bf068c4c9e5b999d1265600634",
+    "branch": "main",
+    "rollbackBranch": "codex/pre-roadmap-merge-20261026",
+    "treeMatchesReviewedIntegration": true,
+    "pushed": false,
+    "released": false
+  }
+}

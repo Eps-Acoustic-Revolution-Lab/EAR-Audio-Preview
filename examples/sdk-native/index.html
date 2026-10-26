@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  />
+  <title>EAR standalone visualizations</title>
+  <link
+    rel="stylesheet"
+    href="./node_modules/@ear-audio/theme/dist/styles.css"
+  />
+  <style>
+    body {
+      background: #111;
+      color: #ddd;
+      font: 14px system-ui;
+      margin: 24px;
+    }
+    main {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    section {
+      border: 1px solid #333;
+      padding: 16px;
+      min-height: 240px;
+    }
+    h1 {
+      font-size: 22px;
+    }
+    h2 {
+      font-size: 14px;
+    }
+    button,
+    input {
+      margin: 0 8px 20px 0;
+    }
+    .view {
+      height: 300px;
+    }
+  </style>
+  <h1>EAR standalone audio visualizations</h1>
+  <p>Select a local audio file. Playback stays in your browser.</p>
+  <input type="file" id="file" accept="audio/*" /><button id="play">
+    Play / pause</button
+  ><button id="dispose">Dispose views</button>
+  <audio id="audio" controls></audio>
+  <main id="views"></main>
+  <script type="importmap">
+    {
+      "imports": {
+        "@ear-audio/core": "./node_modules/@ear-audio/core/dist/index.js",
+        "@ear-audio/web-audio": "./node_modules/@ear-audio/web-audio/dist/index.js",
+        "@ear-audio/dsp": "./node_modules/@ear-audio/dsp/dist/index.js",
+        "@ear-audio/theme": "./node_modules/@ear-audio/theme/dist/index.js",
+        "@ear-audio/level-meter": "./node_modules/@ear-audio/level-meter/dist/index.js",
+        "@ear-audio/spectrum": "./node_modules/@ear-audio/spectrum/dist/index.js",
+        "@ear-audio/stereo-field": "./node_modules/@ear-audio/stereo-field/dist/index.js",
+        "@ear-audio/phase-correlation": "./node_modules/@ear-audio/phase-correlation/dist/index.js",
+        "@ear-audio/descriptors": "./node_modules/@ear-audio/descriptors/dist/index.js",
+        "@ear-audio/live-panel": "./node_modules/@ear-audio/live-panel/dist/index.js",
+        "@ear-audio/core/settings": "./node_modules/@ear-audio/core/dist/settings.js",
+        "@ear-audio/dsp/": "./node_modules/@ear-audio/dsp/dist/",
+        "@ear-audio/dsp/spectralDescriptors": "./node_modules/@ear-audio/dsp/dist/spectralDescriptors.js",
+        "@ear-audio/dsp/frequencyWeightedRms": "./node_modules/@ear-audio/dsp/dist/frequencyWeightedRms.js",
+        "@ear-audio/dsp/frequencyPhaseCorrelation": "./node_modules/@ear-audio/dsp/dist/frequencyPhaseCorrelation.js",
+        "@ear-audio/dsp/stereoPolarField": "./node_modules/@ear-audio/dsp/dist/stereoPolarField.js",
+        "@ear-audio/dsp/liveBallistics": "./node_modules/@ear-audio/dsp/dist/liveBallistics.js",
+        "@ear-audio/dsp/liveMonitoring": "./node_modules/@ear-audio/dsp/dist/liveMonitoring.js",
+        "@ear-audio/dsp/goertzelCqt": "./node_modules/@ear-audio/dsp/dist/goertzelCqt.js",
+        "@ear-audio/dsp/aWeighting": "./node_modules/@ear-audio/dsp/dist/aWeighting.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { createAudioSource } from "@ear-audio/web-audio";
+    import { createLevelMeter } from "@ear-audio/level-meter";
+    import { createSpectrum } from "@ear-audio/spectrum";
+    import { createStereoField } from "@ear-audio/stereo-field";
+    import { createPhaseCorrelation } from "@ear-audio/phase-correlation";
+    import { createDescriptors } from "@ear-audio/descriptors";
+    import { createLivePanel } from "@ear-audio/live-panel";
+    const audio = document.querySelector("#audio");
+    let context,
+      source,
+      views = [],
+      url;
+    document.querySelector("#file").onchange = (event) => {
+      if (url) URL.revokeObjectURL(url);
+      url = URL.createObjectURL(event.target.files[0]);
+      audio.src = url;
+    };
+    document.querySelector("#play").onclick = async () => {
+      if (!context) {
+        context = new AudioContext();
+        const node = context.createMediaElementSource(audio);
+        node.connect(context.destination);
+        source = createAudioSource({ context, node });
+        for (const [name, create] of Object.entries({
+          Level: createLevelMeter,
+          Spectrum: createSpectrum,
+          "Stereo field": createStereoField,
+          "Phase correlation": createPhaseCorrelation,
+          Descriptors: createDescriptors,
+          "Live panel": createLivePanel,
+        })) {
+          const section = document.createElement("section");
+          const title = document.createElement("h2");
+          title.textContent = name;
+          const mount = document.createElement("div");
+          mount.className = "view";
+          section.append(title, mount);
+          document.querySelector("#views").append(section);
+          views.push(create(mount, { source }));
+        }
+        window.earExample = { context, source, views };
+      }
+      await context.resume();
+      if (audio.paused) await audio.play();
+      else audio.pause();
+    };
+    document.querySelector("#dispose").onclick = () => {
+      views.forEach((view) => view.dispose());
+      views = [];
+      source?.dispose();
+      audio.pause();
+    };
+    window.addEventListener("pagehide", () => {
+      views.forEach((view) => view.dispose());
+      source?.dispose();
+      context?.close();
+      if (url) URL.revokeObjectURL(url);
+    });
+  </script>
+</html>

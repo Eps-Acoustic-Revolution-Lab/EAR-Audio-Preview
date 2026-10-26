@@ -1,0 +1,132 @@
+
+> ear-audio-preview@0.6.0 test
+> jest --maxWorkers=2 --workerIdleMemoryLimit=512MB
+
+PASS src/webview/comparison/comparisonApp.test.ts
+PASS src/shared/audioAlignment.test.ts
+PASS src/webview/comparison/loudnessWorker.test.ts
+PASS src/webview/comparison/comparisonDsp.test.ts
+PASS src/webview/comparison/comparisonLiveView.test.ts
+PASS src/webview/services/analyzeSettingsService.test.ts
+PASS src/comparison/comparisonHost.test.ts
+PASS src/webview/utils/timelineStripChart.test.ts
+PASS src/webview/services/loudnessService.test.ts
+PASS src/eslintPolicy.test.ts
+PASS src/webview/comparison/comparisonSession.test.ts
+PASS src/webview/decoders/wasmDecoder.integration.test.ts
+PASS src/webview/components/webview/webview.test.ts
+  ● Console
+
+    console.log
+      error in webview
+
+      at HTMLDivElement.webviewMessageTarget.addEventListener.once (__mocks__/helper.ts:45:19)
+
+PASS src/shared/harmonicFeatureCompute.unvoiced.integration.test.ts
+PASS src/shared/harmonicFeatureCompute.integration.test.ts
+PASS src/webview/utils/goertzelCqt.test.ts
+PASS src/webview/comparison/comparisonAlignment.test.ts
+PASS src/webview/components/analyzeSettings/analyzeSettingsComponent.test.ts
+PASS src/webview/utils/frequencyWeightedRms.test.ts
+PASS src/webview/utils/quinticBSpline.test.ts
+PASS src/webview/utils/stereoPolarField.test.ts
+PASS src/webview/decoders/ogg.integration.test.ts
+PASS src/webview/comparison/comparisonMeasurements.test.ts
+PASS src/webview/components/playerSettings/playerSettingsComponent.test.ts
+PASS src/webview/services/playerService.test.ts
+PASS src/webview/components/settingTab/settingTabComponent.test.ts
+PASS src/sdk/views/views.test.ts
+PASS src/webview/components/settingsOverlay/settingsOverlayComponent.test.ts
+PASS src/webview/services/sequenceFeatureService.test.ts
+PASS src/webview/components/metaFab/metaFabComponent.test.ts
+PASS src/webview/components/contextMenu/contextMenu.test.ts
+PASS src/webview/decoders/aac.integration.test.ts
+PASS src/webview/comparison/essentiaSpectrum.test.ts
+PASS src/webview/components/transportFab/transportFabComponent.test.ts
+PASS src/audioPreviewEditor.test.ts
+PASS src/webview/components/onboarding/onboardingTourComponent.test.ts
+PASS src/webview/services/editListenService.test.ts
+PASS src/webview/decoders/flac.integration.test.ts
+PASS src/webview/comparison/comparisonOnboarding.test.ts
+PASS src/webview/components/liveMeters/liveMonitoringBarComponent.test.ts
+PASS src/webview/utils/stereoPolarField.regression.test.ts
+PASS src/extensionHost/autoEqHost.test.ts
+PASS src/webview/components/knob/knobComponent.test.ts
+PASS src/webview/comparison/comparisonTransport.test.ts
+PASS src/webview/components/liveMeters/eqMonitorStripComponent.test.ts
+PASS src/webview/comparison/scrollState.test.ts
+PASS src/webview/components/player/playerComponent.test.ts
+PASS src/webview/comparison/stftColor.test.ts
+PASS src/webview/services/headphoneEqSettingsService.test.ts
+PASS src/webview/components/contextMenu/contextMenu.sdk.test.ts
+PASS src/webview/decoders/oggOpusLength.test.ts
+PASS src/comparison/comparisonEqHost.test.ts
+PASS src/webview/decoders/sphereDecoder.test.ts
+PASS src/webview/utils/spectralDescriptors.test.ts
+PASS src/webview/comparison/alignmentClient.test.ts
+PASS src/webview/components/waveform/waveFormComponent.test.ts
+PASS src/webview/components/curveCorrection/curveCorrectionOverlayComponent.test.ts
+PASS src/shared/sequenceFeatureCompute.integration.test.ts
+PASS src/webview/decoders/wasmDecoder.test.ts
+PASS src/webview/components/liveMeters/levelMeterComponent.test.ts
+PASS src/webview/services/wavExportFormat.test.ts
+PASS src/extensionHost/comparisonAnalysisHost.test.ts
+PASS src/webview/components/infoTable/infoTableComponent.test.ts
+PASS src/webview/services/pageRpcClient.test.ts
+PASS src/webview/decoders/aacDecoder.test.ts
+PASS src/webview/encoder.test.ts
+PASS src/webview/decoders/decoderFactory.test.ts
+PASS src/webview/comparison/comparisonStftController.test.ts
+PASS src/webview/services/headphoneEqService.test.ts
+PASS src/shared/stftEssentiaCompute.test.ts
+PASS src/message.contract.test.ts
+PASS src/webview/components/loudness/harmonicTimeline.test.ts
+PASS src/webview/utils/timelinePlotLayout.test.ts
+PASS src/webview/utils/loudnessWorkletLoader.test.ts
+PASS src/webview/utils/frequencyPhaseCorrelation.test.ts
+PASS src/webview/services/audioExportService.test.ts
+PASS src/webview/comparison/comparisonFileLoader.test.ts
+PASS src/extensionHost/analysisTaskQueue.test.ts
+PASS src/webview/services/analyzeService.test.ts
+PASS src/webview/spectrogramFrequencyLayout.test.ts
+PASS src/shared/harmonicFeatureCompute.test.ts
+PASS src/webview/utils/spectralDescriptors.dc.test.ts
+PASS src/webview/services/sequenceWorkerClient.test.ts
+PASS src/webview/decoders/webAudioDecoder.test.ts
+PASS src/webview/utils/liveLogSpectrumAxis.test.ts
+PASS src/webview/services/essentiaHostClient.test.ts
+PASS src/webview/decoders/m4aPresentation.test.ts
+PASS src/webview/utils/modifiedAkima.test.ts
+PASS src/webview/utils/liveMonitoring.test.ts
+PASS src/webview/utils/ebur128Loader.test.ts
+PASS src/webview/comparison/trackTheme.test.ts
+PASS src/webview/comparison/stftCache.test.ts
+PASS src/webview/comparison/computeAnalysisJob.test.ts
+PASS src/shared/sequenceFeatureCompute.test.ts
+PASS src/webview/utils/liveBallistics.test.ts
+PASS src/webview/services/sequenceWorkerClient.resources.test.ts
+PASS src/webview/services/playerSettingsService.test.ts
+PASS src/webview/services/autoEqApiClient.test.ts
+PASS src/webview/utils/eqCanvasMath.test.ts
+PASS src/webview/utils/earEqSegmentedControl.test.ts
+PASS src/webview/service.test.ts
+PASS src/webview/services/editExportSettingsService.test.ts
+PASS src/webview/comparison/analysisClient.test.ts
+PASS src/shared/autoEqEqualizePayload.test.ts
+PASS src/webview/utils/liveStereoFrame.test.ts
+PASS src/shared/parseEqPreset.test.ts
+PASS src/webview/decoders/sphere.integration.test.ts
+PASS src/webview/utils/spectralPeakDisplay.test.ts
+PASS src/webview/utils/audioFileBitDepth.test.ts
+PASS src/shared/sequenceHop.test.ts
+PASS src/webview/utils/volumeMapping.test.ts
+PASS src/webview/components/liveMeters/spectralDescriptorLane.test.ts
+PASS src/sdk/core.test.ts
+PASS src/sdk/webAudio.test.ts
+PASS src/webview/components/analyzer/analyzerComponent.test.ts (18.633 s)
+
+Test Suites: 115 passed, 115 total
+Tests:       1 skipped, 915 passed, 916 total
+Snapshots:   0 total
+Time:        18.951 s, estimated 23 s
+Ran all test suites.

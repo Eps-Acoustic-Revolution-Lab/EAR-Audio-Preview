@@ -79,7 +79,9 @@ export class ContextMenu {
       element.append(button);
     }
     // Native fullscreen only shows descendants of its fullscreen element.
-    (document.fullscreenElement ?? document.body).append(element);
+    const scopedRoot =
+      event.target instanceof Element ? event.target.closest(".ear-sdk") : null;
+    (scopedRoot ?? document.fullscreenElement ?? document.body).append(element);
     this._element = element;
     const rect = element.getBoundingClientRect();
     element.style.left = `${Math.max(6, Math.min(event.clientX, innerWidth - rect.width - 6))}px`;

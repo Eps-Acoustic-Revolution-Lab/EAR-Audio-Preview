@@ -1,0 +1,56 @@
+{
+  "name": "@ear-audio/dsp",
+  "version": "0.1.0",
+  "description": "EAR standalone audio visualization dsp",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE.md",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./spectralDescriptors": {
+      "types": "./dist/types/webview/utils/spectralDescriptors.d.ts",
+      "import": "./dist/spectralDescriptors.js"
+    },
+    "./frequencyWeightedRms": {
+      "types": "./dist/types/webview/utils/frequencyWeightedRms.d.ts",
+      "import": "./dist/frequencyWeightedRms.js"
+    },
+    "./frequencyPhaseCorrelation": {
+      "types": "./dist/types/webview/utils/frequencyPhaseCorrelation.d.ts",
+      "import": "./dist/frequencyPhaseCorrelation.js"
+    },
+    "./stereoPolarField": {
+      "types": "./dist/types/webview/utils/stereoPolarField.d.ts",
+      "import": "./dist/stereoPolarField.js"
+    },
+    "./liveBallistics": {
+      "types": "./dist/types/webview/utils/liveBallistics.d.ts",
+      "import": "./dist/liveBallistics.js"
+    },
+    "./liveMonitoring": {
+      "types": "./dist/types/webview/utils/liveMonitoring.d.ts",
+      "import": "./dist/liveMonitoring.js"
+    },
+    "./goertzelCqt": {
+      "types": "./dist/types/webview/utils/goertzelCqt.d.ts",
+      "import": "./dist/goertzelCqt.js"
+    },
+    "./aWeighting": {
+      "types": "./dist/types/webview/utils/aWeighting.d.ts",
+      "import": "./dist/aWeighting.js"
+    }
+  },
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public"
+  }
+}
