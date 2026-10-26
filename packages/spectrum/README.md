@@ -2,9 +2,13 @@
 
 Standalone EAR audio visualization SDK, ESM with TypeScript declarations. MIT licensed. No VS Code host or player is required.
 
+These experimental packages are not published to npm. In the EAR repository, run `npm ci` and `npm run sdk:pack`. Then install the generated packages in your own project (replace the absolute path):
+
 ```sh
-npm install @ear-audio/spectrum @ear-audio/theme
+npm install --ignore-scripts /absolute/path/to/EAR-Audio-Preview/artifacts/sdk-tarballs/*.tgz
 ```
+
+Provide all dependency tarballs together. See the [integration guide](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/packages/README.md) for smaller package selections and Web Audio input.
 
 ```js
 import { createPcmSource } from "@ear-audio/core";
@@ -15,9 +19,11 @@ const view = createSpectrum(document.querySelector("#visualization"), {
   source,
 });
 source.push({ left: new Float32Array(2048), right: new Float32Array(2048) });
-// When no longer needed:
-view.dispose();
-source.dispose();
+// Call from your component unmount / teardown hook, not immediately after creation.
+function cleanup() {
+  view.dispose();
+  source.dispose();
+}
 ```
 
 The host owns audio playback. This view only reads an analysis source. `setOptions`, `resize`, `reset`, `suspend`, `resume`, and idempotent `dispose` are available on the returned view. Mount in an element with a definite width and height.

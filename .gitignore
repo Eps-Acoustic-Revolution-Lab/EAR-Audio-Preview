@@ -21,3 +21,6 @@ CLAUDE.md
 
 /.sdk-types
 /packages/*/dist
+
+# Native acceptance control sessions contain temporary bearer capabilities.
+/.cross-gan/**/native/session.json

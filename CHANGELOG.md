@@ -7,7 +7,7 @@
 - Optional single-file Chroma and predominant melody timelines, with fullscreen and explicit duration/sample-rate limits.
 - Optional live spectral centroid, spread and 85% rolloff in single-file and comparison views.
 - Z/A/B/C RMS weighting; A/B/C values are dBFS estimates, not calibrated SPL.
-- Cancellable browser workers for F0, onset and harmonic analysis, with host fallback on startup failure.
+- Cancellable browser workers for F0, onset and harmonic analysis. F0/onset can fall back to the host if the worker fails; harmonic analysis requires the worker.
 - Experimental standalone visualization SDK: six views, PCM/Web Audio adapters, shared DSP, scoped theme, ESM/type declarations, local tarball packaging and an [integration guide](packages/README.md). SDK packages remain independently versioned at 0.1.0 and unpublished to npm.
 
 ### Fixed
