@@ -4,7 +4,7 @@ import {
   type SpectralDescriptors,
 } from "../../utils/spectralDescriptors";
 import type { LiveComparisonInput, LivePlayback } from "./liveAnalysisInput";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LiveSettings } from "./liveAnalysisInput";
 import { applyMonitoringToTimeDomain } from "../../utils/liveMonitoring";
 
 /** Optional live measurements; shares the spectrum's frame cadence and lifecycle. */
@@ -22,7 +22,7 @@ export default class SpectralDescriptorLane extends Component {
   constructor(
     container: HTMLElement,
     private _player: LivePlayback,
-    private _settings: AnalyzeSettingsService,
+    private _settings: LiveSettings,
     private _comparison?: LiveComparisonInput,
   ) {
     super();

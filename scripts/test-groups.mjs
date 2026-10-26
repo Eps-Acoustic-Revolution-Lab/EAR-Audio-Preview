@@ -6,6 +6,11 @@ import { spawnSync } from "node:child_process";
 
 export const groups = [
   {
+    name: "sdk",
+    description: "Standalone visualization SDK contracts and lifecycle",
+    matches: /^src\/sdk\//,
+  },
+  {
     name: "host",
     description: "Extension host, file lifecycle and provider bridges",
     matches: /^(src\/audioPreviewEditor\.|src\/(comparison|extensionHost)\/)/,

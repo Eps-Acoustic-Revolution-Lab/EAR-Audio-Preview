@@ -8,7 +8,7 @@ import type {
   LiveTrackFrame,
 } from "./liveAnalysisInput";
 import { traceColor } from "./liveAnalysisInput";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LiveSettings } from "./liveAnalysisInput";
 import { quinticBSplineSmoothInto } from "../../utils/quinticBSpline";
 import { akimaResampleInto } from "../../utils/modifiedAkima";
 import {
@@ -61,7 +61,7 @@ export default class SpectralAnalyzerComponent extends Component {
   private _canvas: HTMLCanvasElement;
   private _readoutEl: HTMLElement;
   private _playerService: LivePlayback;
-  private _analyzeSettingsService: AnalyzeSettingsService;
+  private _analyzeSettingsService: LiveSettings;
   private _rafId: number = 0;
   private _bufL: Float32Array = new Float32Array(1024);
   private _bufR: Float32Array = new Float32Array(1024);
@@ -186,10 +186,26 @@ export default class SpectralAnalyzerComponent extends Component {
     }
   }
 
+  private _sdkSuspended = false;
+  suspend(): void {
+    this._sdkSuspended = true;
+    this._stopRaf();
+  }
+  resume(): void {
+    this._sdkSuspended = false;
+    this._syncRafToState();
+    this.resize();
+  }
+  resize(): void {
+    if (!this._sdkSuspended) {
+      this._draw();
+    }
+  }
+
   constructor(
     containerEl: HTMLElement,
     playerService: LivePlayback,
-    analyzeSettingsService: AnalyzeSettingsService,
+    analyzeSettingsService: LiveSettings,
     private readonly _comparison?: LiveComparisonInput,
   ) {
     super();
@@ -380,6 +396,9 @@ export default class SpectralAnalyzerComponent extends Component {
   }
 
   private _startRaf() {
+    if (this._sdkSuspended) {
+      return;
+    }
     if (!this._shouldRunRaf() || this._rafId) {
       return;
     }
@@ -402,8 +421,8 @@ export default class SpectralAnalyzerComponent extends Component {
   }
 
   private _computeFftFrame(analysers: {
-    left: AnalyserNode;
-    right: AnalyserNode;
+    left: import("../../../sdk/core").AnalysisAnalyser;
+    right: import("../../../sdk/core").AnalysisAnalyser;
   }): Float32Array {
     const fftSize = analysers.left.fftSize;
     if (this._bufL.length !== fftSize / 2) {
@@ -457,8 +476,8 @@ export default class SpectralAnalyzerComponent extends Component {
 
   private _computeCqtFrame(
     analysers: {
-      left: AnalyserNode;
-      right: AnalyserNode;
+      left: import("../../../sdk/core").AnalysisAnalyser;
+      right: import("../../../sdk/core").AnalysisAnalyser;
     },
     track?: LiveTrackFrame,
   ): Float32Array {
@@ -550,6 +569,9 @@ export default class SpectralAnalyzerComponent extends Component {
   }
 
   private _draw() {
+    if (this._sdkSuspended) {
+      return;
+    }
     this._descriptorLane.update();
     const analysers = this._playerService.getAnalysers();
     const playing = this._playerService.isPlaying;
@@ -862,6 +884,7 @@ export default class SpectralAnalyzerComponent extends Component {
   }
 
   override dispose() {
+    this._sdkSuspended = true;
     this._stopRaf();
     this._comparisonTraces.clear();
     super.dispose();

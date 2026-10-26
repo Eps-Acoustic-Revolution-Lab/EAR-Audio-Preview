@@ -6,7 +6,7 @@ import type {
   LiveTrackFrame,
 } from "./liveAnalysisInput";
 import { traceColor } from "./liveAnalysisInput";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LiveSettings } from "./liveAnalysisInput";
 import { applyMonitoringToTimeDomain } from "../../utils/liveMonitoring";
 import {
   emaDecayFromReleaseDbPerSec,
@@ -69,7 +69,7 @@ export default class GoniometerComponent extends Component {
   private _canvas: HTMLCanvasElement;
 
   private _playerService: LivePlayback;
-  private _analyzeSettingsService: AnalyzeSettingsService;
+  private _analyzeSettingsService: LiveSettings;
   private _rafId: number = 0;
   private _bufL: Float32Array = new Float32Array(2048);
   private _bufR: Float32Array = new Float32Array(2048);
@@ -163,10 +163,28 @@ export default class GoniometerComponent extends Component {
     this._traceColor = null;
   }
 
+  private _sdkSuspended = false;
+  suspend(): void {
+    this._sdkSuspended = true;
+    this._stopRaf();
+  }
+  resume(): void {
+    this._sdkSuspended = false;
+    this._syncRaf();
+    this.resize();
+  }
+  resize(): void {
+    if (!this._sdkSuspended) {
+      // Comparison publication may have advanced while this view was suspended.
+      // Consume the latest batch on resume/layout, deduplicated by trace stamp.
+      this._drawFrame(!!this._comparison);
+    }
+  }
+
   constructor(
     containerEl: HTMLElement,
     playerService: LivePlayback,
-    analyzeSettingsService: AnalyzeSettingsService,
+    analyzeSettingsService: LiveSettings,
     private readonly _comparison?: LiveComparisonInput,
   ) {
     super();
@@ -392,6 +410,9 @@ export default class GoniometerComponent extends Component {
   }
 
   private _startRaf() {
+    if (this._sdkSuspended) {
+      return;
+    }
     if (this._rafId) {
       return;
     }
@@ -581,6 +602,9 @@ export default class GoniometerComponent extends Component {
   }
 
   private _drawFrame(updateAudio: boolean) {
+    if (this._sdkSuspended) {
+      return;
+    }
     if (this._comparison) {
       this._forEachTrace(() => undefined, updateAudio);
     } else if (updateAudio) {
@@ -908,6 +932,7 @@ export default class GoniometerComponent extends Component {
   }
 
   override dispose() {
+    this._sdkSuspended = true;
     this._stopRaf();
     this._comparisonTraces.clear();
     super.dispose();

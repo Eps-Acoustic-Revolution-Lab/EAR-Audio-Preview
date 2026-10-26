@@ -1,7 +1,7 @@
 import Component from "../../component";
 import { ContextMenu } from "../contextMenu/contextMenu";
 import type { LivePlayback, LiveComparisonInput } from "./liveAnalysisInput";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LiveSettings } from "./liveAnalysisInput";
 import GoniometerComponent from "./goniometerComponent";
 import SpectralAnalyzerComponent from "./spectralAnalyzerComponent";
 import PhaseCorrelationSpectrumComponent from "./phaseCorrelationSpectrumComponent";
@@ -55,7 +55,7 @@ export default class LiveAnalysisComponent extends Component {
   constructor(
     containerEl: HTMLElement,
     playerService: LivePlayback,
-    analyzeSettingsService: AnalyzeSettingsService,
+    analyzeSettingsService: LiveSettings,
     private readonly _comparison?: LiveComparisonInput,
   ) {
     super();
@@ -226,6 +226,33 @@ export default class LiveAnalysisComponent extends Component {
 
   private _splitsFor(mode: LiveAnalysisLayoutMode): LiveAnalysisSplits {
     return mode === "overlay" ? this._overlaySplits : this._inlineSplits;
+  }
+
+  private _viewChildren() {
+    return [
+      this._goniometer,
+      this._phaseCorrelation,
+      this._spectrum,
+      this._overlayGoniometer,
+      this._overlayPhaseCorrelation,
+      this._overlaySpectrum,
+    ];
+  }
+  suspend(): void {
+    for (const child of this._viewChildren()) {
+      child.suspend();
+    }
+  }
+  resume(): void {
+    for (const child of this._viewChildren()) {
+      child.resume();
+    }
+  }
+  resize(): void {
+    this.refreshLayout();
+    for (const child of this._viewChildren()) {
+      child.resize();
+    }
   }
 
   public refreshLayout(): void {

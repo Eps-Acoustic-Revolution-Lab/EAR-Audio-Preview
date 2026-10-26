@@ -2,7 +2,7 @@ import { EventType } from "../../events";
 import Component from "../../component";
 import type { LivePlayback, LiveComparisonInput } from "./liveAnalysisInput";
 import { traceColor } from "./liveAnalysisInput";
-import AnalyzeSettingsService from "../../services/analyzeSettingsService";
+import type { LiveSettings } from "./liveAnalysisInput";
 import { quinticBSplineSmooth } from "../../utils/quinticBSpline";
 import { akimaResample } from "../../utils/modifiedAkima";
 import { emaDecayFromReleaseDbPerSec } from "../../utils/liveBallistics";
@@ -59,7 +59,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   private _canvas: HTMLCanvasElement;
   private _readoutEl: HTMLElement;
   private _playerService: LivePlayback;
-  private _analyzeSettingsService: AnalyzeSettingsService;
+  private _analyzeSettingsService: LiveSettings;
   private _rafId = 0;
   private _frameBuffers: StereoFrameBuffers = ensureStereoFrameBuffers(2048);
   private _engine = new FrequencyPhaseCorrelationEngine();
@@ -89,10 +89,26 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
     }
   }
 
+  private _sdkSuspended = false;
+  suspend(): void {
+    this._sdkSuspended = true;
+    this._stopRaf();
+  }
+  resume(): void {
+    this._sdkSuspended = false;
+    this._syncRafToState();
+    this.resize();
+  }
+  resize(): void {
+    if (!this._sdkSuspended) {
+      this._draw();
+    }
+  }
+
   constructor(
     containerEl: HTMLElement,
     playerService: LivePlayback,
-    analyzeSettingsService: AnalyzeSettingsService,
+    analyzeSettingsService: LiveSettings,
     private readonly _comparison?: LiveComparisonInput,
   ) {
     super();
@@ -160,6 +176,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   }
 
   private _startRaf() {
+    if (this._sdkSuspended) {
+      return;
+    }
     if (!this._shouldRunRaf() || this._rafId) {
       return;
     }
@@ -182,6 +201,9 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   }
 
   private _draw() {
+    if (this._sdkSuspended) {
+      return;
+    }
     const dpr = window.devicePixelRatio || 1;
     const cssW = Math.max(1, Math.floor(this._container.clientWidth));
     const cssH = Math.max(1, Math.floor(this._container.clientHeight));
@@ -530,6 +552,7 @@ export default class PhaseCorrelationSpectrumComponent extends Component {
   }
 
   override dispose() {
+    this._sdkSuspended = true;
     this._stopRaf();
     this._comparisonTraces.clear();
     super.dispose();
