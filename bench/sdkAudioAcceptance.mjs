@@ -6,8 +6,8 @@ import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 
 const root = process.cwd();
-const require = createRequire('/tmp/ear-roadmap-browser/package.json');
-const { chromium } = require('playwright');
+const require = createRequire(import.meta.url);
+const { chromium } = require(process.env.EAR_PLAYWRIGHT_MODULE || 'playwright');
 const consumer = await fs.mkdtemp(path.join(os.tmpdir(), 'ear-sdk-audio-'));
 const reportPath = path.join(root, 'artifacts/sdk-audio-acceptance.json');
 await fs.writeFile(path.join(consumer, 'package.json'), '{"private":true,"type":"module"}');
@@ -25,7 +25,7 @@ const server = http.createServer(async (req, res) => {
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 let browser;
 try {
-  browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
+  browser = await chromium.launch({ executablePath: process.env.EAR_CHROME_EXECUTABLE || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true, args: ['--mute-audio', '--autoplay-policy=no-user-gesture-required'] });
   const page = await browser.newPage();
   await page.goto(`http://127.0.0.1:${server.address().port}/`);
   const result = await page.evaluate(async () => {
