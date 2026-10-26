@@ -42,7 +42,7 @@ AudioPreviewEditorProvider         WebView component
     AUTOEQ, EQ_PRESET)
 ```
 
-- **Extension host** (`src/extension.ts` → `src/audioPreviewEditor.ts`): Registers the custom editor, streams file data in 3 MB chunks, manages VS Code settings/globalState, proxies AutoEq API calls, runs Essentia STFT/sequence analysis in Node.js.
+- **Extension host** (`src/extension.ts` → `src/audioPreviewEditor.ts`): Registers the custom editor, streams file data in 3 MB chunks, manages VS Code settings/globalState, proxies AutoEq API calls, and runs Essentia STFT in Node.js. F0 and onset fall back to the host only when the webview worker fails; harmonic analysis stays in that worker.
 - **Webview** (`src/webview/index.ts` → `WebView` component): Receives file data, decodes audio, builds the Web Audio playback graph, renders all UI.
 
 ### Message protocol
@@ -97,9 +97,9 @@ Tab state managed by `setActiveWorkspacePane()` from `src/webview/workspacePane.
 
 ### Extension host computation
 
-Heavy DSP runs in the Node.js host process (not the webview) for CSP safety:
+STFT runs in the Node.js host for CSP safety. F0, onset, and harmonic analysis run in a browser worker; only F0 and onset fall back to the host:
 - `src/extensionHost/stftHost.ts` — STFT via Essentia.js
-- `src/extensionHost/sequenceFeatureHost.ts` — F0 (PitchYinFFT) + onset detection
+- `src/extensionHost/sequenceFeatureHost.ts` — F0/onset fallback when the browser worker fails
 - `src/extensionHost/autoEqHost.ts` — AutoEq API proxy (entries, targets, equalize)
 - `src/extensionHost/eqPresetHost.ts` — Workspace EQ preset file I/O
 - `src/extensionHost/essentiaHost.ts` — Singleton Essentia.js loader for Node.js

@@ -25,7 +25,7 @@
   <p>
     <a href="#-快速开始">快速开始</a> ·
     <a href="#-核心工作流">核心工作流</a> ·
-    <a href="#whats-new">版本更新 (v0.6)</a> ·
+    <a href="#whats-new">版本更新 (v0.6.1)</a> ·
     <a href="#-为什么选择-ear">核心优势</a> ·
     <a href="#-底层技术架构">底层架构</a> ·
     <a href="#-开发与贡献">开发指南</a>
@@ -35,7 +35,7 @@
 <br>
 
 > [!TIP]
-> **工程技术手记：** 我们在 [技术博客](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/) 中记录了 EAR 背后的核心算法与架构设计，涵盖从 CQT 频谱设计到 WebGL2 各向异性时频谱图渲染的完整实现。
+> **工程技术手记：** 我们在 [技术博客](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/README.md) 中记录了 EAR 背后的核心算法与架构设计，涵盖从 CQT 频谱设计到 WebGL2 各向异性时频谱图渲染的完整实现。
 
 ---
 

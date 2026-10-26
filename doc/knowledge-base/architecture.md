@@ -36,13 +36,13 @@ The core extension host module. Contains:
 
 ### Extension Host Computation (`src/extensionHost/`)
 
-Heavy compute runs in Node.js for CSP safety (the webview's Content Security Policy restricts certain operations):
+STFT runs in Node.js for CSP safety. F0, onset, and harmonic analysis run in a browser worker; the host path below is only the F0/onset fallback:
 
 | Module | Purpose |
 |--------|---------|
 | `essentiaHost.ts` | Singleton lazy loader for `essentia.js` in Node.js. Caches the instance. |
 | `stftHost.ts` | Runs STFT via Essentia's `Windowing` + `Spectrum` algorithms |
-| `sequenceFeatureHost.ts` | Computes F0 (PitchYinFFT) and onset flux (Flux) sequences |
+| `sequenceFeatureHost.ts` | F0 and onset fallback when the browser worker fails. Harmonic analysis does not use this host. |
 | `autoEqHost.ts` | HTTP proxy to `https://autoeq.app` API (entries, targets, equalize) |
 | `eqPresetHost.ts` | File dialog for importing EQ presets, workspace preset CRUD |
 

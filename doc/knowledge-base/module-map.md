@@ -51,7 +51,7 @@ src/
 │   │   ├── analyzeService.ts        # STFT analysis orchestration
 │   │   ├── analyzeSettingsService.ts # All analyze UI state + persistence
 │   │   ├── loudnessService.ts       # Offline EBU R128 profile
-│   │   ├── sequenceFeatureService.ts # F0/onset via extension host
+│   │   ├── sequenceFeatureService.ts # F0/onset worker, host fallback; harmonics stay on the worker
 │   │   ├── headphoneEqService.ts    # EQ filter application
 │   │   ├── headphoneEqSettingsService.ts # EQ profile state + bypass
 │   │   ├── editExportSettingsService.ts  # Export region/channel/filter

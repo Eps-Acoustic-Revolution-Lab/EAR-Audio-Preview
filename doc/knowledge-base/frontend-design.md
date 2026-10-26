@@ -173,7 +173,7 @@ Rotary knob control (used for volume). Supports:
 | `AnalyzeService` | STFT analysis orchestration, Essentia host client |
 | `AnalyzeSettingsService` | All analyze UI state, persistence hooks |
 | `LoudnessService` | Offline EBU R128 profile computation |
-| `SequenceFeatureService` | F0/onset analysis via extension host |
+| `SequenceFeatureService` | F0/onset in a browser worker, with extension-host fallback; harmonic analysis requires the worker |
 | `HeadphoneEqSettingsService` | EQ profile state, bypass toggle |
 | `EditExportSettingsService` | Export region, channel, filter settings |
 | `EditListenService` | Preview listen with separate audio graph |

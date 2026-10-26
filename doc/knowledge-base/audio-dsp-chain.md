@@ -119,18 +119,19 @@ Results are B-spline smoothed (`quinticBSpline.ts`) for display.
 
 ### Live Loudness (`loudness-worklet`)
 
-AudioWorklet node computing EBU R128 measurements at 50 ms intervals during playback. Loaded lazily on first play. Session max true peak tracked across entire playback.
+AudioWorklet node computing EBU R128 measurements at the display rate (`interval` `1/60` second) during playback. Loaded lazily on first play. Session max true peak tracked across entire playback.
 
 ### True Peak (`ebur128-wasm`)
 
-ITU-R BS.1770 true peak detection used in three contexts:
-1. **Waveform hover**: Per-window true peak on cursor readout
-2. **Level meter**: Per-buffer true peak updates clip LEDs
-3. **Info table**: Full-file true peak
+ITU-R BS.1770 true peak detection is used for:
+1. **Waveform hover**: Per-window true peak on the cursor readout
+2. **Loudness profile and live loudness worklet**: Max true peak (dBTP)
+
+The level meter clip LED and peak-hold use per-buffer sample peak (the largest absolute sample), not `ebur128-wasm`. The info table shows encoding, format, channels, sample rate, bit depth, file size, and duration. It does not show true peak.
 
 ## Sequence Feature Analysis
 
-Runs in the extension host via Essentia.js:
+F0, onset, and harmonic analysis run in a cancellable browser worker when the webview has worker and Essentia WASM URIs. The worker uses Essentia.js. F0 and onset fall back to the extension host if that worker fails. Harmonic analysis requires the worker and reports an error for retry; it does not fall back to the host.
 
 ### F0 (Fundamental Frequency)
 - Algorithm: `PitchYinFFT` from Essentia

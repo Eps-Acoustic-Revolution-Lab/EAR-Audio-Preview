@@ -26,7 +26,7 @@
   <p>
     <a href="#-quick-start">Quick Start</a> ·
     <a href="#-see-it-in-action">Workflows</a> ·
-    <a href="#whats-new">What's New (v0.6)</a> ·
+    <a href="#whats-new">What's New (v0.6.1)</a> ·
     <a href="#-why-ear">Why EAR?</a> ·
     <a href="#-under-the-hood">Architecture</a> ·
     <a href="#-development">Development</a>
@@ -36,7 +36,7 @@
 <br>
 
 > [!TIP]
-> **Engineering Deep Dives:** Curious about how we achieve real-time DSP inside an editor? Explore our [Technical Blog](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/), covering everything from PAZ-inspired CQT spectrum design to anisotropic WebGL2 spectrogram rendering.
+> **Engineering Deep Dives:** Curious about how we achieve real-time DSP inside an editor? Explore our [Technical Blog](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/doc/blog/README.md), covering everything from PAZ-inspired CQT spectrum design to anisotropic WebGL2 spectrogram rendering.
 
 ---
 
@@ -205,6 +205,8 @@ The following features are implemented and validated for the upcoming v0.6.1 rel
 📋 [Release History](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/blob/main/CHANGELOG.md) · 💡 [Request a Feature](https://github.com/Eps-Acoustic-Revolution-Lab/EAR-Audio-Preview/issues)
 
 ---
+
+<a id="-development"></a>
 
 ## 💻 Development & Contributing
 

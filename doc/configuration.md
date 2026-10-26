@@ -91,13 +91,13 @@ Hop size is computed automatically from window size, time range, and canvas widt
 | `showLevelMeter` | `boolean` | `false` | — | Show stereo level meter (right column) |
 | `showLiveAnalysis` | `boolean` | `false` | — | Show goniometer + spectrum analyzer |
 | `liveAnalysisFftSize` | `number` | `2048` | `512, 1024, 2048, 4096` | FFT size for live analyser nodes |
-| `liveSoundFieldMode` | `string` | `"polarLevel"` | `polarSample`, `polarLevel`, `lissajous` | Goniometer display mode |
-| `liveSpectrumReleaseDbPerSec` | `number` | `8` | `[0.5, 36]` | Spectrum release rate (dB/s) |
+| `liveSoundFieldMode` | `string` | `"polarSample"` | `polarSample`, `polarLevel`, `lissajous` | Goniometer display mode |
+| `liveSpectrumReleaseDbPerSec` | `number` | `15` | `[0.5, 36]` | Spectrum release rate (dB/s) |
 | `liveSpectrumPeakHoldSec` | `number` | `0` | `[0, 3]` | Peak envelope hold before release (seconds) |
-| `livePolarFieldReleaseDbPerSec` | `number` | `8` | `[0.5, 36]` | Goniometer trail release rate (dB/s) |
-| `liveLevelMeterReleaseDbPerSec` | `number` | `8` | `[0.5, 36]` | Level meter RMS release rate (dB/s) |
+| `livePolarFieldReleaseDbPerSec` | `number` | `15` | `[0.5, 36]` | Goniometer trail release rate (dB/s) |
+| `liveLevelMeterReleaseDbPerSec` | `number` | `15` | `[0.5, 36]` | Level meter RMS release rate (dB/s) |
 | `livePolarLevelGatePct` | `number` | `28` | `[0, 100]` | Polar Level directional gate (% of peak, 0=off) |
-| `livePolarSampleRadiusGamma` | `number` | `1` | `[0.5, 2]` | Polar Sample radial gamma (1=linear) |
+| `livePolarSampleRadiusGamma` | `number` | `0.5` | `[0.1, 1]` | Polar Sample radial gamma (1 = linear). Stored values are clamped to this range in 0.05 steps. The settings slider still offers 0.5–2; a value above 1 is stored as 1. |
 | `livePolarSampleFillBrightnessPct` | `number` | `10` | — | Polar Sample scatter fill brightness boost |
 | `liveSpectrumTiltDbPerOct` | `number` | `0` | `0, 1.5, 3, 4.5, 6` | Spectrum display tilt (dB/oct, anchored at 1 kHz) |
 

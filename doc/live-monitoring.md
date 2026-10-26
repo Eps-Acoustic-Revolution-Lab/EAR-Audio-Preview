@@ -47,7 +47,7 @@ Rendered in the right column (`#liveMetersRight`). Width is controlled by CSS va
 - **Scale**: 0, −3, −6, −12, −18, −24, −36, −48, −60 dBFS ticks
 - **Color**: green (below −12 dBFS) → yellow (−12 to −3) → red (above −3)
 - **Rendering**: Canvas2D with `devicePixelRatio` scaling
-- **True peak**: Per-buffer true peak via `ebur128-wasm` updates the clip LED and peak-hold
+- **Sample peak**: Clip LED and peak-hold use the largest absolute sample in the current meter tap, converted with `20·log10`. This is sample peak in dBFS, not ITU-R BS.1770 true peak. Session true peak shown in the loudness pane comes from the loudness worklet.
 
 ### Goniometer (`GoniometerComponent`)
 
@@ -76,7 +76,7 @@ Log-spaced frequency bars derived from the analyser node's FFT data:
 
 ### Loudness Worklet (`loudness-worklet`)
 
-A separate `AudioWorkletNode` (`LoudnessWorkletNode`) connects between the gain node and the splitter. It computes EBU R128 measurements (LUFS-M/S/I, LRA, max true peak) at 50 ms intervals and posts them to the main thread via `port.onmessage`.
+A separate `AudioWorkletNode` (`LoudnessWorkletNode`) connects between the gain node and the splitter. It computes EBU R128 measurements (LUFS-M/S/I, LRA, max true peak) at the display rate (`interval` `1/60` second, about 16.7 ms) and posts them to the main thread via `port.onmessage`.
 
 The worklet is loaded lazily on first play. During the loading gap, the signal passes directly to the splitter; once the worklet is ready, the graph is rewired to insert it in the chain.
 
@@ -124,7 +124,9 @@ including paused seeks. Closing the editor resets this local display choice.
 Measurements use a Hann-windowed FFT of the current stereo time-domain frame,
 subtracting each channel's finite-frame mean before windowing and summing channel
 powers rather than summing waveforms. DC is excluded; silence
-shows a dash. They follow the monitoring matrix, but not spectrum display tilt,
+shows a dash. Single-file playback measures the frame after the monitoring
+matrix. Comparison mode measures each track's native session PCM and does not
+follow monitor routing. Neither path applies spectrum display tilt,
 A-weighting, smoothing, or peak hold. They remain FFT-based when the plot uses
 CQT. Frame length and sample rate determine resolution; these are instantaneous
 spectral measurements, not an offline whole-file analysis or pitch estimate.
